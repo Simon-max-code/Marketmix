@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Seller Dashboard - MarketMix</title>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="sellers layout.css"> <!-- Your custom CSS -->
+</head>
+<body>
+
+     <div class="body-background">
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="#" class="brand-logo">MarketMix</a>
+      <button class="navbar-toggler" id="navbar-toggler" type="button" aria-label="Toggle navigation">
+<img src="images/elon.jfif" class="navbar-toggler-icon" alt="">
+      </button>
+      <div class="nav-large">
+        <ul class="nav-list">
+          
+  <ul class="nav-links">
+    <li><a href="sellers layout.html">Dashboard</a></li>
+    <li><a href="sellers product.html">My Products</a></li>
+    <li><a href="sellers order.html">Orders</a></li>
+    <li><a href="sellers earning.html">Earnings</a></li>
+    <li><a href="sellers setting.html">Shop Settings</a></li>
+    
+  </ul>
+         
+        </ul>
+        <div class="nav-actions">
+       
+        </div>
+        
+          <div class="icon-container">
+    <div class="profile-container">
+  <img src="images/elon.jfif" alt="Profile" class="profile-icon" onclick="toggleProfileDropdown()">
+
+  <div class="profile-dropdown" id="profileDropdown">
+    <a href="#">Help & Support</a>
+    <a href="#">Logout</a>
+  </div>
+</div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Offcanvas Menu (for small screens) -->
+  <div class="offcanvas-menu" id="offcanvasMenu">
+    <div class="offcanvas-header">
+      <button class="offcanvas-close" id="offcanvasClose">&times;</button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="nav-list">
+       <ul class="nav-links">
+    <li><a href="sellers layout.html">Dashboard</a></li>
+    <li><a href="sellers product.html">My Products</a></li>
+    <li><a href="sellers order.html">Orders</a></li>
+    <li><a href="sellers earning.html">Earnings</a></li>
+    <li><a href="sellers setting.html">Shop Settings</a></li>
+  
+  </ul>
+
+      </ul>
+      <div class="nav-actions">
+     
+      </div>
+      
+        <div class="icon-container">
+   <div class="profile-container">
+  <img src="images/elon.jfif" alt="Profile" class="profile-icon" onclick="toggleProfileDropdown()">
+
+  <div class="nav-list">
+    <li><a href="#">Help & Support</a></li>
+    <li><a href="#">Logout</a></li>
+  </div>
+</div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+<!-- Seller Tips Section -->
+<section style="background: #f7fafc; color: #1e293b;" class="seller-tips">
+  <h3>Seller Tips</h3>
+  <p id="tip-text">Welcome to MarketMix! </p>
+</section>
+ <!-- Dark Mode Toggle -->
+<!-- <div class="dark-mode-toggle">
+  <button id="darkModeBtn" aria-label="Toggle Dark Mode">🌙 Dark Mode</button>
+</div> -->
+  <!-- Welcome Section -->
+  <section style="background-color:#85878f48" class="welcome-section">
+    <h2>Welcome, Sarah!</h2>
+    <p>Here's an overview of your shop today.</p>
+  </section>
+ 
+
+  <!-- Progress Tracker -->
+<section class="progress-tracker">
+  <h3>Progress Tracker</h3>
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+  <p id="progress-text">Profile setup: 40%</p>
+</section>
+
+  <!-- Overview Cards -->
+  <section class="dashboard-overview">
+    <a href="sellers order.html"><div class="overview-card">
+      <i class="fas fa-box"></i>
+      <h3>120</h3>
+      <p>Orders</p>
+    </div></a>
+    <a href="sellers product.html"><div class="overview-card" >
+      <i class="fas fa-tags"></i>
+      <h3>58</h3>
+      <p>Products</p>
+    </div></a>
+    <a href="sellers earning.html"><div class="overview-card">
+      <i class="fas fa-dollar-sign"></i>
+      <h3>$1,250</h3>
+      <p>Earnings</p>
+    </div>
+</a>
+   <a href="sellers setting.html"> <div class="overview-card">
+      <i class="fas fa-cog"></i>
+      <h3>Shop Settings</h3>
+      <p>Manage</p>
+    </div>
+</a>
+  </section>
+
+ 
+
+ 
+<!-- Advanced Seller Tools Section -->
+<section class="advanced-seller-tools">
+  <div class="tools-container">
+    <div class="tool-card" id="sales-chart-card">
+      <i class="fas fa-chart-line"></i>
+      <h3>Sales Analytics</h3>
+      <p>View sales trends</p>
+    </div>
+    <div class="tool-card" id="marketing-coupons-card">
+      <i class="fas fa-tag"></i>
+      <h3>Marketing Coupons</h3>
+      <p>Create promotional offers</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- Activity Log Section -->
+<section class="activity-log-ticker" id="activityTicker">
+  <ul id="tickerList">
+    <li> Product "Red T-Shirt" added</li>
+    <li> You updated "Black Sneakers"</li>
+    <li> Deleted item "Old Stock - Wallet"</li>
+    <li> Deleted item "Old Stock - phone"</li>
+    <li> Deleted item "Old Stock - control"</li>
+    <li> Order #234 confirmed</li>
+    <li> New message from buyer "Ada"</li>
+    <li> New message from buyer "tomiwa"</li>
+    <li> New message from buyer "greg"</li>
+    <li> MARKETMIXX</li>
+  </ul>
+</section>
+
+<!-- Modal -->
+<div id="activityModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeModal">&times;</span>
+    <h2>Full Activity Log</h2>
+    <ul class="full-log">
+      <li> Product "Red T-Shirt" added - June 5</li>
+      <li> You updated "Black Sneakers" - June 4</li>
+      <li> Deleted item "Old Stock - Wallet" - June 3</li>
+      <li> Order #234 confirmed - June 3</li>
+      <li> New message from buyer "Ada" - June 2</li>
+      <!-- Add more logs here -->
+    </ul>
+  </div>
+</div>
+
+
+<!-- Modals -->
+
+<!-- Marketing Coupons Modal -->
+<div class="modal" id="coupons-modal">
+  <div class="modal-content">
+    <span class="close-btn" id="close-coupons">&times;</span>
+    <h3>Create New Coupon</h3>
+    <form id="coupon-form">
+      <label for="coupon-code">Coupon Code:</label>
+      <input type="text" id="coupon-code" required />
+      <label for="discount">Discount (%):</label>
+      <input type="number" id="discount" min="1" max="100" required />
+      <button type="submit">Create Coupon</button>
+    </form>
+  </div>
+</div>
+
+<!-- Sales Chart Modal -->
+<div class="modal" id="sales-modal">
+  <div class="modal-content">
+    <span class="close-btn" id="close-sales">&times;</span>
+    <h3>Sales Analytics</h3>
+    <canvas id="salesChart" width="400" height="200"></canvas>
+  </div>
+</div>
+
+
+ <footer class="dashboard-footer">
+  <div class="footer-left">
+    <p>&copy; 2025 SellerHub Demo. All rights reserved.</p>
+  </div>
+  <div class="footer-right">
+    <a href="#">Help</a>
+    <a href="#">Seller Tips</a>
+    <a href="#">Contact</a>
+  </div>
+</footer>
+
+ <script src="sellers layout.js"></script>
+</body>
+</html>

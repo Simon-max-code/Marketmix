@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - MarketMix</title>
+  <link rel="stylesheet" href="checkout.css">
+</head>
+<body>
+<!-- Lightweight Checkout Top Bar -->
+<header class="checkout-topbar">
+  <div class="topbar-content">
+    <div class="logo">
+      <span>MarketMix</span>
+    </div>
+    <div class="secure">
+      <span class="lock">🔒</span>
+      <span>Secure Checkout</span>
+    </div>
+  </div>
+</header>
+
+
+
+  <div class="checkout-container">
+    
+    <!-- Left: Shipping Details -->
+    <div class="checkout-form">
+      <h2>Shipping Details</h2>
+      <form id="checkoutForm">
+        <label for="fullname">Full Name</label>
+        <input type="text" id="fullname" placeholder="John Doe" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="you@example.com" required>
+
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone" placeholder="+234 800 000 0000" required>
+
+        <label for="address">Address</label>
+        <textarea id="address" rows="3" placeholder="Street, City, State" required></textarea>
+
+        <label for="payment">Payment Method</label>
+        <select id="payment" required>
+          <option value="">-- Select Payment Method --</option>
+          <option value="card">Credit/Debit Card</option>
+          <option value="paypal">PayPal</option>
+          <option value="bank">Bank Transfer</option>
+          <option value="cod">Cash on Delivery</option>
+        </select>
+
+
+        <label for="delivery">Delivery Option</label>
+<select id="delivery" required>
+  <option value="">-- Select Delivery Option --</option>
+  <option value="marketmix">MarketMix Delivery</option>
+</select>
+
+      </form>
+    </div>
+
+    <!-- Right: Order Summary -->
+    <div class="checkout-summary">
+      <h2>Order Summary</h2>
+      <ul id="orderItems">
+        <li class="item"><span>Product 1</span> <span>$20</span></li>
+        <li class="item"><span>Product 2</span> <span>$15</span></li>
+        <li class="item"><span>Shipping</span> <span>$5</span></li>
+      </ul>
+      <div class="total">
+        <strong>Total</strong>
+        <span id="totalAmount">$40</span>
+      </div>
+      <button id="placeOrderBtn">Place Order</button>
+      <p id="orderMessage" class="hidden"></p>
+    </div>
+  </div>
+
+  <script src="checkout.js"></script>
+</body>
+</html>

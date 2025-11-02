@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MarketMix | Shop Settings</title>
+  <link rel="stylesheet" href="sellers setting.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script defer src="sellers settings.js"></script>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <link rel="shortcut icon" href="images/marketmix.png" type="image/x-icon">
+</head>
+<body>
+  <div class="body-background">
+  <!-- Navbar --> 
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="#" class="brand-logo">MarketMix</a>
+      <button class="navbar-toggler" id="navbar-toggler" type="button" aria-label="Toggle navigation">
+    <img src="images/elon.jfif" class="navbar-toggler-icon" alt="">
+      </button>
+      <div class="nav-large">
+        <ul class="nav-list">
+          
+  <ul class="nav-links">
+    <li><a href="sellers layout.html">Dashboard</a></li>
+    <li><a href="sellers product.html">My Products</a></li>
+    <li><a href="sellers order.html">Orders</a></li>
+    <li><a href="sellers earning.html">Earnings</a></li>
+    <li><a href="sellers setting.html">Shop Settings</a></li>
+    
+  </ul>
+         
+        </ul>
+        <div class="nav-actions">
+       
+        </div>
+        
+          <div class="icon-container">
+    <div class="profile-container">
+  <img src="images/elon.jfif" alt="Profile" class="profile-icon" onclick="toggleProfileDropdown()">
+
+  <div class="profile-dropdown" id="profileDropdown">
+    <a href="#">Help & Support</a>
+    <a href="#">Logout</a>
+  </div>
+</div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Offcanvas Menu (for small screens) -->
+  <div class="offcanvas-menu" id="offcanvasMenu">
+    <div class="offcanvas-header">
+      <button class="offcanvas-close" id="offcanvasClose">&times;</button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="nav-list">
+       <ul class="nav-links">
+    <li><a href="sellers layout.html">Dashboard</a></li>
+    <li><a href="sellers product.html">My Products</a></li>
+    <li><a href="sellers order.html">Orders</a></li>
+    <li><a href="sellers earning.html">Earnings</a></li>
+    <li><a href="sellers setting.html">Shop Settings</a></li>
+  
+  </ul>
+
+      </ul>
+      <div class="nav-actions">
+     
+      </div>
+      
+        <div class="icon-container">
+   <div class="profile-container">
+  <img src="images/elon.jfif" alt="Profile" class="profile-icon" onclick="toggleProfileDropdown()">
+
+  <div class="nav-list">
+    <li><a href="#">View Profile</a></li>
+    <li><a href="#">Account Settings</a></li>
+    <li><a href="#">Help & Support</a></li>
+    <li><a href="#">Logout</a></li>
+  </div>
+</div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <form
+      id="shop-settings"
+      class="shop-settings-form"
+      aria-labelledby="shop-settings-title"
+      novalidate
+    >
+      <h2 id="shop-settings-title">Shop Settings</h2>
+
+      <div class="form-group">
+        <label for="shop-name">Shop Name</label>
+        <input
+          type="text"
+          id="shop-name"
+          name="shopName"
+          placeholder="Your shop name"
+          required
+          aria-required="true"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="shop-email">Email Address</label>
+        <input
+          type="email"
+          id="shop-email"
+          name="shopEmail"
+          placeholder="Email for customers"
+          required
+          aria-required="true"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="shop-phone">Phone Number</label>
+        <input
+          type="tel"
+          id="shop-phone"
+          name="shopPhone"
+          placeholder="Your contact number"
+          pattern="^\+?\d{7,15}$"
+          aria-describedby="phone-desc"
+        />
+        <small style="color: #555555;" id="phone-desc">Format: +23400000000</small>
+      </div>
+
+      <div class="form-group">
+        <label for="shop-address">Shop Address</label>
+        <textarea
+          id="shop-address"
+          name="shopAddress"
+          rows="3"
+          placeholder="Shop location/address"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="business-hours">Business Hours</label>
+        <input
+          type="text"
+          id="business-hours"
+          name="businessHours"
+          placeholder="E.g. Mon-Fri 9am - 6pm"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="shop-logo">Shop Logo (PNG, JPG, max 1MB)</label>
+        <input
+          type="file"
+          id="shop-logo"
+          name="shopLogo"
+          accept="image/png, image/jpeg"
+          aria-describedby="logo-desc"
+        />
+        <small id="logo-desc">Allowed types: PNG, JPG. Max size: 1MB</small>
+        <img id="logo-preview" alt="Shop Logo Preview" />
+      </div>
+
+      <div class="form-group">
+        <label for="shop-instagram">Instagram URL</label>
+        <input
+          type="url"
+          id="shop-instagram"
+          name="shopInstagram"
+          placeholder="https://instagram.com/yourshop"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="shop-facebook">Facebook URL</label>
+        <input
+          type="url"
+          id="shop-facebook"
+          name="shopFacebook"
+          placeholder="https://facebook.com/yourshop"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="shop-twitter">Twitter URL</label>
+        <input
+          type="url"
+          id="shop-twitter"
+          name="shopTwitter"
+          placeholder="https://twitter.com/yourshop"
+        />
+      </div>
+
+      <fieldset>
+        <small style="color: red;">Leave password fields blank if you don't want to change your password.</small> <br>
+
+        <legend>Change Password</legend>
+        <div class="form-group">
+          <label for="current-password">Current Password</label>
+          <input
+            type="password"
+            id="current-password"
+            name="currentPassword"
+            autocomplete="current-password"
+          />
+        </div>
+        <div class="form-group">
+          <label for="new-password">New Password</label>
+          <input
+            type="password"
+            id="new-password"
+            name="newPassword"
+            autocomplete="new-password"
+            minlength="6"
+          />
+        </div>
+        <div class="form-group">
+          <label for="confirm-password">Confirm New Password</label>
+          <input
+            type="password"
+            id="confirm-password"
+            name="confirmPassword"
+            autocomplete="new-password"
+          />
+        </div>
+      </fieldset>
+
+      <div class="btn-group" style="margin-top: 15px;">
+        <button type="submit" class="save-btn" aria-live="polite" aria-busy="false" aria-label="Save changes">
+          Save Changes
+          <span class="loading-spinner" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="reset-btn" id="reset-btn">Reset Settings</button>
+        <button type="button" class="preview-btn" id="preview-btn">Preview Shop</button>
+
+      </div>
+
+      <div id="form-message" role="alert" aria-live="assertive" style="margin-top: 10px;"></div>
+    </form>
+  </main>
+
+
+</body>
+</html>

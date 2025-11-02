@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Setup Store — MarketMix</title>
+
+  <!-- Styles & Icons -->
+  <link rel="stylesheet" href="setup-store.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+  <a class="skip-btn" href="sellers layout.html">Skip for now</a>
+
+  <main class="page">
+    <section class="form-column">
+      <div class="card">
+        <h1>Setup Your Store</h1>
+
+        <form id="storeSetupForm" novalidate>
+          <!-- LOGO (drag & drop) -->
+          <div class="form-group" id="logoGroup">
+            <label>Store Logo <span class="required">*</span></label>
+            <div id="logoDrop" class="dropzone">
+              <input type="file" id="storeLogo" accept="image/*" aria-label="Upload store logo" required>
+              <div class="drop-hint">
+                <i class="fa-regular fa-image"></i>
+                <p>Drag & drop logo here, or <span class="choose">choose file</span></p>
+                <small class="muted">PNG, JPG. Required.</small>
+              </div>
+            </div>
+            <div class="logo-preview" id="logoPreviewWrap" aria-hidden="true">
+              <img id="logoPreview" alt="Logo preview" src="">
+              <button type="button" id="removeLogo" class="remove-btn" title="Remove logo">✕</button>
+            </div>
+            <small class="error-msg" id="error-logo"></small>
+          </div>
+
+          <!-- Store Name -->
+          <div class="form-group">
+            <label for="storeName">Store Name <span class="required">*</span></label>
+            <input id="storeName" type="text" placeholder="Your store name" required>
+            <small class="error-msg" id="error-storeName"></small>
+          </div>
+
+          <!-- Description -->
+          <div class="form-group">
+            <label for="storeDesc">Store Description <span class="muted">(optional)</span></label>
+            <textarea id="storeDesc" rows="4" placeholder="Short description (max 250 words)"></textarea>
+            <div class="desc-meta">
+              <small id="wordCount">0 / 250 words</small>
+            </div>
+          </div>
+
+          <!-- Email verification -->
+<div class="form-group">
+  <label for="email">Email <span class="required">*</span></label>
+  <div class="input-row">
+    <input id="email" type="email" placeholder="you@example.com" required>
+    <button type="button" class="verify-btn" id="verifyEmail">Verify</button>
+  </div>
+  <div id="emailOtpSection" class="otp-section">
+    <input type="text" id="emailOtp" placeholder="Enter OTP">
+    <button type="button" class="verify-btn" id="submitEmailOtp">Submit</button>
+  </div>
+  <small class="error-msg" id="error-email"></small>
+</div>
+
+<!-- Phone verification -->
+<div class="form-group">
+  <label for="phone">Phone Number <span class="required">*</span></label>
+  <div class="input-row">
+    <input id="phone" type="tel" placeholder="+234 000 0000" required>
+    <button type="button" class="verify-btn" id="verifyPhone">Verify</button>
+  </div>
+  <div id="phoneOtpSection" class="otp-section">
+    <input type="text" id="phoneOtp" placeholder="Enter OTP">
+    <button type="button" class="verify-btn" id="submitPhoneOtp">Submit</button>
+  </div>
+  <small class="error-msg" id="error-phone"></small>
+</div>
+
+          <!-- Address -->
+          <div class="form-group">
+            <label for="address">Store Address <span class="required">*</span></label>
+            <input id="address" type="text" placeholder="City, State, Country" required>
+            <small class="error-msg" id="error-address"></small>
+          </div>
+
+          <!-- Website (optional) -->
+          <div class="form-group">
+            <label for="website">Website <span class="muted">(optional)</span></label>
+            <input id="website" type="url" placeholder="https://yourstore.com">
+          </div>
+
+          <!-- Categories: chips + add (modal) -->
+          <div class="form-group">
+            <label>Category <span class="required">*</span></label>
+            <div class="chips-wrap" id="categoryChips">
+              <!-- chips inserted via JS -->
+            </div>
+            <div class="chips-actions">
+              <button type="button" id="openAddCategory" class="icon-btn">+ Add category</button>
+            </div>
+            <small class="error-msg" id="error-category"></small>
+          </div>
+
+          <!-- Multiple showcase images (up to 3) -->
+          <div class="form-group">
+            <label>Showcase Images (up to 3) <span class="muted">(optional)</span></label>
+            <div id="galleryUploader" class="gallery-uploader">
+              <input type="file" id="galleryInput" accept="image/*" multiple>
+              <div class="gallery-grid" id="galleryGrid"></div>
+            </div>
+            <small class="muted">Recommended: 1200×800 px</small>
+          </div>
+
+          <!-- Expandable Socials -->
+          <div class="form-group expandable">
+            <button type="button" id="toggleSocials" class="toggle-btn">+ Add Social Links</button>
+            <div class="socials-section" id="socialsSection">
+              <label><i class="fab fa-facebook"></i> Facebook</label>
+              <input id="social-facebook" type="url" placeholder="https://facebook.com/yourpage">
+
+              <label><i class="fab fa-x-twitter"></i> X (Twitter)</label>
+              <input id="social-x" type="url" placeholder="https://x.com/yourprofile">
+
+              <label><i class="fab fa-tiktok"></i> TikTok</label>
+              <input id="social-tiktok" type="url" placeholder="https://www.tiktok.com/@yourprofile">
+
+              <label><i class="fab fa-instagram"></i> Instagram</label>
+              <input id="social-ig" type="url" placeholder="https://instagram.com/yourprofile">
+
+              <label><i class="fab fa-telegram"></i> Telegram</label>
+              <input id="social-telegram" type="url" placeholder="https://t.me/yourchannel">
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <div class="form-actions">
+            <button type="submit" class="save-btn">Save & Continue to Dashboard</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Preview column -->
+    <aside class="preview-column">
+      <div class="card preview-card">
+        <h2 class="small">Store Preview</h2>
+        <div class="preview-logo" id="previewLogoWrap">
+          <img id="previewLogo" src="" alt="Preview logo" style="display:none;">
+          <div class="preview-noimg" id="previewNoImg">No logo</div>
+        </div>
+        <h3 id="previewName">Your Store Name</h3>
+        <p id="previewDesc" class="preview-desc">Store description will appear here.</p>
+
+        <div class="preview-meta">
+          <div class="meta-row"><strong>Address:</strong> <span id="previewAddress">—</span></div>
+          <div class="meta-row"><strong>Email:</strong> <span id="previewEmail">—</span></div>
+          <div class="meta-row"><strong>Phone:</strong> <span id="previewPhone">—</span></div>
+        </div>
+
+        <div class="preview-cats" id="previewCats"></div>
+
+        <div class="preview-gallery" id="previewGallery"></div>
+
+        <div class="preview-socials" id="previewSocials"></div>
+
+        <div class="map-wrap">
+          <iframe id="mapFrame" title="store-location" src="" frameborder="0" loading="lazy"></iframe>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Add Category Modal -->
+  <div id="categoryModal" class="modal" aria-hidden="true">
+    <div class="modal-content">
+      <button class="close-modal" id="closeCategoryModal">×</button>
+      <h3>Add New Category</h3>
+      <input id="newCategoryInput" type="text" placeholder="e.g. Handmade, Pet Supplies">
+      <div class="modal-actions">
+        <button id="saveCategoryBtn" class="btn-primary">Add</button>
+        <button id="cancelCategoryBtn" class="btn-ghost">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+<footer class="footer">
+  <div class="footer-links">
+    <a href="#">Help</a>
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Service</a>
+  </div>
+  <p class="footer-copy">&copy; 2025 MarketMix. All rights res
+
+  <script src="setup-store.js"></script>
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Signup</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+      background: url('your-image.jpg') no-repeat center/cover;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+
+    .signup-container {
+      width: 100%;
+      max-width: 480px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 2rem;
+      border-radius: 1rem;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+
+    .signup-container h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .progressbar {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      counter-reset: step;
+    }
+
+    .progressbar li {
+      list-style: none;
+      position: relative;
+      flex: 1;
+      text-align: center;
+      color: #aaa;
+    }
+
+    .progressbar li::before {
+      counter-increment: step;
+      content: counter(step);
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      border: 2px solid #aaa;
+      display: block;
+      text-align: center;
+      margin: 0 auto 10px;
+      border-radius: 50%;
+      background: transparent;
+    }
+
+    .progressbar li.active::before {
+      border-color: #667eea;
+      background: #667eea;
+      color: #fff;
+    }
+
+    .progressbar li.active {
+      color: #fff;
+    }
+
+    .form-step {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .form-step.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);} 
+      to {opacity: 1; transform: translateY(0);} 
+    }
+
+    .input-group {
+      margin-bottom: 1rem;
+    }
+
+    .input-group input,
+    .input-group select {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 0.6rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 0 2px #667eea;
+    }
+
+    .input-group input::placeholder {
+      color: #ccc;
+    }
+
+    select option {
+      background: #1e1e1e;
+      color: #fff;
+    }
+
+    .error {
+      font-size: 0.8rem;
+      color: #ff6b6b;
+      margin-top: 0.3rem;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 0.6rem;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 0.8rem;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+    }
+
+    .btn-google {
+      background: #fff;
+      color: #444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-google img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .divider {
+      text-align: center;
+      margin: 1.5rem 0;
+      color: #ccc;
+    }
+
+    /* Shake animation for invalid */
+    .shake {
+      animation: shake 0.3s;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+
+    /* Password eye button */
+    .password-group {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: #ccc;
+      user-select: none;
+      transition: color 0.2s;
+    }
+
+    .toggle-password:hover {
+      color: #fff;
+    }
+
+    /* Password strength bar */
+    .strength-bar {
+      height: 6px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.2);
+      margin-top: 5px;
+      overflow: hidden;
+    }
+
+    .strength-bar-fill {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s, background 0.3s;
+    }
+
+    /* Loading spinner */
+    .spinner {
+      border: 6px solid rgba(255, 255, 255, 0.2);
+      border-top: 6px solid #667eea;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin: 2rem auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <h2>Seller Signup</h2>
+
+    <ul class="progressbar">
+      <li class="active">Step 1</li>
+      <li>Step 2</li>
+      <li>Step 3</li>
+    </ul>
+
+   
+    <form id="signupForm">
+      <!-- Step 1 -->
+      <div class="form-step active">
+        <div class="input-group">
+          <input type="text" id="fullname" placeholder="Full Name" required>
+          <div class="error" id="error-fullname"></div>
+        </div>
+        <div class="input-group">
+          <input type="email" id="email" placeholder="Email" required>
+          <div class="error" id="error-email"></div>
+        </div>
+        <div class="input-group">
+          <input type="tel" id="phone" placeholder="Phone Number" required>
+          <div class="error" id="error-phone"></div>
+        </div>
+        <button type="button" class="btn btn-primary next-btn">Next</button>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="form-step">
+        <div class="input-group">
+          <input type="text" id="storeName" placeholder="Store Name" required>
+          <div class="error" id="error-storeName"></div>
+        </div>
+        <div class="input-group">
+          <select id="businessType" required>
+            <option value="">Select Business Type</option>
+            <option value="retail">Retail</option>
+            <option value="wholesale">Wholesale</option>
+            <option value="service">Service</option>
+          </select>
+          <div class="error" id="error-businessType"></div>
+        </div>
+        <div class="input-group">
+          <select id="productCategory" required>
+            <option value="">Select Product Category</option>
+            <option value="fashion">Fashion</option>
+            <option value="electronics">Electronics</option>
+            <option value="home">Home & Living</option>
+            <option value="other">Other</option>
+          </select>
+          <div class="error" id="error-productCategory"></div>
+        </div>
+        <div class="input-group">
+          <input type="text" id="address" placeholder="Business Address" required>
+          <div class="error" id="error-address"></div>
+        </div>
+        <button type="button" class="btn btn-primary next-btn">Next</button>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="form-step">
+        <div class="input-group password-group">
+          <input type="password" id="password" placeholder="Password (min 6 chars)" required>
+          <span class="toggle-password" onclick="togglePassword('password', this)">👁</span>
+          <div class="strength-bar"><div id="strength-bar-fill" class="strength-bar-fill"></div></div>
+          <div class="error" id="error-password"></div>
+        </div>
+        <div class="input-group password-group">
+          <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+          <span class="toggle-password" onclick="togglePassword('confirmPassword', this)">👁</span>
+          <div class="error" id="error-confirmPassword"></div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </form>
+
+    <div class="divider">or</div>
+    <button class="btn btn-google">
+      <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google Logo"> Sign up with Google
+    </button>
+  </div>
+
+  <script>
+    const form = document.getElementById("signupForm");
+    const formSteps = document.querySelectorAll(".form-step");
+    const nextBtns = document.querySelectorAll(".next-btn");
+    const progressbar = document.querySelectorAll(".progressbar li");
+    let currentStep = 0;
+
+    function showStep(step) {
+      formSteps.forEach((stepDiv, index) => {
+        stepDiv.classList.toggle("active", index === step);
+        progressbar[index].classList.toggle("active", index <= step);
+      });
+    }
+
+    function validateStep(step) {
+      let isValid = true;
+      const inputs = formSteps[step].querySelectorAll("input, select");
+
+      inputs.forEach(input => {
+        const errorDiv = document.getElementById("error-" + input.id);
+        if (!input.value.trim()) {
+          errorDiv.textContent = "This field is required";
+          isValid = false;
+        } else {
+          errorDiv.textContent = "";
+          if (input.type === "email") {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(input.value)) {
+              errorDiv.textContent = "Enter a valid email";
+              isValid = false;
+            }
+          }
+          if (input.id === "password" && input.value.length < 6) {
+            errorDiv.textContent = "Password must be at least 6 characters";
+            isValid = false;
+          }
+          if (input.id === "confirmPassword") {
+            const password = document.getElementById("password").value;
+            if (input.value !== password) {
+              errorDiv.textContent = "Passwords do not match";
+              isValid = false;
+            }
+          }
+        }
+      });
+
+      if (!isValid) {
+        formSteps[step].classList.add("shake");
+        setTimeout(() => formSteps[step].classList.remove("shake"), 300);
+      }
+
+      return isValid;
+    }
+
+    nextBtns.forEach((btn, index) => {
+      btn.addEventListener("click", () => {
+        if (validateStep(currentStep)) {
+          currentStep++;
+          showStep(currentStep);
+        }
+      });
+    });
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      if (validateStep(currentStep)) {
+        form.style.display = "none";
+        const successDiv = document.createElement("div");
+        successDiv.innerHTML = `
+          <div style="text-align:center; padding:2rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="#4CAF50" viewBox="0 0 24 24">
+              <path d="M20.285 6.709l-11.285 11.292-5.285-5.292 1.414-1.414 3.871 3.878 9.871-9.878z"/>
+            </svg>
+            <h2>Account Created Successfully!</h2>
+            <p>Welcome aboard, seller 🚀</p>
+          </div>
+        `;
+        document.querySelector(".signup-container").appendChild(successDiv);
+
+        setTimeout(() => {
+          successDiv.innerHTML = `<div class="spinner"></div><p style="text-align:center;">setting up store...</p>`;
+        }, 2000);
+
+        setTimeout(() => {
+          window.location.href = "setup-store.html";
+        }, 4000);
+      }
+    });
+
+    function togglePassword(fieldId, el) {
+      const input = document.getElementById(fieldId);
+      if (input.type === "password") {
+        input.type = "text";
+        el.textContent = "🙈";
+      } else {
+        input.type = "password";
+        el.textContent = "👁";
+      }
+    }
+
+    // Password strength checker
+    const passwordInput = document.getElementById("password");
+    const strengthBarFill = document.getElementById("strength-bar-fill");
+
+    passwordInput.addEventListener("input", () => {
+      const val = passwordInput.value;
+      let strength = 0;
+
+      if (val.length >= 6) strength++;
+      if (/[A-Z]/.test(val)) strength++;
+      if (/[0-9]/.test(val)) strength++;
+      if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+      switch (strength) {
+        case 0:
+          strengthBarFill.style.width = "0%";
+          break;
+        case 1:
+          strengthBarFill.style.width = "25%";
+          strengthBarFill.style.background = "#ff4d4d";
+          break;
+        case 2:
+          strengthBarFill.style.width = "50%";
+          strengthBarFill.style.background = "#ff884d";
+          break;
+        case 3:
+          strengthBarFill.style.width = "75%";
+          strengthBarFill.style.background = "#ffcc00";
+          break;
+        case 4:
+          strengthBarFill.style.width = "100%";
+          strengthBarFill.style.background = "#4CAF50";
+          break;
+      }
+    });
+
+    showStep(currentStep);
+  </script>
+</body>
+</html>

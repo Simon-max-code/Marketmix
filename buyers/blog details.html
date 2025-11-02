@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog Details | MarketMix</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #fff7ed;
+      margin: 0;
+      color: #1E293B;
+    }
+
+    header {
+      background: #000;
+      color: #F97316;
+      text-align: center;
+      padding: 35px;
+      position: relative;
+    }
+
+      footer {
+     background: rgba(0, 0, 0, 0.7);
+      color: #f8fafc;
+      text-align: center;
+      padding: 25px 15px;
+      margin-top: 60px;
+      font-size: 15px;
+    }
+
+
+
+    .back-btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #F97316; /* your site yellow theme */
+  color: #000;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 2px;
+  transition: 0.3s;
+}
+
+.back-btn i {
+  font-size: 18px;
+}
+
+.back-btn:hover {
+  background: #EA580C;
+  transform: translateY(-2px);
+}
+
+    .blog-container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      padding: 20px;
+    }
+
+    .blog-header img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .blog-header h1 {
+      margin-top: 20px;
+      color: #F97316;
+      font-size: 28px;
+    }
+
+    .blog-meta {
+      color: #64748B;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .blog-content p {
+      line-height: 1.7;
+      margin: 15px 0;
+      color: #334155;
+    }
+
+    .related-section {
+      margin-top: 40px;
+    }
+
+    .related-section h3 {
+      color: #F97316;
+      margin-bottom: 20px;
+    }
+
+    .related-posts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+    }
+
+    .related-card {
+      background: #fff7ed;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      transition: 0.3s;
+    }
+
+    .related-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .related-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .related-card h4 {
+      margin: 10px 0;
+      font-size: 16px;
+      color: #1E293B;
+    }
+
+    .related-card a {
+      color: #F97316;
+      font-weight: 600;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .related-card a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      .blog-header h1 {
+        font-size: 22px;
+      }
+      .blog-header img {
+        height: 220px;
+      }
+    }
+  </style>
+</head>
+<body>
+   <button class="back-btn" onclick="history.back()">
+      <i class="fas fa-chevron-left"></i> Back
+    </button>
+  <header>
+ 
+    <h1>MarketMix Blog</h1>
+  </header>
+
+  <main class="blog-container">
+    <div class="blog-header">
+      <img src="marketplace.png" alt="Online Shopping">
+      <h1>How to Save Money on Online Shopping</h1>
+      <p class="blog-meta">By MarketMix Team • October 20, 2025</p>
+    </div>
+
+    <div class="blog-content">
+      <p>Online shopping has made it easier than ever to get your favorite items delivered straight to your door. However, without smart shopping habits, you might end up overspending or missing out on discounts.</p>
+
+      <p>Here are a few practical tips to help you save money while shopping online:</p>
+
+      <p><strong>1. Compare Prices Before Buying:</strong> Use price comparison tools to check different sites before purchasing an item. Sometimes the same product costs less elsewhere.</p>
+
+      <p><strong>2. Look for Discount Codes:</strong> Many websites offer promo codes that can give you up to 30% off. Check coupon sites or the MarketMix discount section for ongoing deals.</p>
+
+      <p><strong>3. Add to Cart and Wait:</strong> Some stores send you special offers if you leave an item in your cart for a while — especially during holidays or flash sales.</p>
+
+      <p><strong>4. Subscribe to Newsletters:</strong> MarketMix often sends early-access sales alerts and exclusive promo codes to subscribers. Sign up to never miss out.</p>
+
+      <p><strong>5. Use Cashback and Reward Programs:</strong> Join loyalty programs or cashback sites to earn money back on your purchases.</p>
+
+      <p>Shopping online can be convenient, fast, and affordable — as long as you shop smart. At MarketMix, we make it our goal to help buyers get the best deals from trusted sellers.</p>
+    </div>
+
+    <section class="related-section">
+      <h3>You Might Also Like</h3>
+      <div class="related-posts">
+        <div class="related-card">
+          <img src="elon.jfif" alt="Fashion Trends">
+          <h4>Top Fashion Trends in 2025</h4>
+          <a href="#">Read More</a>
+        </div>
+        <div class="related-card">
+          <img src="marketplace.png" alt="Gadgets 2025">
+          <h4>Top 10 Gadgets for 2025</h4>
+          <a href="#">Read More</a>
+        </div>
+        <div class="related-card">
+          <img src="marketplace.png" alt="Sell on MarketMix">
+          <h4>Why You Should Sell on MarketMix</h4>
+          <a href="#">Read More</a>
+        </div>
+      </div>
+    </section>
+  </main>
+   <footer>
+    &copy; 2025 MarketMix. All Rights Reserved.
+  </footer>
+
+</body>
+</html>

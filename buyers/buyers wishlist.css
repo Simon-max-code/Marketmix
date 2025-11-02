@@ -1,0 +1,109 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f8f9fa;
+  margin: 0;
+  padding: 0px;
+}
+
+.wishlist-page {
+  max-width: 1000px;
+  margin: auto;
+}
+
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 25px;
+}
+
+.wishlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 20px;
+}
+
+.wishlist-item {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wishlist-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.wishlist-item img {
+  max-width: 100%;
+  border-radius: 8px;
+  height: 160px;
+  object-fit: cover;
+}
+
+.wishlist-item h4 {
+  font-size: 16px;
+  margin: 10px 0 5px;
+  color: #222;
+}
+
+.wishlist-item p {
+  font-weight: bold;
+  color: #ff6600;
+}
+
+.wishlist-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.wishlist-actions button {
+  flex: 1;
+  padding: 8px;
+  font-size: 13px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.wishlist-actions button:active {
+  transform: scale(0.96);
+}
+
+.wishlist-actions .move {
+  background-color: #28a745;
+  color: white;
+}
+
+.wishlist-actions .remove {
+  background-color: #dc3545;
+  color: white;
+}
+
+.wishlist-empty {
+  text-align: center;
+  color: #555;
+  font-size: 1rem;
+  padding: 40px 0;
+}
+
+@media (max-width: 600px) {
+  .wishlist-actions {
+    flex-direction: column;
+  }
+}
+
+ /*footer*/
+  footer {
+  text-align: center;
+  padding: 15px;
+  background-color: #f0f0f0;
+  color: #555;
+  font-size: 14px;
+  margin-top: 30px;
+}

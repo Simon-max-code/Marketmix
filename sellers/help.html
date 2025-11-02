@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Help & Support | MarketMix</title>
+  <link rel="stylesheet" href="view profile.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body>
+  <!-- Navbar -->
+
+
+  <!-- Help & Support Section -->
+  <section class="help-support">
+    <h2>Help & Support</h2>
+
+    <div class="support-card">
+      <h3><i class="fas fa-question-circle"></i> Frequently Asked Questions</h3>
+      <p>Get answers to common questions about your shop, products, and orders.</p>
+      <a href="#">Browse FAQs</a>
+    </div>
+
+    <div class="support-card">
+      <h3><i class="fas fa-envelope"></i> Contact Support</h3>
+      <p>Need assistance? Reach out to our support team.</p>
+      <a href="mailto:support@marketmix.com">support@marketmix.com</a>
+    </div>
+
+    <div class="support-card">
+      <h3><i class="fas fa-book"></i> Seller Guide</h3>
+      <p>Explore tips and best practices for succeeding on MarketMix.</p>
+      <a href="#">Read Seller Guide</a>
+    </div>
+  </section>
+
+  <script>
+    const profilePic = document.getElementById('profilePic');
+    const dropdown = document.getElementById('profileDropdown');
+    profilePic.addEventListener('click', () => {
+      dropdown.classList.toggle('show');
+    });
+  </script>
+</body>
+</html>

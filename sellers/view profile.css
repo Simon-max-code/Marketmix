@@ -1,0 +1,300 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+   background-color: white;
+  color: #333;
+}
+
+
+
+.profile-container {
+  max-width: 900px;
+  margin: 110px auto;
+  padding: 30px;
+    background: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png'), #fff6e0;
+  box-shadow: 0 0 15px rgba(0,0,0,0.08);
+  border-radius: 12px;
+}
+
+.profile-container h2 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.profile-card img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 4px solid #ff6600;
+  object-fit: cover;
+}
+
+.profile-card .info p {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* for account setting */
+
+
+/* === Account Settings Form === */
+.account-settings {
+  max-width: 600px;
+     background: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png'), #fff6e0;
+  padding: 30px;
+  margin: 40px auto;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.account-settings h2 {
+  margin-bottom: 25px;
+  color: #333;
+  font-size: 1.8em;
+}
+
+.settings-form .form-group {
+  margin-bottom: 20px;
+}
+
+.settings-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.settings-form input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.save-btn {
+  background: #ff6600;
+  border: none;
+  padding: 12px 20px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 6px;
+  width: 100%;
+  margin-top: 10px;
+  transition: background 0.3s ease;
+}
+
+.save-btn:hover {
+ background-color: #e65c00;
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+  }
+
+  .profile-dropdown {
+    right: 10px;
+    left: auto;
+  }
+
+  .account-settings {
+    margin: 20px;
+    padding: 20px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* for helphtml */
+.help-support {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.help-support h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 2em;
+}
+
+.support-card {
+     background: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png'), #fff6e0;
+  border-radius: 10px;
+  padding: 25px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.support-card:hover {
+  transform: translateY(-5px);
+}
+
+.support-card h3 {
+  font-size: 1.3em;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.support-card i {
+  color: #ffcc00;
+  margin-right: 8px;
+}
+
+.support-card p {
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.support-card a {
+  color: #ff6600;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.support-card a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .help-support {
+    padding: 10px;
+  }
+
+  .support-card {
+    padding: 20px;
+  }
+
+  .help-support h2 {
+    font-size: 1.5em;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* for logout */
+.logout-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 85vh;
+  background-color: #f8f8f8;
+  padding: 20px;
+}
+
+.logout-card {
+ background: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png'), #fff6e0;
+  padding: 40px 30px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+  max-width: 400px;
+  width: 100%;
+}
+
+.logout-icon {
+  font-size: 3rem;
+  color: #ff6600;
+  margin-bottom: 20px;
+}
+
+.logout-card h2 {
+  font-size: 1.8em;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.logout-card p {
+  font-size: 1em;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.return-btn {
+  display: inline-block;
+  background: #ff6600;
+  color: white;
+  padding: 10px 25px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  margin-right: 10px;
+  transition: background 0.3s ease;
+}
+
+.return-btn:hover {
+  background: #cc5200;
+}
+
+.home-link {
+  display: inline-block;
+  margin-top: 15px;
+  color: #333;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.home-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .logout-card {
+    padding: 25px 20px;
+  }
+
+  .logout-icon {
+    font-size: 2.5rem;
+  }
+}
+

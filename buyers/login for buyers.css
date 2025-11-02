@@ -1,0 +1,150 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    margin-top: 3%;
+}
+
+/* Signup Container */
+.login-container {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+.logo-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.marketmix-logo {
+    width: 150px; /* Adjust size as needed */
+    height: auto;
+}
+
+/* Heading */
+h2 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* Input Fields */
+.input-group {
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Signup Button */
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background-color:  #e68a00;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.login-btn:hover {
+    background-color: #cc7700;
+}
+
+/* Social Login */
+.or {
+    margin: 15px 0;
+    font-size: 14px;
+    color: #777;
+}
+
+.social-login {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.google-btn, .icloud-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.google-btn {
+    background-color: #e68a00;
+    color: white;
+}
+
+.icloud-btn {
+    background-color: #e68a00;
+    color: white;
+}
+
+.google-btn img {
+    width: 30px;
+    margin-right: 10px;
+}
+.icloud-btn img{
+    width: 35px;
+    margin-right: 10px; 
+}
+.google-btn:hover {
+    background-color: #cc7700;
+}
+
+.icloud-btn:hover {
+    background-color: #cc7700;
+}
+
+/* Login Link */
+.signup-link {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.signup-link a {
+    color: rgb(231, 0, 0);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.signup-link a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .login-container {
+        width: 90%;
+    }
+}

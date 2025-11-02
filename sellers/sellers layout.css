@@ -1,0 +1,751 @@
+
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin-top: 5%;
+ background: #f7fafc
+ 
+}
+@media (max-width: 600px){
+  body{
+    margin-top: 17%;
+  }
+}
+
+
+/* ========== Navbar Styles ========== */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 65px;
+  background: rgba(255, 255, 255, 0.95);
+  z-index: 1;
+  
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+}
+
+.brand-logo {
+  color: #1e293b;
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Inline navigation for large screens */
+.nav-large {
+  display: flex;
+  align-items: center;
+}
+
+.nav-large ul {
+  list-style: none;
+  display: flex;
+}
+
+.nav-large ul li {
+  margin: 0 1rem;
+  position: relative;
+}
+
+.nav-large ul li a {
+  color: #1e293b;
+  text-decoration: none;
+  padding: 0.5rem;
+  transition: color 0.3s;
+}
+
+.nav-large ul li a:hover {
+  color: #2563eb;
+}
+
+/* Dropdown for large screens */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: rgba(0, 0, 0, 0.9);
+  min-width: 150px;
+  z-index: 1001;
+}
+
+.dropdown-content a {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: #fff;
+  text-decoration: none;
+}
+
+.dropdown-content a:hover {
+  background: #333;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Search bar and icons */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  margin-left: 1rem;
+}
+
+
+
+
+/* ========== Navbar Toggler for Small Screens ========== */
+.navbar-toggler {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: none; /* Hidden on large screens */
+  outline: none;
+}
+
+.navbar-toggler-icon {
+  width: 50px;
+  height: 45px;
+  border-radius: 50%;
+  display: block;
+  position: relative;
+}
+
+.navbar-toggler-icon::before,
+.navbar-toggler-icon::after {
+  content: '';
+  width: 30px;;
+  height: 3px;
+  position: absolute;
+  left: 0;
+  transition: all 0.3s;
+}
+
+.navbar-toggler-icon::before {
+  top: -8px;
+}
+
+.navbar-toggler-icon::after {
+  top: 8px;
+}
+
+/* ========== Offcanvas Menu (Small Screens) ========== */
+.offcanvas-menu {
+  position: fixed;
+  top: 0;
+  right: -300px; /* Hidden offscreen by default */
+  width: 300px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 999;
+  transition: right 0.3s ease-in-out;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.offcanvas-close{
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+  user-select: none;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .nav-large {
+    display: none;
+  }
+
+  .navbar-toggler {
+    display: block;
+  }
+
+  .slide-content h1 {
+    font-size: 2.5rem;
+  }
+  .slide-content p {
+    font-size: 1.2rem;
+  }
+}
+
+.nav-list li{
+  margin-top: 5%;
+}
+
+
+.profile-icon img {
+  width: 50px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-container {
+  position: relative;
+}
+
+.profile-icon {
+  width: 50px;
+  height: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Dropdown Menu */
+.profile-dropdown {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  background: rgba(0, 0, 0, 0.9);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  display: none;
+  flex-direction: column;
+   min-width: 150px;
+  border-radius: 5px;
+  z-index: 100;
+}
+
+.profile-dropdown a {
+   padding: 0.5rem 1rem;
+  text-decoration: none;
+   color: #fff;
+  transition: background 0.3s;
+   font-size: 1.2rem;
+}
+
+.profile-dropdown a:hover {
+   background: #333;
+}
+
+.offcanvas-body {
+  margin-top: 1rem;
+}
+
+.offcanvas-body ul {
+  list-style: none;
+  padding: 0;
+}
+
+.offcanvas-body ul li {
+  margin: 1rem 0;
+  position: relative;
+}
+
+.offcanvas-body ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.2rem;
+}
+/* ========== Button Group Styling ========== */
+.btn-group {
+  display: flex;
+  gap: 15px; /* Space between buttons */
+  justify-content: center; /* Centering the buttons */
+  margin-top: 20px;
+}
+
+
+
+
+.offcanvas-body {
+  margin-top: 1rem;
+}
+
+.offcanvas-body ul {
+  list-style: none;
+  padding: 0;
+}
+
+.offcanvas-body ul li {
+  margin: 1rem 0;
+  position: relative;
+}
+
+.offcanvas-body ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.2rem;
+}
+
+.offcanvas-body .nav-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.offcanvas-body .nav-actions .search-bar {
+  margin-bottom: 1rem;
+}
+
+
+/* Icon Container */
+.icon-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* User Icon */
+.user-icon {
+  font-size: 24px;
+  cursor: pointer;
+  color: #f1f1f1;
+  padding: 10px;
+}
+
+/* Dropdown Menu */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background: rgb(17, 16, 16);
+  /* min-width: 120px; */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  z-index: 1000;
+}
+
+.dropdown-content a {
+  display: block;
+  padding: 10px;
+  text-decoration: none;
+  color: #ebeaea;
+  transition: 0.3s;
+}
+
+.dropdown-content a:hover {
+  background: #2c2b2b;
+}
+
+/* Show dropdown on hover */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Tooltip for better UX */
+
+
+.user-icon:hover + .tooltip {
+  display: block;
+}
+
+
+  .welcome-section {
+    background: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png'), #85878f48;
+  padding: 20px;
+  width: 80%;
+  margin: auto;
+  border-radius: 10px ;
+  font-weight: 500;
+    text-align: center;
+  }
+  
+  .dashboard-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    background: white;
+  }
+  
+  .overview-card {
+    background: #1e40af;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    transition: transform 0.3s;
+  }
+  
+  .overview-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .overview-card i {
+    font-size: 30px;
+    margin-bottom: 10px;
+  }
+  
+
+.dashboard-overview a{
+  text-decoration: none;
+}
+
+/* Advanced Seller Tools */
+.advanced-seller-tools {
+  padding: 20px;
+    background: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png'), #85878f48;
+  margin: 20px;
+  border-radius: 8px;
+}
+
+.advanced-seller-tools h2 {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.tools-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tool-card {
+  background: #1e40af;
+  color: white;
+  width: 200px;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s, background-color 0.3s;
+}
+
+.tool-card i {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.tool-card:hover {
+  background-color: #2c5282;
+  transform: translateY(-5px);
+}
+
+
+/* Ticker Style */
+.activity-log-ticker {
+  height: 150px;
+  overflow: hidden;
+  background: #85878f48;
+  color: #0e0f11;
+  border-radius: 8px;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  cursor: pointer;
+  position: relative;
+  padding: 10px;
+  margin-top: 30px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.activity-log-ticker ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  animation: scrollUp 20s linear infinite;
+}
+
+#tickerList li::before {
+  content: "✓";
+   left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #122e31;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+.full-log li::before{
+    content: "✓";
+   left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #122e31;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* Scrolling Keyframe */
+@keyframes scrollUp {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-100%); }
+}
+
+/* Modal Styling */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  padding-top: 60px;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 500px;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: scale(0.9);}
+  to {opacity: 1; transform: scale(1);}
+}
+
+.modal .close {
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+}
+
+/* Full log inside modal */
+.full-log {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.full-log li {
+  padding: 5px 0;
+  border-bottom: 1px solid #ddd;
+  color: #121212;
+}
+/* Modal styling */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.6);
+  backdrop-filter: blur(3px);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 20px 30px;
+  border-radius: 8px;
+  max-width: 400px;
+  position: relative;
+}
+
+.close-btn {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: black;
+}
+
+.modal form label {
+  display: block;
+  margin: 10px 0 5px;
+}
+
+.modal form input {
+  width: 100%;
+  padding: 8px 6px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modal form button {
+  background-color: #2c5282;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modal form button:hover {
+  background-color: #122e31;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  .tools-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .tool-card {
+    width: 90%;
+  }
+  .modal-content {
+    width: 90%;
+    margin-top: 30%;
+  }
+}
+
+
+
+
+/* Dark Mode Toggle Button */
+.dark-mode-toggle {
+  text-align: right;
+  padding: 10px 20px;
+}
+
+#darkModeBtn {
+  background-color: #626466;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+#darkModeBtn:hover {
+  background-color: #454647;
+}
+
+/* Seller Tips Section */
+.seller-tips {
+    background: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png'), #fff6e0;
+  font-weight: 500;
+  padding: 25px;
+  margin: 20px;
+  border-radius: 8px 1px 8px 1px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  font-style: italic;
+  /* color: #004080; */
+}
+
+/* Progress Tracker Section */
+.progress-tracker {
+  border-left: 5px solid #122e31;
+  box-shadow: 0 2px 8px rgba(70, 68, 109, 0.393);
+  padding: 20px;
+  margin: 20px;
+  border-radius: 10px;
+  color: #233642;
+}
+.progress-bar-container {
+ background-color: #f0e9d2;
+  border-radius: 20px;
+  height: 15px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 20px;
+  width: 0%;
+  background-color: #2563eb;
+  border-radius: 20px 0 0 20px;
+  transition: width 0.5s ease;
+}
+
+/* Dark Mode Styles */
+/* body.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+body.dark-mode .navbar {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .brand-logo,
+body.dark-mode .nav-large ul li a,
+body.dark-mode .icon-container a,
+body.dark-mode .user-icon {
+  color: #eee;
+}
+
+body.dark-mode .overview-card {
+  background-color: #333;
+  color: #fff;
+  box-shadow: none;
+}
+body.dark-mode .welcome-section{
+  color: #e65c00;
+}
+
+body.dark-mode .seller-tips {
+  background-color: #1a2a42;
+  color: #9fcfff;
+  box-shadow: 0 0 10px #3071df;
+}
+
+body.dark-mode .progress-tracker {
+  background-color: #3a2e0f;
+  color: #f7c453;
+  box-shadow: 0 0 10px #b38600;
+}
+
+body.dark-mode #darkModeBtn {
+  background-color: #555;
+}
+
+body.dark-mode #darkModeBtn:hover {
+  background-color: #777;
+}
+
+ */
+
+
+.dashboard-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f7fafc;
+  color: #555;
+  padding: 15px 30px;
+  font-size: 14px;
+  border-top: 1px solid #e0e0e0;
+  margin-top: 40px;
+}
+
+.dashboard-footer a {
+  color: #007bff;
+  margin-left: 15px;
+  text-decoration: none;
+}
+
+.dashboard-footer a:hover {
+  text-decoration: underline;
+}
+.welcome-section h2{
+ padding: 20px;
+}

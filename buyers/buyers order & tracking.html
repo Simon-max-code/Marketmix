@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders & Tracking - MarketMix</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background-color: #FFF7ED;
+      color: #1e293b;
+      line-height: 1.6;
+    }
+
+    .orders-container {
+      max-width: 1000px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+
+   header {
+      background: #111;
+      color: #fff;
+      text-align: center;
+      padding: 50px 20px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      color:  #F97316;
+      margin-bottom: 10px;
+    }
+
+    .order-card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 20px;
+      margin-bottom: 20px;
+      transition: transform 0.2s ease;
+    }
+
+    .order-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+
+    .order-header h2 {
+      font-size: 1.1rem;
+      color:  #F97316;}
+
+    .order-status {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .status-delivered { background-color: #22c55e20; color: #16a34a; }
+    .status-processing { background-color: #f9731620; color: #f97316; }
+    .status-shipped { background-color: #0ea5e920; color: #0ea5e9; }
+    .status-cancelled { background-color: #dc262620; color: #dc2626; }
+
+    .order-items {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .order-items img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .order-details {
+      flex: 1;
+    }
+
+    .order-details h3 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .order-details p {
+      margin: 5px 0;
+      font-size: 0.9rem;
+      color: #475569;
+    }
+
+    .order-actions {
+      margin-top: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .btn-track {
+      background-color: #f97316;
+      color: #fff;
+    }
+
+    .btn-track:hover {
+      background-color: #ea580c;
+    }
+
+    .btn-view {
+      background-color: #0ea5e9;
+      color: #fff;
+    }
+
+    .btn-view:hover {
+      background-color: #0284c7;
+    }
+
+    .tracking-progress {
+      margin-top: 15px;
+      background: #f1f5f9;
+      border-radius: 6px;
+      padding: 10px 15px;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .tracking-progress.active {
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .order-items {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .order-details h3 {
+        font-size: 0.95rem;
+      }
+    }
+
+    
+     footer {
+     background: rgba(0, 0, 0, 0.7);
+      color: #f8fafc;
+      text-align: center;
+      padding: 25px 15px;
+      margin-top: 60px;
+      font-size: 15px;
+    }
+
+
+
+    .back-btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #F97316; /* your site yellow theme */
+  color: #000;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 2px;
+  transition: 0.3s;
+}
+
+.back-btn i {
+  font-size: 18px;
+}
+
+.back-btn:hover {
+  background: #EA580C;
+  transform: translateY(-2px);
+}
+  </style>
+</head>
+<body>
+<button class="back-btn" onclick="history.back()">
+    <i class="fas fa-chevron-left"></i> Back
+  </button>
+  <header>
+   <h1>My Orders & Tracking</h1>
+    
+  </header>
+  <section class="orders-container">
+   
+
+    <!-- Order 1 -->
+    <div class="order-card">
+      <div class="order-header">
+        <h2>Order #MMX12345</h2>
+        <span class="order-status status-shipped">Shipped</span>
+      </div>
+
+      <div class="order-items">
+        <img src="cloths and shoes.jpg" alt="Product">
+        <div class="order-details">
+          <h3>Men’s Classic Sneakers</h3>
+          <p>Quantity: 1 | Price: ₦14,500</p>
+          <p>Estimated Delivery: Oct 24 - Oct 27</p>
+        </div>
+      </div>
+
+      <div class="order-actions">
+        <button class="btn btn-track" onclick="toggleTracking(this)">Track Order</button>
+        <a href="view detail.html"><button class="btn btn-view">View Details</button></a>
+      </div>
+
+      <div class="tracking-progress">
+        <p>📦 <strong>Order Status:</strong> In Transit</p>
+        <p>🚚 Your package left our Lagos warehouse and is on its way.</p>
+        <p>Expected Delivery: <strong>2 days remaining</strong></p>
+      </div>
+    </div>
+
+    <!-- Order 2 -->
+    <div class="order-card">
+      <div class="order-header">
+        <h2>Order #MMX98765</h2>
+        <span class="order-status status-delivered">Delivered</span>
+      </div>
+
+      <div class="order-items">
+        <img src="electronics and accessories.jpg" alt="Product">
+        <div class="order-details">
+          <h3>Wireless Bluetooth Headphones</h3>
+          <p>Quantity: 1 | Price: ₦23,000</p>
+          <p>Delivered: Oct 15, 2025</p>
+        </div>
+      </div>
+
+      <div class="order-actions">
+          <a href="view detail.html"><button class="btn btn-view">View Details</button></a>
+      </div>
+    </div>
+
+    <!-- Order 3 -->
+    <div class="order-card">
+      <div class="order-header">
+        <h2>Order #MMX56789</h2>
+        <span class="order-status status-processing">Processing</span>
+      </div>
+
+      <div class="order-items">
+        <img src="home and kitchen.webp" alt="Product">
+        <div class="order-details">
+          <h3>Smart LED Lamp</h3>
+          <p>Quantity: 2 | Price: ₦8,000</p>
+          <p>Estimated Delivery: Oct 28 - Oct 30</p>
+        </div>
+      </div>
+
+      <div class="order-actions">
+        <button class="btn btn-track" onclick="toggleTracking(this)">Track Order</button>
+      </div>
+
+      <div class="tracking-progress">
+        <p>🕓 <strong>Order Status:</strong> Processing</p>
+        <p>Your items are being prepared and will ship soon.</p>
+      </div>
+    </div>
+
+  </section>
+ <footer>
+    &copy; 2025 MarketMix. All Rights Reserved.
+  </footer>
+  <script>
+    function toggleTracking(button) {
+      const card = button.closest('.order-card');
+      const progress = card.querySelector('.tracking-progress');
+      progress.classList.toggle('active');
+    }
+  </script>
+
+</body>
+</html>

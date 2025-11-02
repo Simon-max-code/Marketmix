@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help Center - MarketMix</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background-color: #FFF7ED;
+      line-height: 1.6;
+    }
+header {
+      background: #111;
+      color: #fff;
+      text-align: center;
+      padding: 35px 20px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      color:  #F97316;
+      margin-bottom: 10px;
+       text-align: center;
+    }
+
+    header p {
+      color: #ccc;
+      font-size: 1rem;
+    }
+
+    .help-center {
+      max-width: 1000px;
+      margin: 60px auto;
+     
+    }
+
+    h1 {
+      text-align: center;
+     color: #F97316;
+    font-size: 2rem;
+    }
+
+    .help-category {
+      background: #ffffff;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      overflow: hidden;
+      transition: transform 0.2s ease;
+    }
+
+    .help-category:hover {
+      transform: translateY(-2px);
+    }
+
+    .help-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      padding: 18px 20px;
+      background-color: #f1f5f9;
+      color: #F97316;
+      font-weight: 600;
+    }
+
+    .help-header i {
+      transition: transform 0.3s ease;
+    }
+
+    .help-category.active .help-header i {
+      transform: rotate(180deg);
+    }
+
+    .help-content {
+      display: none;
+      padding: 20px;
+      background: #ffffff;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .help-category.active .help-content {
+      display: block;
+    }
+
+    .help-content p {
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .help-center {
+        padding: 15px;
+      }
+      h1 {
+        font-size: 1.6rem;
+      }
+      .help-header {
+        font-size: 1rem;
+      }
+    }
+      footer {
+     background: rgba(0, 0, 0, 0.7);
+      color: #f8fafc;
+      text-align: center;
+      padding: 25px 15px;
+      margin-top: 60px;
+      font-size: 15px;
+    }
+
+
+
+    .back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #F97316; /* your site yellow theme */
+  color: #000;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 16px;
+  margin: 2px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.back-btn i {
+  font-size: 18px;
+}
+
+.back-btn:hover {
+  background: #EA580C;
+  transform: translateY(-2px);
+}
+  </style>
+</head>
+<body>
+  <button class="back-btn" onclick="history.back()">
+    <i class="fas fa-chevron-left"></i> Back
+  </button>
+  <header>
+      <h1>Help Center</h1>
+    <p>what do you want to know how to do</p>
+  </header>
+  <section class="help-center">
+    <h1>Help Center</h1>
+
+    <div class="help-category">
+      <div class="help-header">
+        <span>🛍️ Orders & Tracking</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="help-content">
+        <p><strong>How can I track my order?</strong> — Go to “My Orders” and click “Track Order” to view the delivery status.</p>
+        <p><strong>Can I cancel an order?</strong> — Orders can only be canceled before they are shipped.</p>
+        <p><strong>What if my order didn’t arrive?</strong> — Contact our support team via the Help Center form.</p>
+      </div>
+    </div>
+
+    <div class="help-category">
+      <div class="help-header">
+        <span>💳 Payments & Billing</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="help-content">
+        <p><strong>Which payment methods are accepted?</strong> — We accept credit/debit cards, PayPal, and MarketMix Wallet.</p>
+        <p><strong>Why was my payment declined?</strong> — Check your card details or balance and try again.</p>
+      </div>
+    </div>
+
+    <div class="help-category">
+      <div class="help-header">
+        <span>📦 Returns & Refunds</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="help-content">
+        <p><strong>How do I return a product?</strong> — Go to “My Orders” → select the item → click “Request Return.”</p>
+        <p><strong>How long do refunds take?</strong> — Refunds are processed within 5–10 business days.</p>
+      </div>
+    </div>
+
+    <div class="help-category">
+      <div class="help-header">
+        <span>👤 Account & Settings</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="help-content">
+        <p><strong>How do I reset my password?</strong> — Click “Forgot Password” on the login page to reset it.</p>
+        <p><strong>Can I change my email address?</strong> — Yes, under Account Settings → “Edit Email.”</p>
+      </div>
+    </div>
+
+    <div class="help-category">
+      <div class="help-header">
+        <span>🛒 Selling on MarketMix</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="help-content">
+        <p><strong>How do I open a shop?</strong> — Go to the seller signup page and follow the steps to create your store.</p>
+        <p><strong>How do I list a new product?</strong> — From your seller dashboard, click “Add Product.”</p>
+      </div>
+    </div>
+
+    <div class="help-category">
+      <div class="help-header">
+        <span>📞 Contact Support</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="help-content">
+        <p>If you still need help, reach out to our support team via the <a href="contact.html">Contact Page</a> or email us at <strong>support@marketmix.com</strong>.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <footer>
+    &copy; 2025 MarketMix. All Rights Reserved.
+  </footer>
+  <script>
+    const helpCategories = document.querySelectorAll('.help-category');
+
+    helpCategories.forEach(category => {
+      category.querySelector('.help-header').addEventListener('click', () => {
+        category.classList.toggle('active');
+      });
+    });
+  </script>
+
+</body>
+</html>

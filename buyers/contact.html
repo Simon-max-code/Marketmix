@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us | MarketMix</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #FFF7ED;
+      color: #333;
+    }
+
+    header {
+      background: #111;
+      color: #f97316;
+      text-align: center;
+      padding: 40px 15px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      color: #f97316;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      color: #ccc;
+      font-size: 1rem;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #F97316;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 2px;
+      transition: 0.3s;
+    }
+
+    .back-btn:hover {
+      background:  #EA580C;
+      transform: translateY(-2px);
+    }
+
+    .contact-container {
+      max-width: 1100px;
+      margin: 50px auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 30px;
+    }
+
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .contact-info h2 {
+      color: #f97316;
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+    }
+
+    .contact-info p {
+      color: #555;
+      line-height: 1.7;
+      margin-bottom: 15px;
+    }
+
+    .contact-details {
+      margin-top: 20px;
+    }
+
+    .contact-details div {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .contact-details i {
+      font-size: 20px;
+      color:  #0EA5E9;
+      margin-right: 10px;
+    }
+
+    .contact-form {
+      background: #FFF7ED;
+      padding: 25px;
+      border-radius: 12px;
+    }
+
+    .contact-form h3 {
+      margin-bottom: 20px;
+      color:  #f97316;
+    }
+
+    .contact-form form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: 0.3s;
+      font-family: inherit;
+    }
+
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+      border-color:  #0EA5E9;
+      outline: none;
+    }
+
+    .contact-form button {
+      background:  #F97316;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .contact-form button:hover {
+      background: #EA580C;
+      transform: translateY(-2px);
+    }
+
+    .map-container {
+      margin: 50px auto;
+      max-width: 1100px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    iframe {
+      width: 100%;
+      height: 350px;
+      border: none;
+    }
+
+    @media (max-width: 900px) {
+      .contact-container {
+        grid-template-columns: 1fr;
+        padding: 20px;
+      }
+      .contact-form {
+        margin-top: 20px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 1.6rem;
+      }
+    }
+    footer {
+     background: rgba(0, 0, 0, 0.7);
+      color: #f8fafc;
+      text-align: center;
+      padding: 25px 15px;
+      margin-top: 60px;
+      font-size: 15px;
+    }
+
+
+
+    .back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #F97316; /* your site yellow theme */
+  color: #000;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.back i {
+  font-size: 18px;
+}
+
+.back:hover {
+  background: #EA580C;
+  transform: translateY(-2px);
+}
+  </style>
+</head>
+<body>
+
+  <button class="back-btn" onclick="history.back()">
+    <i class="fas fa-chevron-left"></i> Back
+  </button>
+
+  <header>
+    <h1>Contact Us</h1>
+    <p>We’d love to hear from you! Get in touch with the MarketMix team.</p>
+  </header>
+
+  <div class="contact-container">
+    <div class="contact-info">
+      <h2>Let’s Talk</h2>
+      <p>Whether you’re a buyer needing assistance, a seller with inquiries, or just have general feedback — we’re here to help.</p>
+      
+      <div class="contact-details">
+        <div><i class="fas fa-envelope"></i> support@marketmix.com</div>
+        <div><i class="fas fa-phone"></i> +234 812 345 6789</div>
+        <div><i class="fas fa-map-marker-alt"></i> Lagos, Nigeria</div>
+      </div>
+    </div>
+
+    <div class="contact-form">
+      <h3>Send Us a Message</h3>
+      <form onsubmit="sendMessage(event)">
+        <input type="text" id="name" placeholder="Full Name" required>
+        <input type="email" id="email" placeholder="Email Address" required>
+        <textarea id="message" rows="5" placeholder="Your Message..." required></textarea>
+        <button type="submit">Send Message</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="map-container">
+    <!-- Example Google Map Embed -->
+    <iframe 
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3940.1478579670947!2d3.379205274063791!3d6.524379223040402!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103bf4e129e3bb7f%3A0x1b7bb7b4e8cf9b50!2sLagos%2C%20Nigeria!5e0!3m2!1sen!2sng!4v1697400000000"
+      allowfullscreen=""
+      loading="lazy">
+    </iframe>
+  </div>
+  <footer>
+    &copy; 2025 MarketMix. All Rights Reserved.
+  </footer>
+
+  <script>
+    function sendMessage(event) {
+      event.preventDefault();
+      alert("✅ Your message has been sent successfully! We'll get back to you shortly.");
+      document.querySelector('form').reset();
+    }
+  </script>
+
+</body>
+</html>

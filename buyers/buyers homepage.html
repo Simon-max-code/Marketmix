@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MarketMix - Buyer Home</title>
+  <link rel="stylesheet" href="buyers homepage.css">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="shortcut icon" href="marketplace.png" type="image/x-icon">
+</head>
+<body>
+
+  <!-- Navbar Section -->
+  <div class="navbar">
+    <a href="#" class="logo">MarketMix</a>
+
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Search on MarketMix">
+      <button onclick="doSearch()">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+
+    <div class="notification" id="bell" >
+      <a href="buyer notification page.html"><i class="fas fa-bell"></i>
+      <span class="badge">5</span></a>
+    </div>
+  </div>
+  <main class="main-content">
+
+    <!-- 🎞 Hero Slider -->
+    <section class="hero-slider">
+      <div class="slides">
+        <img src="oli.png" class="slide active">
+        <img src="IMG-20250302-WA0088.jpg" class="slide">
+        <img src="home and kitchen.webp" class="slide">
+      </div>
+    </section>
+
+    <!-- ⚡ Quick Links Section -->
+<section class="quick-links">
+  <h2 class="section-title">Quick Links</h2>
+  <div class="quick-links-container">
+    
+
+    <div class="links-wrapper">
+      <div class="link-card">
+        <img src="electronics and accessories.jpg" alt="Category 1">
+        <p>Phones</p>
+      </div>
+      <div class="link-card">
+        <img src="home and kitchen.webp" alt="Category 2">
+        <p>Fashion</p>
+      </div>
+      <div class="link-card">
+        <img src="download.jfif" alt="Category 3">
+        <p>Electronics</p>
+      </div>
+      <div class="link-card">
+        <img src="marketplace.png" alt="Category 4">
+        <p>Beauty</p>
+      </div>
+      <div class="link-card">
+        <img src="elon.jfif" alt="Category 5">
+        <p>Home</p>
+      </div>
+      <div class="link-card">
+        <img src="electronics and accessories.jpg" alt="Category 6">
+        <p>Sports</p>
+      </div>
+    </div>
+
+</section>
+
+
+    <!-- ⚡ Flash Sales Section -->
+<section class="flash-sales">
+  <div class="section-header">
+    <h2>⚡ Flash Sales</h2>
+    <div id="countdown"></div>
+  </div>
+
+  <div class="flash-wrapper">
+   
+    <div class="flash-container">
+      
+      <!-- Product Card -->
+      <div class="flash-card">
+        <img src="marketplace.png" alt="Product">
+        <h4>Smartphone</h4>
+        <p class="price">$250 <span>$300</span></p>
+        <button>Add to Cart</button>
+      </div>
+
+      <div class="flash-card">
+        <img src="home and kitchen.webp" alt="Product">
+        <h4>Headphones</h4>
+        <p class="price">$50 <span>$80</span></p>
+        <button>Add to Cart</button>
+      </div>
+
+      <div class="flash-card">
+        <img src="IMG-20250302-WA0088.jpg" alt="Product">
+        <h4>Smartwatch</h4>
+        <p class="price">$120 <span>$200</span></p>
+        <button>Add to Cart</button>
+      </div>
+
+      <div class="flash-card">
+        <img src="download.jfif" alt="Product">
+        <h4>Laptop</h4>
+        <p class="price">$650 <span>$800</span></p>
+        <button>Add to Cart</button>
+      </div>
+
+      <div class="flash-card">
+        <img src="home and kitchen.webp" alt="Product">
+        <h4>Bluetooth Speaker</h4>
+        <p class="price">$75 <span>$120</span></p>
+        <button>Add to Cart</button>
+      </div>
+
+    </div>
+   
+  </div>
+</section>
+    <!-- 🏷️ Popular Categories -->
+<section class="popular-categories" id="category">
+  <h2>Popular Categories</h2>
+  <div class="categories-container">
+    <div class="category-card" onclick="goToCategory('Fashion')">
+      <img src="props and stuff.jpg" alt="Fashion">
+      <p>Fashion</p>
+    </div>
+
+    <div class="category-card" onclick="goToCategory('Electronics')">
+      <img src="cloths and shoes.jpg" alt="Electronics">
+      <p>Electronics</p>
+    </div>
+
+    <div class="category-card" onclick="goToCategory('Phones')">
+      <img src="home and kitchen.webp" alt="Phones">
+      <p>Phones</p>
+    </div>
+
+    <div class="category-card" onclick="goToCategory('Beauty')">
+      <img src="props and stuff.jpg" alt="Beauty">
+      <p>Beauty</p>
+    </div>
+
+    <div class="category-card" onclick="goToCategory('Home')">
+      <img src="IMG-20250302-WA0088.jpg" alt="Home">
+      <p>Home</p>
+    </div>
+
+    <div class="category-card" onclick="goToCategory('Sports')">
+      <img src="oli.png" alt="Sports">
+      <p>Sports</p>
+    </div>
+
+    <div class="category-card" onclick="goToCategory('Gaming')">
+      <img src="electronics and accessories.jpg" alt="Gaming">
+      <p>Gaming</p>
+    </div>
+
+    <div class="category-card" onclick="goToCategory('Baby Products')">
+      <img src="cloths and shoes.jpg" alt="Baby Products">
+      <p>Baby Products</p>
+    </div>
+
+    <div class="category-card" onclick="goToCategory('Groceries')">
+      <img src="electronics and accessories.jpg" alt="Groceries">
+      <p>Groceries</p>
+    </div>
+
+    <div class="category-card" onclick="goToCategory('Appliances')">
+      <img src="elon.jfif" alt="Appliances">
+      <p>Appliances</p>
+    </div>
+  </div>
+</section>
+
+
+   <!-- 🛒 Best-Selling Products Section -->
+<section class="best-selling">
+  <h2>Best-Selling Products</h2>
+  <div class="best-selling-grid">
+    <!-- Product Card -->
+    <div class="product-card">
+      <img src="web dev.jpeg" alt="Product 1">
+      <h3>Product Name 1</h3>
+      <p class="price">$25.00</p>
+      <button class="add-to-cart">Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+      <img src="props and stuff.jpg" alt="Product 2">
+      <h3>Product Name 2</h3>
+      <p class="price">$40.00</p>
+      <button class="add-to-cart">Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+      <img src="marketplace.png" alt="Product 3">
+      <h3>Product Name 3</h3>
+      <p class="price">$18.00</p>
+      <button class="add-to-cart">Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+      <img src="IMG-20250302-WA0088.jpg" alt="Product 4">
+      <h3>Product Name 4</h3>
+      <p class="price">$55.00</p>
+      <button class="add-to-cart">Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+      <img src="oli.png" alt="Product 5">
+      <h3>Product Name 5</h3>
+      <p class="price">$32.00</p>
+      <button class="add-to-cart">Add to Cart</button>
+    </div>
+  </div>
+</section>
+
+    <!-- 🎯 Recommended For You -->
+    <!-- ⭐ Recommended for You Section -->
+<section class="recommended-section">
+  <h2>Recommended for You</h2>
+  <div class="recommended-grid">
+    <!-- Product Card -->
+    <div class="product-card">
+      <img src="home and kitchen.webp" alt="Product">
+      <h3>kitchen</h3>
+      <p class="price">$29.99</p>
+      <button>Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+      <img src="IMG-20250302-WA0088.jpg" alt="Product">
+      <h3>simon</h3>
+      <p class="price">$49.99</p>
+      <button>Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+      <img src="props and stuff.jpg" alt="Product">
+      <h3>marketmix</h3>
+      <p class="price">$19.99</p>
+      <button>Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+      <img src="oli.png" alt="Product">
+      <h3>avengers</h3>
+      <p class="price">$39.99</p>
+      <button>Add to Cart</button>
+    </div>
+
+    <div class="product-card">
+      <img src="home and kitchen.webp" alt="Product">
+      <h3>puma</h3>
+      <p class="price">$59.99</p>
+      <button>Add to Cart</button>
+    </div>
+  </div>
+</section>
+
+
+<!-- 📰 Blog Section -->
+<section class="blog-section">
+  <h2>Latest From Our Blog</h2>
+  <div class="blog-slider">
+    <div class="blog-cards">
+      <!-- Blog Card 1 -->
+      <div class="blog-card">
+        <img src="elon.jfif" alt="Blog 1">
+        <h3>Top 10 Gadgets for 2025</h3>
+        <p>Discover the trending gadgets that everyone is buying this year...</p>
+        <a href="blog details.html">Read More</a>
+      </div>
+
+      <!-- Blog Card 2 -->
+      <div class="blog-card">
+        <img src="marketplace.png" alt="Blog 2">
+        <h3>How to Save Money on Online Shopping</h3>
+        <p>Smart shopping tips to get the best deals without breaking the bank...</p>
+        <a href="blog details.html">Read More</a>
+      </div>
+
+      <!-- Blog Card 3 -->
+      <div class="blog-card">
+        <img src="marketplace.png" alt="Blog 3">
+        <h3>Top Fashion Trends in 2025</h3>
+        <p>Stay updated with the latest fashion styles dominating this season...</p>
+        <a href="blog details.html">Read More</a>
+      </div>
+
+      <!-- Blog Card 4 -->
+      <div class="blog-card">
+        <img src="marketplace.png" alt="Blog 4">
+        <h3>Why You Should Sell on MarketMix</h3>
+        <p>Learn how opening a shop on our platform can boost your sales...</p>
+        <a href="blog details.html">Read More</a>
+      </div>
+
+      <div class="blog-card">
+        <img src="marketplace.png" alt="Blog 1">
+        <h3>Top 10 Gadgets for 2025</h3>
+        <p>Discover the trending gadgets that everyone is buying this year...</p>
+        <a href="blog details.html">Read More</a>
+      </div>
+
+      <div class="blog-card">
+        <img src="marketplace.png" alt="Blog 1">
+        <h3>Top 10 Gadgets for 2025</h3>
+        <p>Discover the trending gadgets that everyone is buying this year...</p>
+        <a href="blog details.html">Read More</a>
+      </div>
+
+      <div class="blog-card">
+        <img src="marketplace.png" alt="Blog 1">
+        <h3>Top 10 Gadgets for 2025</h3>
+        <p>Discover the trending gadgets that everyone is buying this year...</p>
+        <a href="blog details.html">Read More</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+    <!-- 📌 Footer -->
+   <footer class="footer">
+  <div class="footer-container">
+      
+      <!-- About Us Section -->
+      <div class="footer-column">
+          <h3>About MarketMix</h3>
+          <p>MarketMix is the best place to buy and sell products online. Connect with millions of buyers and grow your business today.</p>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="footer-column">
+          <h3>Quick Links</h3>
+          <ul>
+              <li><a href="about us.html">About Us</a></li>
+              <li><a href="faq page.html">Faq</a></li>
+              <li><a href="contact.html">Contact</a></li>
+              <li><a href="privacy policy.html">Privacy Policy</a></li>
+              <li><a href="Terms & Conditions.html">Terms & Conditions</a></li>
+          </ul>
+      </div>
+
+      <!-- Customer Support -->
+      <div class="footer-column">
+          <h3>Customer Support</h3>
+          <ul>
+              <li><a href="help center.html">Help Center</a></li>
+              <li><a href="buyers order & tracking.html">Order Tracking</a></li>
+              <li><a href="return refund.html">Returns & Refunds</a></li>
+              <li><a href="shipping infor.html">Shipping Info</a></li>
+          </ul>
+      </div>
+
+      
+
+      <!-- Social Media Links -->
+      <div class="footer-column">
+          <h3>Follow Us</h3>
+          <div class="footer-social">
+              <a href="#"><i class="fab fa-facebook"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-linkedin"></i></a>
+          </div>
+      </div>
+
+  </div>
+
+  <!-- Copyright Section -->
+  <div class="footer-bottom">
+      <p>&copy; 2025 MarketMix. All rights reserved.</p>
+  </div>
+</footer>
+
+  </main>
+
+
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+  <a href="buyers account.html" class="nav-link">
+    <span class="icon-wrapper">
+      <i class="fas fa-home"></i>
+    </span>
+    <span class="link-text">Home</span>
+  </a>
+
+  <a href="#category" class="nav-link">
+    <span class="icon-wrapper">
+      <i class="fas fa-th-large"></i>
+    </span>
+    <span class="link-text">Categories</span>
+  </a>
+
+  <a href="cart.html" class="nav-link cart-link">
+    <span class="icon-wrapper">
+      <i class="fas fa-shopping-cart"></i>
+      <span class="cart-count">0</span>
+    </span>
+    <span class="link-text">Cart</span>
+  </a>
+
+  <a href="buyers profile.html" class="nav-link">
+    <span class="icon-wrapper">
+      <i class="fas fa-user"></i>
+    </span>
+    <span class="link-text">Account</span>
+  </a>
+</div>
+
+
+
+  <script src="buyers homepage.js"></script>
+</body>
+</html>

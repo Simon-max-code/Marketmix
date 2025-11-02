@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cart - MarketMix</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root{
+      --bg:#fff7ed;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:#e2e8f0;
+      --accent: #F97316;     
+      --accent-600:#EA580C; 
+      --danger:#ef4444;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    .cart-container{
+      max-width: 960px;
+      margin: 32px auto;
+      padding: 0 16px;
+    }
+
+    h1{
+      margin: 0 0 16px;
+      font-size: clamp(1.5rem, 2.5vw, 2rem);
+      font-weight: 700;
+      letter-spacing: .2px;
+      color: var(--text);
+    }
+
+    .intro{
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+
+    .cart-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:16px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:var(--card);
+      margin-bottom:12px;
+    }
+
+    .item-details h3{
+      margin:0;
+      font-size:1rem;
+      font-weight:600;
+      color:var(--text);
+    }
+    .item-details p{
+      margin:.35rem 0 0;
+      font-size:.95rem;
+      color:var(--muted);
+    }
+
+    .item-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .quantity-btn{
+      width:36px;height:36px;line-height:36px;
+      border:none;border-radius:8px;
+      background:var(--accent);color:#fff;
+      font-size:1.1rem;font-weight:700;
+      cursor:pointer;
+      transition: background .15s ease;
+    }
+    .quantity-btn:hover{ background: var(--accent-600); }
+    .quantity{ min-width:24px; text-align:center; font-weight:600; }
+
+    .delete-btn{
+      border:1px solid var(--danger);
+      color:var(--danger);
+      background:#fff;
+      padding:8px 12px;
+      border-radius:8px;
+      cursor:pointer;
+      transition: all .15s ease;
+    }
+    .delete-btn:hover{
+      background:var(--danger);
+      color:#fff;
+    }
+
+    .totals-card{
+      margin-top:16px;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .total{
+      font-size:1.15rem;
+      font-weight:700;
+      color:var(--accent);
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      width:100%;
+    }
+    @media (min-width:600px){
+      .actions{ width:auto; margin-left:auto; }
+    }
+
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:12px 16px; border-radius:10px; border:1px solid transparent;
+      font-weight:600; cursor:pointer; text-decoration:none;
+      transition: background .15s ease, border-color .15s ease, color .15s ease;
+      white-space:nowrap;
+    }
+    .btn-primary{
+      background:var(--accent); color:#fff;
+    }
+    .btn-primary:hover{ background:var(--accent-600); }
+    .btn-outline{
+      background:#fff; color:var(--accent); border-color:var(--accent);
+    }
+    .btn-outline:hover{
+      background: #eef2ff; border-color: var(--accent-600); color: var(--accent-600);
+    }
+
+    /* Responsive layout tweaks */
+    @media (max-width:680px){
+      .cart-item{ align-items:flex-start; }
+      .item-actions{ margin-left:auto; }
+    }
+
+    /* Mobile optimization */
+    @media (max-width: 480px) {
+      body { font-size: 15px; }
+      h1 { font-size: 1.3rem; margin-bottom: 12px; }
+      .cart-container { margin: 16px auto; padding: 0 12px; }
+      .cart-item { flex-direction: column; align-items: flex-start; gap: 12px; padding: 12px; }
+      .item-details h3 { font-size: 1rem; }
+      .item-details p { font-size: 0.9rem; }
+      .item-actions { width: 100%; justify-content: space-between; margin-top: 8px; }
+      .quantity-btn { width: 40px; height: 40px; font-size: 1.2rem; }
+      .delete-btn { flex: 1; text-align: center; padding: 10px; font-size: 0.9rem; }
+      .totals-card { flex-direction: column; align-items: flex-start; gap: 16px; padding: 14px; }
+      .total { font-size: 1rem; }
+      .actions { flex-direction: column; width: 100%; gap: 8px; }
+      .btn { width: 100%; font-size: 0.95rem; padding: 12px; }
+    }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #F97316;
+      color: #000;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .back i { font-size: 18px; }
+    .back:hover { background: #EA580C; transform: translateY(-2px); }
+
+    footer {
+      background: rgba(0, 0, 0, 0.7);
+      color: #f8fafc;
+      text-align: center;
+      padding: 25px 15px;
+      margin-top: 60px;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cart-container">
+    <button class="back" onclick="history.back()">
+      <i class="fas fa-chevron-left"></i> Back
+    </button>
+
+    <h1>Your Cart</h1>
+    <p class="intro">Review your items, adjust quantities, or remove products before checkout.</p>
+
+    <!-- Cart items injected here -->
+    <div id="cart-items"></div>
+
+    <!-- Totals + actions -->
+    <div class="totals-card">
+      <div class="total">Total: $0.00</div>
+      <div class="actions">
+        <a href="checkout.html" class="btn btn-primary">Proceed to Checkout</a>
+        <a href="reviews ratings.html" class="btn btn-outline">Go to Reviews & Ratings</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 MarketMix. All Rights Reserved.
+  </footer>
+
+  <script>
+    // Load cart from localStorage
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    // Update cart count in bottom nav
+    function updateCartCount() {
+      const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+      const cartCount = document.querySelector('.cart-count');
+      if(cartCount){
+        cartCount.textContent = count;
+        cartCount.style.display = count > 0 ? 'inline-block' : 'none';
+      }
+    }
+
+    // Save cart to localStorage
+    function saveCart() {
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartCount();
+    }
+
+    // Render cart items
+    function renderCart() {
+      const container = document.getElementById('cart-items');
+      container.innerHTML = '';
+
+      if(cart.length === 0){
+        container.innerHTML = '<p>Your cart is empty.</p>';
+        updateTotal();
+        return;
+      }
+
+      cart.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.classList.add('cart-item');
+        div.innerHTML = `
+          <div class="item-details">
+            <h3>${item.name}</h3>
+            <p>$${parseFloat(item.price).toFixed(2)}</p>
+          </div>
+          <div class="item-actions">
+            <button class="quantity-btn">−</button>
+            <span class="quantity">${item.quantity}</span>
+            <button class="quantity-btn">+</button>
+            <button class="delete-btn">Delete</button>
+          </div>
+        `;
+
+        const [minusBtn, quantitySpan, plusBtn, deleteBtn] = div.querySelectorAll('.item-actions *');
+
+        minusBtn.addEventListener('click', () => {
+          if(item.quantity > 1) item.quantity--;
+          saveAndRender();
+        });
+
+        plusBtn.addEventListener('click', () => {
+          item.quantity++;
+          saveAndRender();
+        });
+
+        deleteBtn.addEventListener('click', () => {
+          cart.splice(index, 1);
+          saveAndRender();
+        });
+
+        container.appendChild(div);
+      });
+
+      updateTotal();
+    }
+
+    // Update total
+   function updateTotal() {
+  const totalEl = document.querySelector('.total');
+  const total = cart.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
+  totalEl.textContent = `Total: $${total.toFixed(2)}`;
+}
+
+
+
+    // Save and re-render
+    function saveAndRender() {
+      saveCart();
+      renderCart();
+    }
+
+    // Initial render
+    renderCart();
+    updateCartCount();
+  </script>
+</body>
+</html>
