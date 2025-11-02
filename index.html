@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
   <title>MarketMix - Buy, Sell & Discover</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -23,7 +23,7 @@
       --safe-right: max(12px, env(safe-area-inset-right));
     }
     *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%;font-family:'Inter',system-ui,Arial,sans-serif;color:#0f172a;background:#f1f5f9;scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;font-family:'Inter',system-ui,Arial,sans-serif;color:#0f172a;background:#f1f5f9;scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;width:100%;overflow-x:hidden}
     a{color:inherit;-webkit-touch-callout:none}
     input,button,textarea,select{font-family:inherit;font-size:16px}
     button{-webkit-appearance:none;appearance:none}
@@ -32,7 +32,7 @@
     *:focus-visible{outline:3px solid var(--primary);outline-offset:2px;border-radius:4px}
 
     /* ====== Layout Shell ====== */
-    .page-shell{min-height:100vh;display:flex;flex-direction:column}
+    .page-shell{min-height:100vh;display:flex;flex-direction:column;width:100%;max-width:100%;overflow-x:hidden}
 
     /* ====== Topbar / Navbar ====== */
     nav.navbar{position:sticky;top:0;z-index:1200;backdrop-filter:blur(12px);background:linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9));border-bottom:1px solid rgba(15,23,42,0.08);box-shadow:0 2px 8px rgba(15,23,42,0.04);padding-top:var(--safe-top);padding-left:var(--safe-left);padding-right:var(--safe-right)}
@@ -95,7 +95,7 @@
     .hero-card p{margin:8px 0 0;color:var(--muted);font-size:clamp(0.8rem, 2vw, 0.9rem);line-height:1.4}
 
     /* ====== Section Titles ====== */
-    .section{max-width:1200px;margin:36px auto;padding:0 16px;width:100%;padding-left:var(--safe-left);padding-right:var(--safe-right)}
+    .section{max-width:1200px;margin:36px auto;padding:0 16px;width:100%;max-width:100%;padding-left:var(--safe-left);padding-right:var(--safe-right)}
     .section h2{font-size:clamp(1.3rem, 5vw, 1.8rem);margin-bottom:18px;color:#0f172a;font-weight:800}
 
     /* ====== Back to Top ====== */
@@ -132,10 +132,10 @@
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}
     
     /* Best Selling Grid - Specific styling */
-    .best-selling-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(160px, 50vw, 240px),1fr));gap:16px}
+    .best-selling-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
     
     /* New Arrivals Grid - Specific styling */
-    .new-arrivals-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(160px, 50vw, 280px),1fr));gap:16px}
+    .new-arrivals-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
     
     .product-card{background:white;border-radius:12px;padding:14px;box-shadow:0 4px 12px rgba(2,6,23,0.06);display:flex;flex-direction:column;gap:12px;transition:all var(--trans);cursor:pointer;min-height:100%;-webkit-user-select:none;user-select:none}
     .product-card:active{transform:scale(0.98)}
@@ -957,7 +957,7 @@
         <div class="footer-col">
           <h3>Quick Links</h3>
           <ul>
-            <li><a href="./buyers/about-us.html">About Us</a></li>
+            <li><a href="#">About Us</a></li>
             <li><a href="#">FAQ</a></li>
             <li><a href="#">Contact</a></li>
             <li><a href="#">Privacy Policy</a></li>
