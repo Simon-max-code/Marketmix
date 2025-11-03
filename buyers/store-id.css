@@ -41,6 +41,11 @@ body {
   color: var(--muted);
   font-size: 0.95rem;
 }
+
+#followBtn{
+  margin-bottom: 10px;
+}
+
 .store-actions button {
   background: var(--accent);
   border: none;
