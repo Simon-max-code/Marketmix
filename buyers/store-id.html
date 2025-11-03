@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Store Profile | MarketMix</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="store-id.css" />
+</head>
+<body>
+
+  <!-- Store Header -->
+  <div class="store-header">
+    <div class="store-logo"></div>
+  </div>
+
+  <!-- Store Info -->
+  <div class="store-info">
+    <div class="store-details">
+      <h2 id="storeName">UrbanStyle Collections</h2>
+      <p><i class="fa-solid fa-star" style="color:gold"></i> <span id="storeRating">4.8</span> (1.2k reviews)</p>
+    </div>
+    <div class="store-actions">
+      <button id="followBtn">Follow</button>
+      <button><i class="fa-solid fa-envelope"></i> Contact Seller</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="store-tabs">
+    <button class="tab-btn active" data-tab="products">Products</button>
+    <button class="tab-btn" data-tab="reviews">Reviews</button>
+    <button class="tab-btn" data-tab="about">About</button>
+    <button class="tab-btn" data-tab="policies">Policies</button>
+  </div>
+
+  <!-- Tab Contents -->
+  <section id="products" class="tab-content active">
+    <div class="filter-bar">
+      <select id="categoryFilter">
+        <option value="all">All Categories</option>
+        <option value="clothing">Clothing</option>
+        <option value="shoes">Shoes</option>
+        <option value="accessories">Accessories</option>
+      </select>
+    </div>
+
+    <div id="productsGrid" class="products-grid"></div>
+  </section>
+
+  <section id="reviews" class="tab-content">
+    <div class="reviews">
+      <h3>Customer Reviews</h3>
+      <p>⭐ 4.8 average from 1,200 reviews</p>
+      <p>“Fast delivery and great quality products!” – Janet</p>
+      <p>“Excellent seller. Will buy again.” – Tolu</p>
+    </div>
+  </section>
+
+  <section id="about" class="tab-content">
+    <p>UrbanStyle Collections is your one-stop shop for trendy and comfortable wear. We deliver quality items at affordable prices across Nigeria.</p>
+  </section>
+
+  <section id="policies" class="tab-content">
+    <ul>
+      <li><strong>Shipping:</strong> Orders ship within 2–3 business days.</li>
+      <li><strong>Returns:</strong> Returns accepted within 7 days of delivery.</li>
+      <li><strong>Contact:</strong> urbanstyle@marketmix.com</li>
+    </ul>
+  </section>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <script src="store-id.js"></script>
+</body>
+</html>
