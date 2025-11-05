@@ -1,37 +1,41 @@
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f4f4f9;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  background: url('../images/your-image.jpg') no-repeat center/cover;
   height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
 }
 
 .login-container {
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
 }
 
 .login-box {
-  background: #fff;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   width: 100%;
-  max-width: 400px;
+  max-width: 480px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 2rem;
+  border-radius: 1rem;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  position: relative;
   text-align: center;
 }
 
 h1 {
-  color: #ff9900;
+  color: #ffffff;
   margin-bottom: 10px;
 }
 
 .subtitle {
-  color: #666;
+  color: #d0d0d0;
   margin-bottom: 20px;
 }
 
@@ -39,18 +43,24 @@ label {
   display: block;
   text-align: left;
   margin-top: 12px;
-  font-weight: bold;
-  color: #444;
+  font-weight: 600;
+  color: #e6e6e6;
 }
 
 input {
   width: 100%;
   padding: 12px;
   margin-top: 6px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  border: none;
+  border-radius: 0.6rem;
+  background: rgba(255,255,255,0.06);
+  color: #fff;
   font-size: 1rem;
   outline: none;
+}
+
+input:focus {
+  box-shadow: 0 0 0 2px rgba(43,108,176,0.15);
 }
 
 button {
@@ -58,29 +68,26 @@ button {
   margin-top: 20px;
   padding: 12px;
   border: none;
-  border-radius: 8px;
-  background: #ff9900;
+  border-radius: 0.6rem;
+  background: linear-gradient(135deg,#667eea,#764ba2);
   color: white;
   font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: 0.3s;
+  transition: transform 0.2s, background 0.3s;
 }
 
-button:hover {
-  background: #e68a00;
-}
+button:hover { transform: translateY(-2px); }
 
 .note {
   margin-top: 15px;
-  font-size: 0.9rem;
-  color: #555;
+  font-size: 0.95rem;
+  color: #ccc;
 }
 
 .note a {
-  color: #ff9900;
+  color: #667eea;
   text-decoration: none;
 }
 
-.note a:hover {
-  text-decoration: underline;
-}
+.note a:hover { text-decoration: underline; }
