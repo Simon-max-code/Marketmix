@@ -1,9 +1,10 @@
 body {
   font-family: Arial, sans-serif;
-  background: #f8f9fa;
+  background:  #FFF7ED;
   margin: 0;
   padding: 0;
 }
+
 
 .checkout-container {
   display: grid;
@@ -73,7 +74,7 @@ button {
   width: 100%;
   padding: 12px;
   border: none;
-  background: #28a745;
+  background: #F97316;
   color: #fff;
   font-size: 1rem;
   border-radius: 10px;
@@ -82,7 +83,7 @@ button {
 }
 
 button:hover {
-  background: #218838;
+  background:  #EA580C;
 }
 
 #orderMessage {
