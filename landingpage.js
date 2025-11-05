@@ -271,20 +271,65 @@
 
       // ===== KEYBOARD ACCESSIBILITY =====
         (function() {
-          // existing user-dropdown keyboard accessibility
+          // user-dropdown: keyboard + click + hover handling
           const dropdown = document.querySelector('.user-dropdown');
           if (dropdown) {
             const btn = dropdown.querySelector('.icon-btn');
             const menu = dropdown.querySelector('.menu');
-            const menuItems = menu.querySelectorAll('a');
+            const menuItems = menu ? menu.querySelectorAll('a') : [];
+
+            function closeDropdown() {
+              dropdown.classList.remove('open');
+              btn.setAttribute('aria-expanded', 'false');
+              if (menu) menu.setAttribute('aria-hidden', 'true');
+            }
+
+            function openDropdown() {
+              dropdown.classList.add('open');
+              btn.setAttribute('aria-expanded', 'true');
+              if (menu) menu.setAttribute('aria-hidden', 'false');
+            }
+
+            // Click toggles (useful for touch/mobile)
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const isOpen = dropdown.classList.toggle('open');
+              btn.setAttribute('aria-expanded', String(isOpen));
+              if (menu) menu.setAttribute('aria-hidden', String(!isOpen));
+              if (isOpen) menuItems[0]?.focus();
+            });
+
+            // Keyboard support
             btn.addEventListener('keydown', (e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 const isExpanded = btn.getAttribute('aria-expanded') === 'true';
-                btn.setAttribute('aria-expanded', !isExpanded);
-                if (!isExpanded) { menuItems[0]?.focus(); }
+                if (isExpanded) { closeDropdown(); }
+                else { openDropdown(); menuItems[0]?.focus(); }
+              } else if (e.key === 'Escape') {
+                closeDropdown();
+                btn.focus();
+              } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                openDropdown();
+                menuItems[0]?.focus();
               }
             });
+
+            // Close when clicking outside
+            document.addEventListener('click', (e) => {
+              if (!e.target.closest('.user-dropdown')) {
+                closeDropdown();
+              }
+            });
+
+            // Close on Escape anywhere
+            document.addEventListener('keydown', (e) => {
+              if (e.key === 'Escape') closeDropdown();
+            });
+
+            // Close when a menu item is chosen
+            menuItems.forEach(mi => mi.addEventListener('click', () => closeDropdown()));
           }
 
           // new navbar toggle accessibility
