@@ -4,11 +4,13 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Purchase History - MarketMix</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
   body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(to bottom, #fffde7, #b1b487);
+    background: #FFF7ED;
     color: #333;
   }
 
@@ -72,7 +74,7 @@
     min-width: 150px;
   }
   .search-filter button {
-    background: #ffe800;
+    background: #F97316; 
     border: none;
     padding: 8px 14px;
     border-radius: 6px;
@@ -95,7 +97,7 @@
     vertical-align: middle;
   }
   .history-table th {
-    background-color: #ffe800;
+    background-color: #F97316; 
     font-weight: bold;
   }
   .history-table tr:nth-child(even) {
@@ -134,44 +136,7 @@
   .btn:hover {
     background-color: #555;
   }
-  .btn-yellow {
-    background: #ffe800;
-    color: #333;
-  }
-
-  /* Export buttons */
-  .export-btns {
-    margin-top: 15px;
-    display: flex;
-    gap: 10px;
-  }
-
-  /* AI Recommendations */
-  .recommendations {
-    margin-top: 30px;
-  }
-  .recommendations h3 {
-    margin-bottom: 15px;
-  }
-  .recommend-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
-  }
-  .recommend-item {
-    background: white;
-    padding: 10px;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-  }
-  .recommend-item img {
-    max-width: 100%;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 4px;
-    margin-bottom: 8px;
-  }
+  /* (Removed export buttons and recommendations styles - not needed) */
 
   /* Notification Center */
   .notifications {
@@ -214,18 +179,47 @@
     }
   }
   /*footer*/
-  footer {
-  text-align: center;
-  padding: 15px;
-  background-color: #f0f0f0;
-  color: #555;
-  font-size: 14px;
-  margin-top: 30px;
+footer {
+     background: rgba(0, 0, 0, 0.7);
+      color: #f8fafc;
+      text-align: center;
+      padding: 25px 15px;
+      margin-top: 60px;
+      font-size: 15px;
+    }
+
+
+
+    .back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #F97316; /* your site yellow theme */
+  color: #000;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 2px;
+  transition: 0.3s;
+}
+
+.back-btn i {
+  font-size: 18px;
+}
+
+.back-btn:hover {
+  background: #EA580C;
+  transform: translateY(-2px);
 }
 
 </style>
 </head>
 <body>
+<button class="back-btn" onclick="history.back()">
+      <i class="fas fa-chevron-left"></i> Back
+    </button>
 
 <div class="container">
   <h2>🧾 Purchase History</h2>
@@ -239,14 +233,6 @@
     <div class="card">
       <h3>12</h3>
       <p>Total Orders</p>
-    </div>
-    <div class="card">
-      <h3>320 pts</h3>
-      <p>Loyalty Points</p>
-    </div>
-    <div class="card">
-      <h3>Electronics</h3>
-      <p>Favorite Category</p>
     </div>
   </div>
 
@@ -270,7 +256,6 @@
         <th>Date</th>
         <th>Total</th>
         <th>Status</th>
-        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -283,12 +268,7 @@
         <td data-label="Date">June 20, 2025</td>
         <td data-label="Total">$35.00</td>
         <td data-label="Status" class="status Delivered">Delivered</td>
-        <td data-label="Actions">
-          <button class="btn" onclick="notify('Reordered #90512')">Reorder</button>
-          <button class="btn" onclick="notify('Invoice downloaded for #90512')">Invoice</button>
-          <button class="btn" onclick="notify('Review submitted for #90512')">Review</button>
-          <button class="btn" onclick="notify('Support contacted for #90512')">Support</button>
-        </td>
+        
       </tr>
       <tr>
         <td data-label="Order ID">#90344</td>
@@ -299,12 +279,7 @@
         <td data-label="Date">June 18, 2025</td>
         <td data-label="Total">$120.00</td>
         <td data-label="Status" class="status Delivered">Delivered</td>
-        <td data-label="Actions">
-          <button class="btn" onclick="notify('Reordered #90344')">Reorder</button>
-          <button class="btn" onclick="notify('Invoice downloaded for #90344')">Invoice</button>
-          <button class="btn" onclick="notify('Review submitted for #90344')">Review</button>
-          <button class="btn" onclick="notify('Support contacted for #90344')">Support</button>
-        </td>
+        
       </tr>
       <tr>
         <td data-label="Order ID">#90128</td>
@@ -315,41 +290,13 @@
         <td data-label="Date">June 10, 2025</td>
         <td data-label="Total">$70.00</td>
         <td data-label="Status" class="status Cancelled">Cancelled</td>
-        <td data-label="Actions">
-          <button class="btn" onclick="notify('Reordered #90128')">Reorder</button>
-          <button class="btn" onclick="notify('Invoice downloaded for #90128')">Invoice</button>
-          <button class="btn" onclick="notify('Review submitted for #90128')">Review</button>
-          <button class="btn" onclick="notify('Support contacted for #90128')">Support</button>
-        </td>
+        
       </tr>
     </tbody>
   </table>
 
   <!-- Export buttons -->
-  <div class="export-btns">
-    <button class="btn-yellow" onclick="notify('Exported to CSV')">Export CSV</button>
-    <button class="btn-yellow" onclick="notify('Exported to Excel')">Export Excel</button>
-    <button class="btn-yellow" onclick="notify('Exported to PDF')">Export PDF</button>
-  </div>
-
-  <!-- AI Recommendations -->
-  <div class="recommendations">
-    <h3>Recommended for You</h3>
-    <div class="recommend-grid">
-      <div class="recommend-item">
-        <img src="home and kitchen.webp" alt="">
-        <p>Bluetooth Speaker</p>
-      </div>
-      <div class="recommend-item">
-        <img src="web dev.jpeg" alt="">
-        <p>Wireless Mouse</p>
-      </div>
-      <div class="recommend-item">
-        <img src="download.jfif" alt="">
-        <p>USB-C Charger</p>
-      </div>
-    </div>
-  </div>
+  
 </div>
 
 <!-- Notification Center -->
