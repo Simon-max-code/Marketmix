@@ -16,33 +16,28 @@
         <!-- <p>Log in to MarketMix</p> -->
 
         <form action="#" method="POST">
-        
-
             <div class="input-group">
-                <label for="email">Email</label>
+                <label for="email">Email address</label>
                 <input type="email" id="email" placeholder="Enter your email" required>
             </div>
 
             <div class="input-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" placeholder="Enter your password" required>
+                <a href="forgot-password.html" class="forgot-password">Forgot password?</a>
             </div>
 
+            <button type="submit" class="login-btn">Login to your account</button>
 
-            <button type="submit" class="login-btn">login</button>
-
-            <p class="or">Or Login with</p>
+            <p class="or">Or continue with</p>
 
             <div class="social-login">
-                <button id="google-login" class="google-btn">
-                    <img src="images/gogle.png" alt="Google Icon"> login with Google
-                </button>
-                <button id="icloud-login" class="icloud-btn">
-                    <img src="images/icloud2.png" alt="iCloud Icon"> login with iCloud
+                <button type="button" id="google-login" class="google-btn">
+                    <img src="images/google-icon.png" alt="Google Icon"> Continue with Google
                 </button>
             </div>
 
-            <p class="signup-link">Don't have an account? <a href="signup for buyers.htm">Login here</a></p>
+            <p class="signup-link">Don't have an account? <a href="signup-buyers.html">Sign up</a></p>
         </form>
     </div>
 
