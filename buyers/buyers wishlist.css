@@ -1,6 +1,6 @@
 body {
   font-family: 'Segoe UI', sans-serif;
-  background: #f8f9fa;
+  background:  #FFF7ED;
   margin: 0;
   padding: 0px;
 }
@@ -76,15 +76,19 @@ h2 {
 }
 
 .wishlist-actions .move {
-  background-color: #28a745;
+  background-color:#F97316;
   color: white;
 }
-
+.wishlist-actions .move:hover{
+  background-color:#EA580C;
+}
 .wishlist-actions .remove {
-  background-color: #dc3545;
+  background-color: red;
   color: white;
 }
-
+.wishlist-actions .remove:hover {
+  background-color: rgb(190, 8, 8);
+}
 .wishlist-empty {
   text-align: center;
   color: #555;
@@ -100,10 +104,36 @@ h2 {
 
  /*footer*/
   footer {
-  text-align: center;
-  padding: 15px;
-  background-color: #f0f0f0;
-  color: #555;
-  font-size: 14px;
-  margin-top: 30px;
+     background: rgba(0, 0, 0, 0.7);
+      color: #f8fafc;
+      text-align: center;
+      padding: 25px 15px;
+      margin-top: 60px;
+      font-size: 15px;
+    }
+
+
+
+    .back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #F97316; /* your site yellow theme */
+  color: #000;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 2px;
+  transition: 0.3s;
+}
+
+.back-btn i {
+  font-size: 18px;
+}
+
+.back-btn:hover {
+  background: #EA580C;
+  transform: translateY(-2px);
 }
