@@ -1,24 +1,24 @@
 /* General Styles */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background: url('../images/marketplace\ blue.avif') center/cover no-repeat fixed;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
-    margin-top: 3%;
 }
 
-/* Signup Container */
+/* Login Container */
 .login-container {
     background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 400px;
     text-align: center;
+    margin-top: 10%;
 }
 .logo-container {
     text-align: center;
@@ -57,21 +57,23 @@ h2 {
     font-size: 16px;
 }
 
-/* Signup Button */
+/* Login Button */
 .login-btn {
     width: 100%;
     padding: 12px;
-    background-color:  #e68a00;
+    background-color: #2B6CB0;
     color: white;
     border: none;
     font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
-    border-radius: 5px;
-    margin-top: 10px;
+    border-radius: 8px;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
 }
 
 .login-btn:hover {
-    background-color: #cc7700;
+    background-color: #2159a9;
 }
 
 /* Social Login */
@@ -85,23 +87,67 @@ h2 {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin-top: 20px;
 }
 
-.google-btn, .icloud-btn {
+.google-btn {
     width: 100%;
     padding: 12px;
     font-size: 14px;
-    border: none;
+    border: 1px solid #e0e0e0;
+    background-color: white;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 5px;
-    font-weight: bold;
+    border-radius: 8px;
+    font-weight: 600;
+    color: #333;
+    transition: background-color 0.3s ease;
 }
 
+.google-btn:hover {
+    background-color: #f8f8f8;
+}
+
+.google-btn img {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.forgot-password {
+    display: block;
+    text-align: right;
+    color: #2B6CB0;
+    text-decoration: none;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.signup-link {
+    margin-top: 20px;
+    color: #666;
+    font-size: 14px;
+}
+
+.signup-link a {
+    color: #2B6CB0;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.signup-link a:hover {
+    text-decoration: underline;
+}
+
+
 .google-btn {
-    background-color: #e68a00;
+    background-color: #F97316;
     color: white;
 }
 
@@ -123,7 +169,7 @@ h2 {
 }
 
 .icloud-btn:hover {
-    background-color: #cc7700;
+    background-color: #EA580C;
 }
 
 /* Login Link */
