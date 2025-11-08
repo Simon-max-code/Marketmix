@@ -415,32 +415,16 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // All good: show success UI (brief) then redirect
-    // (Keep behavior consistent with signup page)
-    form.style.display = 'none';
-    const container = document.createElement('div');
-    container.className = 'card';
-    container.innerHTML = `
-      <div style="text-align:center;padding:28px;">
-        <svg width="84" height="84" viewBox="0 0 24 24" fill="#4CAF50" xmlns="http://www.w3.org/2000/svg">
-          <path d="M20.285 6.709l-11.285 11.292-5.285-5.292 1.414-1.414 3.871 3.878 9.871-9.878z"/>
-        </svg>
-        <h2 style="margin:14px 0 6px;">Store Saved Successfully!</h2>
-        <p style="color:#bfc9d7;">verifying KYC…</p>
-      </div>
-    `;
-    document.querySelector('.form-column .card').appendChild(container);
+    // All good: show success notifications and redirect
+    showNotification('Store setup completed successfully! 🎉', 'success');
+    
+    setTimeout(() => {
+      showNotification('Preparing KYC verification...', 'success');
+    }, 1500);
 
-    // show spinner after 2s, redirect after 4s
-    setTimeout(()=> {
-      container.innerHTML = `<div style="padding:30px;text-align:center;">
-        <div class="spinner" style="margin:0 auto 12px; border:6px solid rgba(255,255,255,0.12); border-top:6px solid var(--accent); border-radius:50%; width:64px;height:64px; animation:spin 1s linear infinite"></div>
-        <p style="color:#bfc9d7;">Redirecting to dashboard...</p>
-      </div>`;
-    }, 2000);
-    setTimeout(()=> {
+    setTimeout(() => {
       window.location.href = 'kyc.html';
-    }, 4000);
+    }, 3000);
   });
 
   /* -------------------------
