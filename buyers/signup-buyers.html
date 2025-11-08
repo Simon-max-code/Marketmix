@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up | MarketMix</title>
     <link rel="stylesheet" href="login for buyers.css">
+    <link rel="stylesheet" href="../shared/notifications.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="../shared/auth.js" defer></script>
     <style>
         .input-row {
             display: flex;
@@ -52,7 +55,7 @@
         </div>
         <h2>Create an Account</h2>
 
-        <form action="#" method="POST">
+        <form onsubmit="handleFormSubmit(event, 'Signup', 'buyers homepage.html')">
             <div class="input-row">
                 <div class="input-group">
                     <label for="firstName">First Name</label>
@@ -91,7 +94,7 @@
             <p class="or">Or continue with</p>
 
             <div class="social-login">
-                <button type="button" id="google-login" class="google-btn">
+                <button type="button" id="google-login" class="google-btn" onclick="handleGoogleSignIn('Signup', 'buyers homepage.html')">
                     <img src="images/google-icon.png" alt="Google Icon"> Continue with Google
                 </button>
             </div>
