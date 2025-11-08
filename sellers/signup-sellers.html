@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Seller Signup</title>
+  <link rel="stylesheet" href="../shared/notifications.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="../shared/auth.js" defer></script>
   <style>
     body {
       margin: 0;
@@ -382,26 +385,15 @@
     form.addEventListener("submit", e => {
       e.preventDefault();
       if (validateStep(currentStep)) {
-        form.style.display = "none";
-        const successDiv = document.createElement("div");
-        successDiv.innerHTML = `
-          <div style="text-align:center; padding:2rem;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="#4CAF50" viewBox="0 0 24 24">
-              <path d="M20.285 6.709l-11.285 11.292-5.285-5.292 1.414-1.414 3.871 3.878 9.871-9.878z"/>
-            </svg>
-            <h2>Account Created Successfully!</h2>
-            <p>Welcome aboard, seller 🚀</p>
-          </div>
-        `;
-        document.querySelector(".signup-container").appendChild(successDiv);
-
+        showNotification('Account created successfully! Welcome aboard, seller 🚀', 'success');
+        
         setTimeout(() => {
-          successDiv.innerHTML = `<div class="spinner"></div><p style="text-align:center;">setting up store...</p>`;
-        }, 2000);
+          showNotification('Redirecting to store setup...', 'success');
+        }, 1500);
 
         setTimeout(() => {
           window.location.href = "setup-store.html";
-        }, 4000);
+        }, 3000);
       }
     });
 
