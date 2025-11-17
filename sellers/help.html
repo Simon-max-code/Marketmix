@@ -1,45 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Help & Support | MarketMix</title>
-  <link rel="stylesheet" href="view profile.css"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Help & Support - MarketMix</title>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="sellers layout.css"> <!-- Use same seller styles -->
+  <style>
+    .help-section{padding:32px; background:#f7fafc; color:#1e293b;}
+    .help-card{border:1px solid #e6e6e6;padding:18px;border-radius:8px;margin-bottom:16px}
+    .help-card h3{margin:0 0 8px}
+  </style>
 </head>
 <body>
-  <!-- Navbar -->
 
-
-  <!-- Help & Support Section -->
-  <section class="help-support">
-    <h2>Help & Support</h2>
-
-    <div class="support-card">
-      <h3><i class="fas fa-question-circle"></i> Frequently Asked Questions</h3>
-      <p>Get answers to common questions about your shop, products, and orders.</p>
-      <a href="#">Browse FAQs</a>
+  <!-- Navbar (same as sellers layout) -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="sellers layout.html" class="brand-logo">MarketMix</a>
+      <button class="navbar-toggler" id="navbar-toggler" type="button" aria-label="Toggle navigation">
+        <img src="images/elon.jfif" class="navbar-toggler-icon" alt="">
+      </button>
+      <div class="nav-large">
+        <ul class="nav-list">
+          <ul class="nav-links">
+            <li><a href="sellers layout.html">Dashboard</a></li>
+            <li><a href="sellers product.html">My Products</a></li>
+            <li><a href="sellers order.html">Orders</a></li>
+            <li><a href="sellers earning.html">Earnings</a></li>
+            <li><a href="sellers setting.html">Shop Settings</a></li>
+          </ul>
+        </ul>
+        <div class="nav-actions"></div>
+        <div class="icon-container">
+          <div class="profile-container">
+            <img src="images/elon.jfif" alt="Profile" class="profile-icon" onclick="toggleProfileDropdown()">
+            <div class="profile-dropdown" id="profileDropdown">
+              <a href="#">Help & Support</a>
+              <a href="#">Logout</a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </nav>
 
-    <div class="support-card">
-      <h3><i class="fas fa-envelope"></i> Contact Support</h3>
-      <p>Need assistance? Reach out to our support team.</p>
-      <a href="mailto:support@marketmix.com">support@marketmix.com</a>
+  <main class="content-wrap">
+    <section class="help-section">
+      <h1>Help & Support</h1>
+      <p>Here are answers to common questions and resources to help sellers manage their shops.</p>
+
+      <div class="help-card">
+        <h3><i class="fas fa-question-circle"></i> Account & Login</h3>
+        <p>To update your account, go to <a href="sellers setting.html">Shop Settings</a>. Use 'Forgot password' on login if needed.</p>
+      </div>
+
+      <div class="help-card">
+        <h3><i class="fas fa-box"></i> Products & Inventory</h3>
+        <p>Add and edit products from <a href="sellers product.html">My Products</a>. Keep stock levels up-to-date.</p>
+      </div>
+
+      <div class="help-card">
+        <h3><i class="fas fa-truck"></i> Orders & Shipping</h3>
+        <p>Manage orders under <a href="sellers order.html">Orders</a> and mark as shipped when fulfilled.</p>
+      </div>
+
+      <div class="help-card">
+        <h3><i class="fas fa-envelope"></i> Contact Support</h3>
+        <p>If you need direct assistance, use the <a href="contact.html">Contact</a> page to reach our support team.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="dashboard-footer">
+    <div class="footer-left">
+      <p>&copy; 2025 MarketMix. All rights reserved.</p>
     </div>
-
-    <div class="support-card">
-      <h3><i class="fas fa-book"></i> Seller Guide</h3>
-      <p>Explore tips and best practices for succeeding on MarketMix.</p>
-      <a href="#">Read Seller Guide</a>
+    <div class="footer-right">
+      <a href="help.html">Help</a>
+      <a href="seller-tips.html">Seller Tips</a>
+      <a href="contact.html">Contact</a>
     </div>
-  </section>
+  </footer>
 
-  <script>
-    const profilePic = document.getElementById('profilePic');
-    const dropdown = document.getElementById('profileDropdown');
-    profilePic.addEventListener('click', () => {
-      dropdown.classList.toggle('show');
-    });
-  </script>
+  <script src="sellers layout.js"></script>
 </body>
 </html>
