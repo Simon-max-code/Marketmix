@@ -21,10 +21,10 @@
           <span class="hamburger"></span>
         </button>
 
-        <div class="mm-search-wrap" role="search" aria-label="Site search">
-          <input id="mm-search" type="search" placeholder="Search products, categories..." aria-label="Search" />
-          <button id="mm-search-btn" aria-label="Search"><i class="fas fa-search"></i></button>
-        </div>
+        <form id="mm-search-form" class="mm-search-wrap" role="search" aria-label="Site search" action="index-search-results.html" method="get">
+          <input id="mm-search" name="q" type="search" placeholder="Search products, categories..." aria-label="Search" />
+          <button id="mm-search-btn" type="submit" aria-label="Search"><i class="fas fa-search"></i></button>
+        </form>
 
         <div id="mm-menu" class="mm-menu" aria-hidden="true">
           <ul class="mm-links" role="menubar">
