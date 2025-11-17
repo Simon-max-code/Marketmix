@@ -641,7 +641,7 @@ table {
 
 /* Seller Tips Section */
 .seller-tips {
-    background: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png'), #fff6e0;
+    background:  #1e40af;
   font-weight: 500;
   padding: 25px;
   margin: 20px;
@@ -649,6 +649,41 @@ table {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   font-style: italic;
   /* color: #004080; */
+}
+
+/* Style for help/tip cards requested by user */
+.help-card,
+.tip {
+  background: #1e40af; /* primary blue */
+  color: #ffffff;
+  border: none;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  transition: background-color 0.18s ease, transform 0.12s ease;
+}
+
+.help-card h3,
+.tip h3 {
+  margin: 0 0 6px;
+  color: #ffffff;
+}
+
+.help-card p,
+.tip p {
+  color: rgba(255,255,255,0.92);
+}
+
+.help-card a,
+.tip a {
+  color: #fce7ff; /* pale link for contrast */
+  text-decoration: underline;
+}
+
+.help-card:hover,
+.tip:hover {
+  background-color: #2c5282; /* darker blue on hover */
+  transform: translateY(-3px);
 }
 
 /* Progress Tracker Section */
