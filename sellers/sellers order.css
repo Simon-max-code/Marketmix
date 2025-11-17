@@ -598,29 +598,11 @@ h1 {
 }
 
 
-.site-footer {
-  background-color: #d9d9db;
-  padding: 20px 15px;
-  text-align: center;
-  font-size: 0.95rem;
-  color: #555;
-  border-top: 1px solid #cbd;
-  margin-top: 40px;
-}
-
-.site-footer a {
-  color: #007bff;
-  text-decoration: none;
-}
-
-.site-footer a:hover {
-  text-decoration: underline;
-}
-
-/* Mobile-friendly footer */
-@media screen and (max-width: 768px) {
-  .site-footer {
-    font-size: 0.9rem;
-    padding: 15px 10px;
-  }
-}
+    footer {
+     background: rgba(0, 0, 0, 0.7);
+      color: #f8fafc;
+      text-align: center;
+      padding: 25px 15px;
+      margin-top: 60px;
+      font-size: 15px;
+    }
