@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact - Seller Support | MarketMix</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="sellers layout.css">
+  <style>
+    .contact-section{padding:32px;background:#f7fafc;color:#1e293b}
+    /* center the intro paragraph under the H1 */
+    .contact-section > p{ text-align:center; max-width:900px; margin:0 auto 18px; color:#1e293b }
+    .contact-card{  background: white;border:1px solid #e6e6e6;padding:20px;border-radius:8px;max-width:720px;margin:0 auto}
+    .contact-card label{display:block;margin:8px 0 4px; color: black;}
+    .contact-card input, .contact-card textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:6px}
+
+    /* Primary button style for contact form */
+    .btn-primary{
+      display:block;
+      width: fit-content;
+      margin: 12px auto 0; /* center the button */
+      background: #1e40af; /* orange accent to stand out on blue */
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 6px 14px rgba(255,122,0,0.12);
+      transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+    }
+    .btn-primary:hover{
+      background:  #2c5282;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    }
+    
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="sellers layout.html" class="brand-logo">MarketMix</a>
+      <button class="navbar-toggler" id="navbar-toggler" type="button" aria-label="Toggle navigation">
+        <img src="images/elon.jfif" class="navbar-toggler-icon" alt="">
+      </button>
+      <div class="nav-large">
+        <ul class="nav-list">
+          <ul class="nav-links">
+            <li><a href="sellers layout.html">Dashboard</a></li>
+            <li><a href="sellers product.html">My Products</a></li>
+            <li><a href="sellers order.html">Orders</a></li>
+            <li><a href="sellers earning.html">Earnings</a></li>
+            <li><a href="sellers setting.html">Shop Settings</a></li>
+          </ul>
+        </ul>
+        <div class="nav-actions"></div>
+        <div class="icon-container">
+          <div class="profile-container">
+            <img src="images/elon.jfif" alt="Profile" class="profile-icon" onclick="toggleProfileDropdown()">
+            <div class="profile-dropdown" id="profileDropdown">
+              <a href="#">Help & Support</a>
+              <a href="#">Logout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="content-wrap">
+    <section class="contact-section">
+      <h1 style="text-align: center;">Contact Support</h1>
+      <p>If you need help, send us a message and our support team will respond.</p>
+
+      <div class="contact-card">
+        <form id="sellerContactForm">
+          <label for="name">Your name</label>
+          <input type="text" id="name" name="name" required>
+
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required>
+
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="6" required></textarea>
+
+          <button type="submit" class="btn btn-primary">Send Message</button>
+        </form>
+
+        <div class="conlink" style="margin-top:18px;color:black">
+          <p><strong>Support email:</strong> <a href="mailto:support@marketmix.example" style="color:   #0e3e79">support@marketmix.example</a></p>
+          <p><strong>Phone:</strong> +1 (555) 123-4567</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="dashboard-footer">
+    <div class="footer-left">
+      <p>&copy; 2025 MarketMix. All rights reserved.</p>
+    </div>
+    <div class="footer-right">
+      <a href="help.html">Help</a>
+      <a href="seller-tips.html">Seller Tips</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('sellerContactForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      // Simple client-side feedback — no backend in this static project
+      alert('Message sent. Our support team will contact you shortly.');
+      e.target.reset();
+    });
+  </script>
+  <script src="sellers layout.js"></script>
+</body>
+</html>
