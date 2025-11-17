@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Results | MarketMix</title>
+  <link rel="stylesheet" href="buyers homepage.css">
+  <link rel="stylesheet" href="../shared/notifications.css">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <!-- Navbar (kept from buyers homepage) -->
+  <div class="navbar">
+    <a href="#" class="logo">MarketMix</a>
+
+    <form id="searchFormTop" class="search-container" action="search-results.html" method="get">
+      <input type="search" name="q" id="searchInputTop" placeholder="Search on MarketMix" aria-label="Search">
+      <button type="submit">
+        <i class="fas fa-search"></i>
+      </button>
+    </form>
+
+    <div class="notification" id="bell" >
+      <a href="buyer notification page.html"><i class="fas fa-bell"></i>
+      <span class="badge">5</span></a>
+    </div>
+  </div>
+
+  <main class="main-content">
+    <section class="search-results">
+      <h2 id="resultsTitle">Search results</h2>
+      <div id="resultsInfo" style="color:#666; margin-bottom:12px;"></div>
+
+      <div class="best-selling-grid" id="resultsGrid">
+        <!-- Results will be injected here as .product-card elements -->
+      </div>
+
+      <div id="noResults" style="display:none; color:#777; text-align:center; margin-top:20px;">No products found.</div>
+    </section>
+  </main>
+
+  <!-- Footer copied from buyers homepage -->
+  <footer class="footer">
+    <div class="footer-container">
+        <div class="footer-column">
+            <h3>About MarketMix</h3>
+            <p>MarketMix is the best place to buy and sell products online. Connect with millions of buyers and grow your business today.</p>
+        </div>
+        <div class="footer-column">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="about us.html">About Us</a></li>
+                <li><a href="faq page.html">Faq</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="privacy policy.html">Privacy Policy</a></li>
+                <li><a href="Terms & Conditions.html">Terms & Conditions</a></li>
+            </ul>
+        </div>
+        <div class="footer-column">
+            <h3>Customer Support</h3>
+            <ul>
+                <li><a href="help center.html">Help Center</a></li>
+                <li><a href="buyers order & tracking.html">Order Tracking</a></li>
+                <li><a href="return refund.html">Returns & Refunds</a></li>
+                <li><a href="shipping infor.html">Shipping Info</a></li>
+            </ul>
+        </div>
+        <div class="footer-column">
+            <h3>Follow Us</h3>
+            <div class="footer-social">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 MarketMix. All rights reserved.</p>
+    </div>
+  </footer>
+  
+  <!-- reuse buyer homepage script so navbar behaviour (badge, cart count, toasts) matches home -->
+  <script src="buyers homepage.js" defer></script>
+  <script src="search-results.js" defer></script>
+</body>
+</html>
