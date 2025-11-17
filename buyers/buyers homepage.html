@@ -15,12 +15,12 @@
   <div class="navbar">
     <a href="#" class="logo">MarketMix</a>
 
-    <div class="search-container">
-      <input type="text" id="searchInput" placeholder="Search on MarketMix">
-      <button onclick="doSearch()">
+    <form id="searchForm" class="search-container" action="search-results.html" method="get">
+      <input type="search" name="q" id="searchInput" placeholder="Search on MarketMix" aria-label="Search">
+      <button type="submit">
         <i class="fas fa-search"></i>
       </button>
-    </div>
+    </form>
 
     <div class="notification" id="bell" >
       <a href="buyer notification page.html"><i class="fas fa-bell"></i>
