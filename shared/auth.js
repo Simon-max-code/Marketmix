@@ -1,14 +1,14 @@
 // Utility function to show notifications
 function showNotification(message, type = 'success') {
     // Remove any existing notifications
-    const existing = document.querySelector('.notification');
+    const existing = document.querySelector('.site-notification');
     if (existing) {
         existing.remove();
     }
 
-    // Create new notification
-    const notification = document.createElement('div');
-    notification.className = `notification ${type === 'error' ? 'error' : ''}`;
+        // Create new notification
+        const notification = document.createElement('div');
+        notification.className = `site-notification ${type === 'error' ? 'error' : ''}`;
     
     // Add icon based on type
     const icon = document.createElement('i');
