@@ -21,10 +21,10 @@
           <span class="hamburger"></span>
         </button>
 
-        <div class="mm-search-wrap" role="search" aria-label="Site search">
-          <input id="mm-search" type="search" placeholder="Search products, categories..." aria-label="Search" />
-          <button id="mm-search-btn" aria-label="Search"><i class="fas fa-search"></i></button>
-        </div>
+        <form id="mm-search-form" class="mm-search-wrap" role="search" aria-label="Site search" action="index-search-results.html" method="get">
+          <input id="mm-search" name="q" type="search" placeholder="Search products, categories..." aria-label="Search" />
+          <button id="mm-search-btn" type="submit" aria-label="Search"><i class="fas fa-search"></i></button>
+        </form>
 
         <div id="mm-menu" class="mm-menu" aria-hidden="true">
           <ul class="mm-links" role="menubar">
@@ -34,7 +34,7 @@
           </ul>
 
  <div class="mm-icons">
-    <a href="./buyers/buyers homepag    <!-- User account dropdown: hover or click to open -->
+    <!-- User account dropdown: hover or click to open -->
     <div class="user-dropdown">
       <button class="mm-icon icon-btn" aria-haspopup="true" aria-expanded="false" aria-label="Account">
         <i class="fas fa-user"></i>
@@ -47,16 +47,18 @@
         <a href="./sellers/signup-sellers.html" class="menu-item" role="menuitem">Signup as Seller</a>
       </div>
     </div>
-" class="mm-icon" aria-label="Cart">
-            <i class="fas fa-shopping-cart"></i>
-            <span class="mm-count" id="mm-cart-count">0</span>
+          <a href="./buyers/cart.html" class="mm-icon" aria-label="Cart">
+            <span class="icon-wrap">
+              <i class="fas fa-shopping-cart"></i>
+              <span class="mm-count" id="mm-cart-count">0</span>
+            </span>
           </a>
 
         </div>
 
 
           <div class="mm-menu-bottom">
-            <a href="./buyers/buyers homepage.html" class="btn btn-shop">Shop</a>
+            <a href="./buyers/signup-buyers.html" class="btn btn-shop">Shop</a>
             <a href="./sellers/signup-sellers.html" class="btn btn-sell">Sell</a>
           </div>
         </div>
@@ -69,7 +71,7 @@
         <h1>Discover Latest Trends</h1>
         <p>Exclusive premium products from trusted sellers worldwide.</p>
         <div class="cta-row">
-          <a href="./buyers/buyers homepage.html" class="btn btn-shop">
+          <a href="./buyers/signup-buyers.html" class="btn btn-shop">
             <i class="fas fa-bag-shopping"></i> Shop
           </a>
           <a href="./sellers/signup-sellers.html" class="btn btn-sell">
