@@ -256,8 +256,10 @@ input:focus {
 // =====================================================
 
 // API Base URL - Update this based on environment
-const API_BASE_URL = 'http://localhost:5000/api'; // Development
- const API_BASE_URL = 'https://marketmix-backend-production.up.railway.app'; 
+// Use development or production URL based on environment
+const API_BASE_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:5000/api'
+  : 'https://marketmix-backend-production.up.railway.app/api'; 
 
 /**
  * Handle form submission for buyer signup
