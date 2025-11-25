@@ -46,6 +46,153 @@
         .terms-checkbox a:hover {
             text-decoration: underline;
         }
+        /* =====================================================
+   ALERT STYLES
+   ===================================================== */
+
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alert-error {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+}
+
+.alert-success {
+  background-color: #efe;
+  border: 1px solid #cfc;
+  color: #3c3;
+}
+
+.alert-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.alert-message {
+  flex: 1;
+}
+
+.alert-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.alert-close:hover {
+  opacity: 1;
+}
+
+/* =====================================================
+   LOADING SPINNER
+   ===================================================== */
+
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =====================================================
+   BUTTON DISABLED STATE
+   ===================================================== */
+
+.login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =====================================================
+   INPUT VALIDATION STYLES
+   ===================================================== */
+
+input.invalid {
+  border-color: #c33 !important;
+  background-color: #fff5f5;
+}
+
+input.valid {
+  border-color: #3c3 !important;
+  background-color: #f5fff5;
+}
+
+input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+/* =====================================================
+   PASSWORD STRENGTH INDICATOR (Optional)
+   ===================================================== */
+
+.password-strength {
+  margin-top: 8px;
+  display: flex;
+  gap: 4px;
+  height: 4px;
+}
+
+.password-strength span {
+  flex: 1;
+  background-color: #e0e0e0;
+  border-radius: 2px;
+  transition: background-color 0.3s;
+}
+
+.password-strength.weak span:nth-child(1) {
+  background-color: #f44336;
+}
+
+.password-strength.medium span:nth-child(1),
+.password-strength.medium span:nth-child(2),
+.password-strength.medium span:nth-child(3) {
+  background-color: #ff9800;
+}
+
+.password-strength.strong span {
+  background-color: #4CAF50;
+}
     </style>
 </head>
 <body>
@@ -102,5 +249,228 @@
             <p class="signup-link">Already have an account? <a href="login for buyers.html">Log in</a></p>
         </form>
     </div>
+
+    <script>
+        // =====================================================
+// BUYER SIGNUP - Frontend JavaScript
+// =====================================================
+
+// API Base URL - Update this based on environment
+const API_BASE_URL = 'http://localhost:5000/api'; // Development
+ const API_BASE_URL = 'https://marketmix-backend-production.up.railway.app'; 
+
+/**
+ * Handle form submission for buyer signup
+ */
+async function handleFormSubmit(event, formType, redirectUrl) {
+  event.preventDefault();
+
+  // Get form values
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+  const termsAccepted = document.getElementById('terms').checked;
+
+  // Frontend validation
+  if (!termsAccepted) {
+    showError('Please accept the Terms of Service and Privacy Policy');
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    showError('Passwords do not match');
+    return;
+  }
+
+  if (password.length < 8) {
+    showError('Password must be at least 8 characters long');
+    return;
+  }
+
+  // Prepare data for API
+  const signupData = {
+    firstName: firstName,
+    lastName: lastName,
+    email: email,
+    password: password,
+    role: 'buyer' // Always buyer for this form
+  };
+
+  try {
+    // Show loading state
+    showLoading(true);
+
+    // Call backend API
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(signupData)
+    });
+
+    const data = await response.json();
+
+    // Hide loading state
+    showLoading(false);
+
+    if (response.ok && data.status === 'success') {
+      // Store user data and token
+      localStorage.setItem('user', JSON.stringify(data.data.user));
+      localStorage.setItem('token', data.data.token);
+      localStorage.setItem('userRole', 'buyer');
+
+      // Show success message
+      showSuccess('Account created successfully! Redirecting...');
+
+      // Redirect after 1 second
+      setTimeout(() => {
+        window.location.href = redirectUrl;
+      }, 1000);
+    } else {
+      // Show error message from backend
+      showError(data.message || 'Failed to create account');
+    }
+  } catch (error) {
+    console.error('Signup error:', error);
+    showLoading(false);
+    showError('Network error. Please check your connection and try again.');
+  }
+}
+
+/**
+ * Handle Google Sign In
+ */
+async function handleGoogleSignIn(formType, redirectUrl) {
+  // TODO: Implement Google OAuth
+  showError('Google Sign-In coming soon!');
+}
+
+/**
+ * Show error message
+ */
+function showError(message) {
+  // Remove any existing alerts
+  removeAlerts();
+
+  // Create error alert
+  const alert = document.createElement('div');
+  alert.className = 'alert alert-error';
+  alert.innerHTML = `
+    <span class="alert-icon">⚠️</span>
+    <span class="alert-message">${message}</span>
+    <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+  `;
+
+  // Insert at the top of the form container
+  const container = document.querySelector('.login-container');
+  container.insertBefore(alert, container.firstChild);
+
+  // Auto-remove after 5 seconds
+  setTimeout(() => alert.remove(), 5000);
+}
+
+/**
+ * Show success message
+ */
+function showSuccess(message) {
+  // Remove any existing alerts
+  removeAlerts();
+
+  // Create success alert
+  const alert = document.createElement('div');
+  alert.className = 'alert alert-success';
+  alert.innerHTML = `
+    <span class="alert-icon">✓</span>
+    <span class="alert-message">${message}</span>
+  `;
+
+  // Insert at the top of the form container
+  const container = document.querySelector('.login-container');
+  container.insertBefore(alert, container.firstChild);
+}
+
+/**
+ * Remove all alerts
+ */
+function removeAlerts() {
+  const alerts = document.querySelectorAll('.alert');
+  alerts.forEach(alert => alert.remove());
+}
+
+/**
+ * Show/hide loading state
+ */
+function showLoading(isLoading) {
+  const submitBtn = document.querySelector('.login-btn');
+  
+  if (isLoading) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner"></span> Creating Account...';
+  } else {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = 'Create Account';
+  }
+}
+
+/**
+ * Validate email format
+ */
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+/**
+ * Real-time password strength checker (optional)
+ */
+function checkPasswordStrength(password) {
+  let strength = 0;
+  
+  if (password.length >= 8) strength++;
+  if (password.length >= 12) strength++;
+  if (/[a-z]/.test(password)) strength++;
+  if (/[A-Z]/.test(password)) strength++;
+  if (/[0-9]/.test(password)) strength++;
+  if (/[^a-zA-Z0-9]/.test(password)) strength++;
+  
+  return {
+    score: strength,
+    label: strength < 3 ? 'Weak' : strength < 5 ? 'Medium' : 'Strong'
+  };
+}
+
+// Optional: Add real-time validation
+document.addEventListener('DOMContentLoaded', function() {
+  // Email validation
+  const emailInput = document.getElementById('email');
+  if (emailInput) {
+    emailInput.addEventListener('blur', function() {
+      if (this.value && !isValidEmail(this.value)) {
+        this.classList.add('invalid');
+        showError('Please enter a valid email address');
+      } else {
+        this.classList.remove('invalid');
+      }
+    });
+  }
+
+  // Password match validation
+  const passwordInput = document.getElementById('password');
+  const confirmPasswordInput = document.getElementById('confirmPassword');
+  
+  if (confirmPasswordInput) {
+    confirmPasswordInput.addEventListener('input', function() {
+      if (this.value && this.value !== passwordInput.value) {
+        this.classList.add('invalid');
+      } else {
+        this.classList.remove('invalid');
+      }
+    });
+  }
+});
+    </script>
 </body>
 </html>
