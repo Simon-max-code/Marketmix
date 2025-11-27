@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - MarketMix</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .login-card { box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); }
+    .error-message { color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem; display: none; }
+    .error-message.show { display: block; }
+    .input-error { border-color: #dc2626 !important; }
+  </style>
+</head>
+<body class="h-screen flex items-center justify-center">
+  <div class="w-full max-w-md">
+    <!-- Login Card -->
+    <div class="login-card bg-white rounded-lg p-8">
+      <!-- Logo / Title -->
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-12 h-12 bg-blue-600 text-white rounded-lg mb-4">
+          <i class="fas fa-store text-xl"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">MarketMix Admin</h1>
+        <p class="text-gray-600">Admin Panel Login</p>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <!-- Username Input -->
+        <div class="mb-4">
+          <label for="username" class="block text-sm font-semibold text-gray-700 mb-2">Username</label>
+          <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            placeholder="Enter admin username"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition"
+            required
+          >
+          <div class="error-message" id="usernameError"></div>
+        </div>
+
+        <!-- Password Input -->
+        <div class="mb-6">
+          <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+          <div class="relative">
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              placeholder="Enter admin password"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition"
+              required
+            >
+            <button 
+              type="button" 
+              onclick="togglePasswordVisibility()"
+              class="absolute right-3 top-3 text-gray-600 hover:text-gray-800"
+            >
+              <i id="passwordToggle" class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="error-message" id="passwordError"></div>
+        </div>
+
+        <!-- Remember Me Checkbox -->
+        <div class="flex items-center mb-6">
+          <input 
+            type="checkbox" 
+            id="rememberMe" 
+            name="rememberMe"
+            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-600"
+          >
+          <label for="rememberMe" class="ml-2 block text-sm text-gray-700">
+            Remember me
+          </label>
+        </div>
+
+        <!-- Login Button -->
+        <button 
+          type="submit" 
+          class="w-full px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2"
+        >
+          <i class="fas fa-sign-in-alt"></i> Login to Dashboard
+        </button>
+      </form>
+
+      <!-- Demo Credentials Info -->
+      <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <p class="text-sm text-gray-700 mb-2">
+          <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+          <span class="font-semibold">Demo Credentials:</span>
+        </p>
+        <p class="text-sm text-gray-600">Username: <code class="bg-white px-2 py-1 rounded border border-gray-200 font-mono">admin</code></p>
+        <p class="text-sm text-gray-600">Password: <code class="bg-white px-2 py-1 rounded border border-gray-200 font-mono">admin123</code></p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center mt-6">
+      <p class="text-white text-sm">
+        &copy; 2024 MarketMix. All rights reserved.
+      </p>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 opacity-0 transform translate-y-4 transition-all duration-300">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastMessage">Success</span>
+  </div>
+
+  <script>
+    // Check if already logged in
+    window.addEventListener('DOMContentLoaded', () => {
+      const session = localStorage.getItem('adminSession');
+      if (session) {
+        window.location.href = 'index.html';
+      }
+
+      // Restore username if remembered
+      const rememberedUsername = localStorage.getItem('adminUsername');
+      if (rememberedUsername) {
+        document.getElementById('username').value = rememberedUsername;
+        document.getElementById('rememberMe').checked = true;
+      }
+    });
+
+    function handleLogin(event) {
+      event.preventDefault();
+      
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const rememberMe = document.getElementById('rememberMe').checked;
+
+      // Clear previous errors
+      clearErrors();
+
+      // Validate inputs
+      let hasErrors = false;
+      if (!username) {
+        showError('usernameError', 'Username is required');
+        hasErrors = true;
+      }
+      if (!password) {
+        showError('passwordError', 'Password is required');
+        hasErrors = true;
+      }
+
+      if (hasErrors) return;
+
+      // Validate credentials (dummy: admin/admin123)
+      if (username !== 'admin' || password !== 'admin123') {
+        showError('passwordError', 'Invalid username or password');
+        return;
+      }
+
+      // Save session
+      localStorage.setItem('adminSession', JSON.stringify({
+        username: username,
+        loginTime: new Date().toISOString()
+      }));
+
+      // Remember username if checked
+      if (rememberMe) {
+        localStorage.setItem('adminUsername', username);
+      } else {
+        localStorage.removeItem('adminUsername');
+      }
+
+      // Show success toast
+      showToast('Login successful! Redirecting...', 'success');
+
+      // Redirect to dashboard after a short delay
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1000);
+    }
+
+    function showError(elementId, message) {
+      const errorEl = document.getElementById(elementId);
+      if (errorEl) {
+        errorEl.textContent = message;
+        errorEl.classList.add('show');
+        
+        // Add error style to corresponding input
+        const inputId = elementId.replace('Error', '');
+        const inputEl = document.getElementById(inputId);
+        if (inputEl) {
+          inputEl.classList.add('input-error');
+        }
+      }
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('.error-message').forEach(el => {
+        el.classList.remove('show');
+        el.textContent = '';
+      });
+      document.querySelectorAll('input').forEach(el => {
+        el.classList.remove('input-error');
+      });
+    }
+
+    function togglePasswordVisibility() {
+      const passwordInput = document.getElementById('password');
+      const passwordToggle = document.getElementById('passwordToggle');
+      
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        passwordToggle.classList.remove('fa-eye');
+        passwordToggle.classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        passwordToggle.classList.remove('fa-eye-slash');
+        passwordToggle.classList.add('fa-eye');
+      }
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+      const icon = toast.querySelector('i');
+
+      toastMessage.textContent = message;
+      
+      if (type === 'success') {
+        toast.className = 'fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 opacity-0 transform translate-y-4 transition-all duration-300 bg-green-600 text-white';
+        icon.className = 'fas fa-check-circle';
+      } else if (type === 'error') {
+        toast.className = 'fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 opacity-0 transform translate-y-4 transition-all duration-300 bg-red-600 text-white';
+        icon.className = 'fas fa-exclamation-circle';
+      }
+
+      // Show toast
+      setTimeout(() => {
+        toast.classList.add('opacity-100', 'translate-y-0');
+      }, 10);
+
+      // Hide after 3 seconds
+      setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+      }, 3000);
+    }
+
+    // Allow Enter key to submit form
+    document.getElementById('loginForm').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        handleLogin(e);
+      }
+    });
+  </script>
+</body>
+</html>
