@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="login for buyers.css">
     <link rel="stylesheet" href="../shared/notifications.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="../shared/auth.js" defer></script>
     <style>
+        /* ===== INPUT STYLES ===== */
         .input-row {
             display: flex;
             gap: 15px;
@@ -20,6 +20,106 @@
             margin-bottom: 0;
         }
 
+        .input-group {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .input-group input.invalid {
+            border-color: #f44336 !important;
+            background-color: #fff5f5;
+        }
+
+        .input-group input.valid {
+            border-color: #4CAF50 !important;
+            background-color: #f5fff5;
+        }
+
+        /* Password visibility toggle */
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 42px;
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 5px;
+            transition: color 0.2s;
+        }
+
+        .password-toggle:hover {
+            color: #333;
+        }
+
+        /* Password strength indicator */
+        .password-strength {
+            margin-top: 8px;
+            display: none;
+            gap: 4px;
+            height: 4px;
+        }
+
+        .password-strength.active {
+            display: flex;
+        }
+
+        .password-strength span {
+            flex: 1;
+            background-color: #e0e0e0;
+            border-radius: 2px;
+            transition: background-color 0.3s;
+        }
+
+        .password-strength.weak span:nth-child(1) {
+            background-color: #f44336;
+        }
+
+        .password-strength.medium span:nth-child(1),
+        .password-strength.medium span:nth-child(2),
+        .password-strength.medium span:nth-child(3) {
+            background-color: #ff9800;
+        }
+
+        .password-strength.strong span {
+            background-color: #4CAF50;
+        }
+
+        .password-hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .password-hint.active {
+            display: block;
+        }
+
+        /* Terms checkbox */
         .terms-checkbox {
             display: flex;
             align-items: start;
@@ -30,12 +130,14 @@
 
         .terms-checkbox input[type="checkbox"] {
             margin-top: 3px;
+            cursor: pointer;
         }
 
         .terms-checkbox label {
             font-size: 14px;
             color: #666;
             line-height: 1.4;
+            cursor: pointer;
         }
 
         .terms-checkbox a {
@@ -46,153 +148,201 @@
         .terms-checkbox a:hover {
             text-decoration: underline;
         }
-        /* =====================================================
-   ALERT STYLES
-   ===================================================== */
 
-.alert {
-  padding: 12px 16px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 14px;
-  animation: slideDown 0.3s ease-out;
-}
+        /* Alert styles */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            animation: slideDown 0.3s ease-out;
+        }
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-.alert-error {
-  background-color: #fee;
-  border: 1px solid #fcc;
-  color: #c33;
-}
+        .alert-error {
+            background-color: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+        }
 
-.alert-success {
-  background-color: #efe;
-  border: 1px solid #cfc;
-  color: #3c3;
-}
+        .alert-success {
+            background-color: #efe;
+            border: 1px solid #cfc;
+            color: #3c3;
+        }
 
-.alert-icon {
-  font-size: 18px;
-  flex-shrink: 0;
-}
+        .alert-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
 
-.alert-message {
-  flex: 1;
-}
+        .alert-success .alert-icon {
+            animation: checkmark 0.5s ease-out;
+        }
 
-.alert-close {
-  background: none;
-  border: none;
-  font-size: 20px;
-  color: inherit;
-  cursor: pointer;
-  padding: 0;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.7;
-  transition: opacity 0.2s;
-}
+        @keyframes checkmark {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
 
-.alert-close:hover {
-  opacity: 1;
-}
+        .alert-message {
+            flex: 1;
+        }
 
-/* =====================================================
-   LOADING SPINNER
-   ===================================================== */
+        .alert-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: inherit;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
 
-.spinner {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-}
+        .alert-close:hover {
+            opacity: 1;
+        }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
 
-/* =====================================================
-   BUTTON DISABLED STATE
-   ===================================================== */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
 
-.login-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
+        /* Button states */
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
 
-/* =====================================================
-   INPUT VALIDATION STYLES
-   ===================================================== */
+        .login-btn:hover:not(:disabled) {
+            background-color: #45a049;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
 
-input.invalid {
-  border-color: #c33 !important;
-  background-color: #fff5f5;
-}
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
 
-input.valid {
-  border-color: #3c3 !important;
-  background-color: #f5fff5;
-}
+        /* Container styles */
+        .login-container {
+            max-width: 480px;
+            margin: 40px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
 
-input:focus {
-  outline: none;
-  border-color: #4CAF50;
-  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
-}
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-/* =====================================================
-   PASSWORD STRENGTH INDICATOR (Optional)
-   ===================================================== */
+        .marketmix-logo {
+            max-width: 180px;
+            height: auto;
+        }
 
-.password-strength {
-  margin-top: 8px;
-  display: flex;
-  gap: 4px;
-  height: 4px;
-}
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
 
-.password-strength span {
-  flex: 1;
-  background-color: #e0e0e0;
-  border-radius: 2px;
-  transition: background-color 0.3s;
-}
+        .or {
+            text-align: center;
+            color: #666;
+            margin: 20px 0;
+            position: relative;
+        }
 
-.password-strength.weak span:nth-child(1) {
-  background-color: #f44336;
-}
+        .or::before,
+        .or::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background-color: #e0e0e0;
+        }
 
-.password-strength.medium span:nth-child(1),
-.password-strength.medium span:nth-child(2),
-.password-strength.medium span:nth-child(3) {
-  background-color: #ff9800;
-}
+        .or::before {
+            left: 0;
+        }
 
-.password-strength.strong span {
-  background-color: #4CAF50;
-}
+        .or::after {
+            right: 0;
+        }
+
+        .social-login {
+            margin: 20px 0;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .signup-link a {
+            color: #2B6CB0;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -202,374 +352,518 @@ input:focus {
         </div>
         <h2>Create an Account</h2>
 
-        <form onsubmit="handleFormSubmit(event, 'Signup', 'buyers homepage.html')">
+        <form id="signupForm">
             <div class="input-row">
                 <div class="input-group">
                     <label for="firstName">First Name</label>
-                    <input type="text" id="firstName" placeholder="Enter first name" required>
+                    <input type="text" id="firstName" placeholder="Enter first name" required autocomplete="given-name">
                 </div>
                 <div class="input-group">
                     <label for="lastName">Last Name</label>
-                    <input type="text" id="lastName" placeholder="Enter last name" required>
+                    <input type="text" id="lastName" placeholder="Enter last name" required autocomplete="family-name">
                 </div>
             </div>
 
             <div class="input-group">
                 <label for="email">Email address</label>
-                <input type="email" id="email" placeholder="Enter your email" required>
+                <input type="email" id="email" placeholder="Enter your email" required autocomplete="email">
             </div>
 
             <div class="input-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Create a password" required>
+                <input type="password" id="password" placeholder="Create a password" required autocomplete="new-password">
+                <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password')">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <div class="password-strength" id="passwordStrength">
+                    <span></span><span></span><span></span><span></span>
+                </div>
+                <div class="password-hint" id="passwordHint">
+                    Use 8+ characters with uppercase, lowercase, and numbers
+                </div>
             </div>
 
             <div class="input-group">
                 <label for="confirmPassword">Confirm Password</label>
-                <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+                <input type="password" id="confirmPassword" placeholder="Confirm your password" required autocomplete="new-password">
+                <button type="button" class="password-toggle" onclick="togglePasswordVisibility('confirmPassword')">
+                    <i class="fas fa-eye"></i>
+                </button>
             </div>
 
             <div class="terms-checkbox">
                 <input type="checkbox" id="terms" required>
                 <label for="terms">
-                    I agree to MarketMix's <a href="Terms & Conditions.html">Terms of Service</a> and <a href="privacy policy.html">Privacy Policy</a>
+                    I agree to MarketMix's <a href="Terms & Conditions.html" target="_blank">Terms of Service</a> and <a href="privacy policy.html" target="_blank">Privacy Policy</a>
                 </label>
             </div>
 
-            <button type="submit" class="login-btn">Create Account</button>
+            <button type="submit" class="login-btn" id="submitBtn">Create Account</button>
 
             <p class="or">Or continue with</p>
 
             <div class="social-login" id="google-signin-container">
-                <!-- Google Sign-In button will be rendered here -->
+                <button type="button" class="login-btn" style="background-color: #fff; color: #333; border: 2px solid #e0e0e0;" onclick="showAlert('info', 'Google Sign-In will be available once you add your Google Client ID')">
+                    <i class="fab fa-google" style="margin-right: 8px;"></i>
+                    Sign up with Google
+                </button>
             </div>
 
             <p class="signup-link">Already have an account? <a href="login for buyers.html">Log in</a></p>
         </form>
     </div>
 
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
         // =====================================================
-        // BUYER SIGNUP - Frontend JavaScript
+        // CONFIGURATION
         // =====================================================
-
-        // API Base URL - Update this based on environment
-        const API_BASE_URL = window.location.hostname === 'localhost' 
-          ? 'http://localhost:5000/api'
-          : 'https://marketmix-backend-production.up.railway.app/api';
+        const API_BASE_URL = 'https://marketmix-backend-production.up.railway.app/api';
+        const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID_HERE'; // Replace with your actual Google Client ID
         
-        const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID_HERE'; // Replace with your Google Client ID
+        console.log('🚀 MarketMix Signup - API Base URL:', API_BASE_URL);
 
-        console.log('API Base URL:', API_BASE_URL);
+        // Rate limiting
+        let lastSubmitTime = 0;
+        const SUBMIT_COOLDOWN = 3000; // 3 seconds between submissions
 
-        /**
-         * Handle form submission for buyer signup
-         */
-        async function handleFormSubmit(event, formType, redirectUrl) {
-          event.preventDefault();
-          console.log('Form submitted');
+        // =====================================================
+        // FORM SUBMISSION HANDLER
+        // =====================================================
+        document.getElementById('signupForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            console.log('📝 Form submitted');
 
-          // Get form values
-          const firstName = document.getElementById('firstName').value.trim();
-          const lastName = document.getElementById('lastName').value.trim();
-          const email = document.getElementById('email').value.trim();
-          const password = document.getElementById('password').value;
-          const confirmPassword = document.getElementById('confirmPassword').value;
-          const termsAccepted = document.getElementById('terms').checked;
-
-          console.log('Form values:', { firstName, lastName, email, termsAccepted });
-
-          // Frontend validation - check each field
-          if (!firstName || !lastName) {
-            showError('First name and last name are required');
-            return;
-          }
-
-          if (!email) {
-            showError('Email is required');
-            return;
-          }
-
-          if (!isValidEmail(email)) {
-            showError('Please enter a valid email address');
-            return;
-          }
-
-          if (!password) {
-            showError('Password is required');
-            return;
-          }
-
-          if (password.length < 8) {
-            showError('Password must be at least 8 characters long');
-            return;
-          }
-
-          if (password !== confirmPassword) {
-            showError('Passwords do not match');
-            return;
-          }
-
-          if (!termsAccepted) {
-            showError('Please accept the Terms of Service and Privacy Policy');
-            return;
-          }
-
-          // Prepare data for API
-          const signupData = {
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            password: password,
-            role: 'buyer'
-          };
-
-          console.log('Sending signup data:', signupData);
-
-          try {
-            // Show loading state
-            showLoading(true);
-
-            // Call backend API
-            const response = await fetch(`${API_BASE_URL}/auth/register`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(signupData)
-            });
-
-            console.log('Response status:', response.status);
-            const data = await response.json();
-            console.log('Response data:', data);
-
-            // Hide loading state
-            showLoading(false);
-
-            if (response.ok && data.status === 'success') {
-              // Store user data and token
-              localStorage.setItem('user', JSON.stringify(data.data.user));
-              localStorage.setItem('token', data.data.token);
-              localStorage.setItem('userRole', 'buyer');
-
-              console.log('User registered successfully');
-              showSuccess('Account created successfully! Redirecting...');
-
-              // Redirect after 1.5 seconds
-              setTimeout(() => {
-                window.location.href = redirectUrl;
-              }, 1500);
-            } else {
-              // Show error message from backend
-              const errorMsg = data.message || 'Failed to create account';
-              console.error('Signup error:', errorMsg);
-              showError(errorMsg);
+            // Rate limiting check
+            const now = Date.now();
+            if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
+                showAlert('error', 'Please wait a moment before trying again');
+                return;
             }
-          } catch (error) {
-            console.error('Signup error:', error);
-            showLoading(false);
-            showError('Network error. Please check your connection and try again. Error: ' + error.message);
-          }
-        }
+            lastSubmitTime = now;
 
-        /**
-         * Handle Google Sign In
-         */
-        function handleGoogleSignIn(response) {
-          console.log('Google Sign-In response received');
-          
-          if (!response.credential) {
-            showError('Google Sign-In failed. Please try again.');
-            return;
-          }
+            // Get and sanitize form values
+            const firstName = sanitizeInput(document.getElementById('firstName').value);
+            const lastName = sanitizeInput(document.getElementById('lastName').value);
+            const email = sanitizeInput(document.getElementById('email').value);
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const termsAccepted = document.getElementById('terms').checked;
 
-          // Decode JWT token
-          const token = response.credential;
-          const decoded = parseJwt(token);
-          console.log('Decoded Google token:', decoded);
+            console.log('📋 Form values:', { firstName, lastName, email, termsAccepted });
 
-          // Prepare data for backend
-          const signupData = {
-            firstName: decoded.given_name || '',
-            lastName: decoded.family_name || '',
-            email: decoded.email,
-            googleId: decoded.sub,
-            role: 'buyer'
-          };
-
-          console.log('Sending Google signup data:', signupData);
-
-          // Call backend API for Google signup
-          signupWithGoogle(signupData);
-        }
-
-        /**
-         * Sign up user with Google credentials
-         */
-        async function signupWithGoogle(signupData) {
-          try {
-            showLoading(true);
-
-            const response = await fetch(`${API_BASE_URL}/auth/google-register`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(signupData)
-            });
-
-            console.log('Google signup response status:', response.status);
-            const data = await response.json();
-            console.log('Google signup response data:', data);
-
-            showLoading(false);
-
-            if (response.ok && data.status === 'success') {
-              // Store user data and token
-              localStorage.setItem('user', JSON.stringify(data.data.user));
-              localStorage.setItem('token', data.data.token);
-              localStorage.setItem('userRole', 'buyer');
-
-              console.log('User registered with Google successfully');
-              showSuccess('Account created with Google! Redirecting...');
-
-              setTimeout(() => {
-                window.location.href = 'buyers homepage.html';
-              }, 1500);
-            } else {
-              const errorMsg = data.message || 'Failed to create account with Google';
-              console.error('Google signup error:', errorMsg);
-              showError(errorMsg);
+            // Validation
+            const validation = validateForm(firstName, lastName, email, password, confirmPassword, termsAccepted);
+            if (!validation.valid) {
+                showAlert('error', validation.message);
+                return;
             }
-          } catch (error) {
-            console.error('Google signup error:', error);
-            showLoading(false);
-            showError('Network error with Google Sign-In: ' + error.message);
-          }
-        }
 
-        /**
-         * Decode JWT token
-         */
-        function parseJwt(token) {
-          const base64Url = token.split('.')[1];
-          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-          const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-          }).join(''));
-          return JSON.parse(jsonPayload);
-        }
+            // Prepare signup data
+            const signupData = {
+                firstName: firstName,
+                lastName: lastName,
+                email: email.toLowerCase(),
+                password: password,
+                role: 'buyer'
+            };
 
-        /**
-         * Show error message
-         */
-        function showError(message) {
-          removeAlerts();
-          const alert = document.createElement('div');
-          alert.className = 'alert alert-error';
-          alert.innerHTML = `
-            <span class="alert-icon">⚠️</span>
-            <span class="alert-message">${message}</span>
-            <button class="alert-close" onclick="this.parentElement.remove()">×</button>
-          `;
-          const container = document.querySelector('.login-container');
-          if (container) {
-            container.insertBefore(alert, container.firstChild);
-          }
-          setTimeout(() => {
-            if (alert.parentElement) alert.remove();
-          }, 6000);
-        }
+            console.log('📤 Sending signup request...');
 
-        /**
-         * Show success message
-         */
-        function showSuccess(message) {
-          removeAlerts();
-          const alert = document.createElement('div');
-          alert.className = 'alert alert-success';
-          alert.innerHTML = `
-            <span class="alert-icon">✓</span>
-            <span class="alert-message">${message}</span>
-          `;
-          const container = document.querySelector('.login-container');
-          if (container) {
-            container.insertBefore(alert, container.firstChild);
-          }
-        }
+            try {
+                showLoading(true);
 
-        /**
-         * Remove all alerts
-         */
-        function removeAlerts() {
-          const alerts = document.querySelectorAll('.alert');
-          alerts.forEach(alert => alert.remove());
-        }
+                const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(signupData)
+                });
 
-        /**
-         * Show/hide loading state
-         */
-        function showLoading(isLoading) {
-          const submitBtn = document.querySelector('.login-btn');
-          if (submitBtn) {
-            if (isLoading) {
-              submitBtn.disabled = true;
-              submitBtn.innerHTML = '<span class="spinner"></span> Creating Account...';
-            } else {
-              submitBtn.disabled = false;
-              submitBtn.innerHTML = 'Create Account';
+                console.log('📥 Response status:', response.status);
+                const data = await response.json();
+                console.log('📥 Response data:', data);
+
+                showLoading(false);
+
+                if (response.ok && data.status === 'success') {
+                    // Store user data securely
+                    storeAuthData(data.data.user, data.data.token);
+                    
+                    console.log('✅ User registered successfully');
+                    showAlert('success', 'Account created successfully! Redirecting...');
+
+                    // Redirect after 1.5 seconds
+                    setTimeout(() => {
+                        window.location.href = 'buyers homepage.html';
+                    }, 1500);
+                } else {
+                    const errorMsg = getUserFriendlyError(data.message || 'Failed to create account');
+                    console.error('❌ Signup error:', errorMsg);
+                    showAlert('error', errorMsg);
+                }
+            } catch (error) {
+                console.error('❌ Network error:', error);
+                showLoading(false);
+                showAlert('error', 'Connection problem. Please check your internet and try again.');
             }
-          }
-        }
-
-        /**
-         * Validate email format
-         */
-        function isValidEmail(email) {
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          return emailRegex.test(email);
-        }
-
-        // Real-time validation on page load
-        document.addEventListener('DOMContentLoaded', function() {
-          console.log('Page loaded, initializing form validation');
-          
-          const emailInput = document.getElementById('email');
-          if (emailInput) {
-            emailInput.addEventListener('blur', function() {
-              if (this.value && !isValidEmail(this.value)) {
-                this.classList.add('invalid');
-              } else {
-                this.classList.remove('invalid');
-              }
-            });
-          }
-
-          const passwordInput = document.getElementById('password');
-          const confirmPasswordInput = document.getElementById('confirmPassword');
-          
-          if (confirmPasswordInput && passwordInput) {
-            confirmPasswordInput.addEventListener('input', function() {
-              if (this.value && this.value !== passwordInput.value) {
-                this.classList.add('invalid');
-              } else {
-                this.classList.remove('invalid');
-              }
-            });
-          }
-
-          if (window.google && window.google.accounts) {
-            window.google.accounts.id.initialize({
-              client_id: GOOGLE_CLIENT_ID,
-              callback: handleGoogleSignIn,
-              auto_select: false
-            });
-            console.log('Google Sign-In initialized');
-          } else {
-            console.warn('Google Sign-In library not loaded');
-          }
         });
+
+        // =====================================================
+        // VALIDATION FUNCTIONS
+        // =====================================================
+        function validateForm(firstName, lastName, email, password, confirmPassword, termsAccepted) {
+            if (!firstName || !lastName) {
+                return { valid: false, message: 'First name and last name are required' };
+            }
+
+            if (firstName.length < 2 || lastName.length < 2) {
+                return { valid: false, message: 'Names must be at least 2 characters long' };
+            }
+
+            if (!email) {
+                return { valid: false, message: 'Email is required' };
+            }
+
+            if (!isValidEmail(email)) {
+                return { valid: false, message: 'Please enter a valid email address' };
+            }
+
+            if (!password) {
+                return { valid: false, message: 'Password is required' };
+            }
+
+            const passwordCheck = validatePassword(password);
+            if (!passwordCheck.valid) {
+                return { valid: false, message: passwordCheck.message };
+            }
+
+            if (password !== confirmPassword) {
+                return { valid: false, message: 'Passwords do not match' };
+            }
+
+            if (!termsAccepted) {
+                return { valid: false, message: 'Please accept the Terms of Service and Privacy Policy' };
+            }
+
+            return { valid: true };
+        }
+
+        function validatePassword(password) {
+            if (password.length < 8) {
+                return { valid: false, message: 'Password must be at least 8 characters long' };
+            }
+
+            const hasUpperCase = /[A-Z]/.test(password);
+            const hasLowerCase = /[a-z]/.test(password);
+            const hasNumbers = /\d/.test(password);
+
+            if (!hasUpperCase || !hasLowerCase) {
+                return { valid: false, message: 'Password must contain uppercase and lowercase letters' };
+            }
+
+            if (!hasNumbers) {
+                return { valid: false, message: 'Password must contain at least one number' };
+            }
+
+            return { valid: true };
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function sanitizeInput(input) {
+            return input.trim().replace(/[<>]/g, '');
+        }
+
+        // =====================================================
+        // PASSWORD STRENGTH INDICATOR
+        // =====================================================
+        function checkPasswordStrength(password) {
+            const strengthIndicator = document.getElementById('passwordStrength');
+            const hint = document.getElementById('passwordHint');
+            
+            if (!password) {
+                strengthIndicator.classList.remove('active', 'weak', 'medium', 'strong');
+                hint.classList.remove('active');
+                return;
+            }
+
+            strengthIndicator.classList.add('active');
+            hint.classList.add('active');
+
+            let score = 0;
+            if (password.length >= 8) score++;
+            if (password.length >= 12) score++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
+            if (/\d/.test(password)) score++;
+            if (/[^a-zA-Z0-9]/.test(password)) score++;
+
+            strengthIndicator.className = 'password-strength active';
+            if (score <= 2) {
+                strengthIndicator.classList.add('weak');
+                hint.textContent = 'Weak password. Add more characters and variety.';
+                hint.style.color = '#f44336';
+            } else if (score <= 4) {
+                strengthIndicator.classList.add('medium');
+                hint.textContent = 'Medium strength. Consider adding special characters.';
+                hint.style.color = '#ff9800';
+            } else {
+                strengthIndicator.classList.add('strong');
+                hint.textContent = 'Strong password! ✓';
+                hint.style.color = '#4CAF50';
+            }
+        }
+
+        // =====================================================
+        // PASSWORD VISIBILITY TOGGLE
+        // =====================================================
+        function togglePasswordVisibility(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = event.target.closest('button').querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        // =====================================================
+        // ALERT FUNCTIONS
+        // =====================================================
+        function showAlert(type, message) {
+            removeAlerts();
+            
+            const icons = {
+                error: '⚠️',
+                success: '✓',
+                info: 'ℹ️'
+            };
+            
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <span class="alert-icon">${icons[type]}</span>
+                <span class="alert-message">${message}</span>
+                ${type !== 'success' ? '<button class="alert-close" onclick="this.parentElement.remove()">×</button>' : ''}
+            `;
+            
+            const container = document.querySelector('.login-container');
+            if (container) {
+                container.insertBefore(alert, container.firstChild);
+            }
+            
+            if (type !== 'info') {
+                setTimeout(() => {
+                    if (alert.parentElement) alert.remove();
+                }, 6000);
+            }
+        }
+
+        function removeAlerts() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => alert.remove());
+        }
+
+        // =====================================================
+        // LOADING STATE
+        // =====================================================
+        function showLoading(isLoading) {
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn) {
+                if (isLoading) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner"></span> Creating Account...';
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Create Account';
+                }
+            }
+        }
+
+        // =====================================================
+        // AUTH DATA STORAGE
+        // =====================================================
+        function storeAuthData(user, token) {
+            try {
+                const authData = {
+                    user,
+                    token,
+                    expiresAt: Date.now() + (24 * 60 * 60 * 1000), // 24 hours
+                    role: 'buyer'
+                };
+                localStorage.setItem('user', JSON.stringify(user));
+                localStorage.setItem('token', token);
+                localStorage.setItem('userRole', 'buyer');
+                localStorage.setItem('authData', JSON.stringify(authData));
+                console.log('💾 Auth data stored successfully');
+            } catch (error) {
+                console.error('❌ Failed to store auth data:', error);
+            }
+        }
+
+        // =====================================================
+        // ERROR MESSAGE MAPPING
+        // =====================================================
+        function getUserFriendlyError(backendMessage) {
+            const errorMap = {
+                'duplicate': 'This email is already registered. Please log in instead.',
+                'already exists': 'This email is already registered. Please log in instead.',
+                'validation failed': 'Please check your information and try again.',
+                'invalid email': 'Please enter a valid email address.',
+                'password': 'Please check your password requirements.',
+                'network': 'Connection problem. Please check your internet.',
+                'timeout': 'Request took too long. Please try again.',
+                'server error': 'Something went wrong on our end. Please try again later.'
+            };
+            
+            const lowerMessage = backendMessage.toLowerCase();
+            for (const [key, value] of Object.entries(errorMap)) {
+                if (lowerMessage.includes(key)) {
+                    return value;
+                }
+            }
+            
+            return backendMessage || 'Something went wrong. Please try again.';
+        }
+
+        // =====================================================
+        // REAL-TIME VALIDATION
+        // =====================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎯 Page loaded, initializing validation...');
+            
+            // Auto-focus first name field
+            document.getElementById('firstName').focus();
+            
+            // Email validation
+            const emailInput = document.getElementById('email');
+            emailInput.addEventListener('input', function() {
+                if (this.value.length > 3) {
+                    if (isValidEmail(this.value)) {
+                        this.classList.remove('invalid');
+                        this.classList.add('valid');
+                    } else {
+                        this.classList.add('invalid');
+                        this.classList.remove('valid');
+                    }
+                } else {
+                    this.classList.remove('invalid', 'valid');
+                }
+            });
+
+            // Password strength check
+            const passwordInput = document.getElementById('password');
+            passwordInput.addEventListener('input', function() {
+                checkPasswordStrength(this.value);
+            });
+
+            // Confirm password validation
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            confirmPasswordInput.addEventListener('input', function() {
+                const password = passwordInput.value;
+                if (this.value) {
+                    if (this.value === password) {
+                        this.classList.remove('invalid');
+                        this.classList.add('valid');
+                    } else {
+                        this.classList.add('invalid');
+                        this.classList.remove('valid');
+                    }
+                } else {
+                    this.classList.remove('invalid', 'valid');
+                }
+            });
+
+            console.log('✅ Validation initialized successfully');
+        });
+
+        // =====================================================
+        // GOOGLE SIGN-IN (Placeholder)
+        // =====================================================
+        // To enable Google Sign-In:
+        // 1. Get your Google Client ID from https://console.cloud.google.com/
+        // 2. Replace GOOGLE_CLIENT_ID at the top of this file
+        // 3. Uncomment the code below
+        
+        /*
+        if (window.google && GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID_HERE') {
+            window.google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: handleGoogleSignIn,
+                auto_select: false
+            });
+            
+            window.google.accounts.id.renderButton(
+                document.getElementById('google-signin-container'),
+                { 
+                    theme: 'outline', 
+                    size: 'large',
+                    width: '100%',
+                    text: 'signup_with'
+                }
+            );
+            console.log('✅ Google Sign-In initialized');
+        }
+
+        async function handleGoogleSignIn(response) {
+            console.log('🔐 Google Sign-In initiated');
+            showLoading(true);
+            
+            try {
+                const token = response.credential;
+                const decoded = parseJwt(token);
+                
+                const signupData = {
+                    firstName: decoded.given_name || '',
+                    lastName: decoded.family_name || '',
+                    email: decoded.email,
+                    googleId: decoded.sub,
+                    role: 'buyer'
+                };
+
+                const apiResponse = await fetch(`${API_BASE_URL}/auth/google-register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(signupData)
+                });
+
+                const data = await apiResponse.json();
+                showLoading(false);
+
+                if (apiResponse.ok && data.status === 'success') {
+                    storeAuthData(data.data.user, data.data.token);
+                    showAlert('success', 'Signed up with Google! Redirecting...');
+                    setTimeout(() => {
+                        window.location.href = 'buyers homepage.html';
+                    }, 1500);
+                } else {
+                    showAlert('error', getUserFriendlyError(data.message));
+                }
+            } catch (error) {
+                console.error('❌ Google sign-in error:', error);
+                showLoading(false);
+                showAlert('error', 'Google Sign-In failed. Please try again.');
+            }
+        }
+
+        function parseJwt(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        }
+        */
     </script>
+    
+    <!-- Uncomment when you add Google Client ID -->
+    <!-- <script src="https://accounts.google.com/gsi/client" async defer></script> -->
 </body>
 </html>
