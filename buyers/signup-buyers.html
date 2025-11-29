@@ -240,239 +240,336 @@ input:focus {
 
             <p class="or">Or continue with</p>
 
-            <div class="social-login">
-                <button type="button" id="google-login" class="google-btn" onclick="handleGoogleSignIn('Signup', 'buyers homepage.html')">
-                    <img src="images/google-icon.png" alt="Google Icon"> Continue with Google
-                </button>
+            <div class="social-login" id="google-signin-container">
+                <!-- Google Sign-In button will be rendered here -->
             </div>
 
             <p class="signup-link">Already have an account? <a href="login for buyers.html">Log in</a></p>
         </form>
     </div>
 
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
         // =====================================================
-// BUYER SIGNUP - Frontend JavaScript
-// =====================================================
+        // BUYER SIGNUP - Frontend JavaScript
+        // =====================================================
 
-// API Base URL - Update this based on environment
-// Use development or production URL based on environment
-const API_BASE_URL = window.location.hostname === 'localhost' 
-  ? 'http://localhost:5000/api'
-  : 'https://marketmix-backend-production.up.railway.app/api'; 
+        // API Base URL - Update this based on environment
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+          ? 'http://localhost:5000/api'
+          : 'https://marketmix-backend-production.up.railway.app/api';
+        
+        const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID_HERE'; // Replace with your Google Client ID
 
-/**
- * Handle form submission for buyer signup
- */
-async function handleFormSubmit(event, formType, redirectUrl) {
-  event.preventDefault();
+        console.log('API Base URL:', API_BASE_URL);
 
-  // Get form values
-  const firstName = document.getElementById('firstName').value.trim();
-  const lastName = document.getElementById('lastName').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
-  const confirmPassword = document.getElementById('confirmPassword').value;
-  const termsAccepted = document.getElementById('terms').checked;
+        /**
+         * Handle form submission for buyer signup
+         */
+        async function handleFormSubmit(event, formType, redirectUrl) {
+          event.preventDefault();
+          console.log('Form submitted');
 
-  // Frontend validation
-  if (!termsAccepted) {
-    showError('Please accept the Terms of Service and Privacy Policy');
-    return;
-  }
+          // Get form values
+          const firstName = document.getElementById('firstName').value.trim();
+          const lastName = document.getElementById('lastName').value.trim();
+          const email = document.getElementById('email').value.trim();
+          const password = document.getElementById('password').value;
+          const confirmPassword = document.getElementById('confirmPassword').value;
+          const termsAccepted = document.getElementById('terms').checked;
 
-  if (password !== confirmPassword) {
-    showError('Passwords do not match');
-    return;
-  }
+          console.log('Form values:', { firstName, lastName, email, termsAccepted });
 
-  if (password.length < 8) {
-    showError('Password must be at least 8 characters long');
-    return;
-  }
+          // Frontend validation - check each field
+          if (!firstName || !lastName) {
+            showError('First name and last name are required');
+            return;
+          }
 
-  // Prepare data for API
-  const signupData = {
-    firstName: firstName,
-    lastName: lastName,
-    email: email,
-    password: password,
-    role: 'buyer' // Always buyer for this form
-  };
+          if (!email) {
+            showError('Email is required');
+            return;
+          }
 
-  try {
-    // Show loading state
-    showLoading(true);
+          if (!isValidEmail(email)) {
+            showError('Please enter a valid email address');
+            return;
+          }
 
-    // Call backend API
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(signupData)
-    });
+          if (!password) {
+            showError('Password is required');
+            return;
+          }
 
-    const data = await response.json();
+          if (password.length < 8) {
+            showError('Password must be at least 8 characters long');
+            return;
+          }
 
-    // Hide loading state
-    showLoading(false);
+          if (password !== confirmPassword) {
+            showError('Passwords do not match');
+            return;
+          }
 
-    if (response.ok && data.status === 'success') {
-      // Store user data and token
-      localStorage.setItem('user', JSON.stringify(data.data.user));
-      localStorage.setItem('token', data.data.token);
-      localStorage.setItem('userRole', 'buyer');
+          if (!termsAccepted) {
+            showError('Please accept the Terms of Service and Privacy Policy');
+            return;
+          }
 
-      // Show success message
-      showSuccess('Account created successfully! Redirecting...');
+          // Prepare data for API
+          const signupData = {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            password: password,
+            role: 'buyer'
+          };
 
-      // Redirect after 1 second
-      setTimeout(() => {
-        window.location.href = redirectUrl;
-      }, 1000);
-    } else {
-      // Show error message from backend
-      showError(data.message || 'Failed to create account');
-    }
-  } catch (error) {
-    console.error('Signup error:', error);
-    showLoading(false);
-    showError('Network error. Please check your connection and try again.');
-  }
-}
+          console.log('Sending signup data:', signupData);
 
-/**
- * Handle Google Sign In
- */
-async function handleGoogleSignIn(formType, redirectUrl) {
-  // TODO: Implement Google OAuth
-  showError('Google Sign-In coming soon!');
-}
+          try {
+            // Show loading state
+            showLoading(true);
 
-/**
- * Show error message
- */
-function showError(message) {
-  // Remove any existing alerts
-  removeAlerts();
+            // Call backend API
+            const response = await fetch(`${API_BASE_URL}/auth/register`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(signupData)
+            });
 
-  // Create error alert
-  const alert = document.createElement('div');
-  alert.className = 'alert alert-error';
-  alert.innerHTML = `
-    <span class="alert-icon">⚠️</span>
-    <span class="alert-message">${message}</span>
-    <button class="alert-close" onclick="this.parentElement.remove()">×</button>
-  `;
+            console.log('Response status:', response.status);
+            const data = await response.json();
+            console.log('Response data:', data);
 
-  // Insert at the top of the form container
-  const container = document.querySelector('.login-container');
-  container.insertBefore(alert, container.firstChild);
+            // Hide loading state
+            showLoading(false);
 
-  // Auto-remove after 5 seconds
-  setTimeout(() => alert.remove(), 5000);
-}
+            if (response.ok && data.status === 'success') {
+              // Store user data and token
+              localStorage.setItem('user', JSON.stringify(data.data.user));
+              localStorage.setItem('token', data.data.token);
+              localStorage.setItem('userRole', 'buyer');
 
-/**
- * Show success message
- */
-function showSuccess(message) {
-  // Remove any existing alerts
-  removeAlerts();
+              console.log('User registered successfully');
+              showSuccess('Account created successfully! Redirecting...');
 
-  // Create success alert
-  const alert = document.createElement('div');
-  alert.className = 'alert alert-success';
-  alert.innerHTML = `
-    <span class="alert-icon">✓</span>
-    <span class="alert-message">${message}</span>
-  `;
+              // Redirect after 1.5 seconds
+              setTimeout(() => {
+                window.location.href = redirectUrl;
+              }, 1500);
+            } else {
+              // Show error message from backend
+              const errorMsg = data.message || 'Failed to create account';
+              console.error('Signup error:', errorMsg);
+              showError(errorMsg);
+            }
+          } catch (error) {
+            console.error('Signup error:', error);
+            showLoading(false);
+            showError('Network error. Please check your connection and try again. Error: ' + error.message);
+          }
+        }
 
-  // Insert at the top of the form container
-  const container = document.querySelector('.login-container');
-  container.insertBefore(alert, container.firstChild);
-}
+        /**
+         * Handle Google Sign In
+         */
+        function handleGoogleSignIn(response) {
+          console.log('Google Sign-In response received');
+          
+          if (!response.credential) {
+            showError('Google Sign-In failed. Please try again.');
+            return;
+          }
 
-/**
- * Remove all alerts
- */
-function removeAlerts() {
-  const alerts = document.querySelectorAll('.alert');
-  alerts.forEach(alert => alert.remove());
-}
+          // Decode JWT token
+          const token = response.credential;
+          const decoded = parseJwt(token);
+          console.log('Decoded Google token:', decoded);
 
-/**
- * Show/hide loading state
- */
-function showLoading(isLoading) {
-  const submitBtn = document.querySelector('.login-btn');
-  
-  if (isLoading) {
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner"></span> Creating Account...';
-  } else {
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = 'Create Account';
-  }
-}
+          // Prepare data for backend
+          const signupData = {
+            firstName: decoded.given_name || '',
+            lastName: decoded.family_name || '',
+            email: decoded.email,
+            googleId: decoded.sub,
+            role: 'buyer'
+          };
 
-/**
- * Validate email format
- */
-function isValidEmail(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
+          console.log('Sending Google signup data:', signupData);
 
-/**
- * Real-time password strength checker (optional)
- */
-function checkPasswordStrength(password) {
-  let strength = 0;
-  
-  if (password.length >= 8) strength++;
-  if (password.length >= 12) strength++;
-  if (/[a-z]/.test(password)) strength++;
-  if (/[A-Z]/.test(password)) strength++;
-  if (/[0-9]/.test(password)) strength++;
-  if (/[^a-zA-Z0-9]/.test(password)) strength++;
-  
-  return {
-    score: strength,
-    label: strength < 3 ? 'Weak' : strength < 5 ? 'Medium' : 'Strong'
-  };
-}
+          // Call backend API for Google signup
+          signupWithGoogle(signupData);
+        }
 
-// Optional: Add real-time validation
-document.addEventListener('DOMContentLoaded', function() {
-  // Email validation
-  const emailInput = document.getElementById('email');
-  if (emailInput) {
-    emailInput.addEventListener('blur', function() {
-      if (this.value && !isValidEmail(this.value)) {
-        this.classList.add('invalid');
-        showError('Please enter a valid email address');
-      } else {
-        this.classList.remove('invalid');
-      }
-    });
-  }
+        /**
+         * Sign up user with Google credentials
+         */
+        async function signupWithGoogle(signupData) {
+          try {
+            showLoading(true);
 
-  // Password match validation
-  const passwordInput = document.getElementById('password');
-  const confirmPasswordInput = document.getElementById('confirmPassword');
-  
-  if (confirmPasswordInput) {
-    confirmPasswordInput.addEventListener('input', function() {
-      if (this.value && this.value !== passwordInput.value) {
-        this.classList.add('invalid');
-      } else {
-        this.classList.remove('invalid');
-      }
-    });
-  }
-});
+            const response = await fetch(`${API_BASE_URL}/auth/google-register`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(signupData)
+            });
+
+            console.log('Google signup response status:', response.status);
+            const data = await response.json();
+            console.log('Google signup response data:', data);
+
+            showLoading(false);
+
+            if (response.ok && data.status === 'success') {
+              // Store user data and token
+              localStorage.setItem('user', JSON.stringify(data.data.user));
+              localStorage.setItem('token', data.data.token);
+              localStorage.setItem('userRole', 'buyer');
+
+              console.log('User registered with Google successfully');
+              showSuccess('Account created with Google! Redirecting...');
+
+              setTimeout(() => {
+                window.location.href = 'buyers homepage.html';
+              }, 1500);
+            } else {
+              const errorMsg = data.message || 'Failed to create account with Google';
+              console.error('Google signup error:', errorMsg);
+              showError(errorMsg);
+            }
+          } catch (error) {
+            console.error('Google signup error:', error);
+            showLoading(false);
+            showError('Network error with Google Sign-In: ' + error.message);
+          }
+        }
+
+        /**
+         * Decode JWT token
+         */
+        function parseJwt(token) {
+          const base64Url = token.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(''));
+          return JSON.parse(jsonPayload);
+        }
+
+        /**
+         * Show error message
+         */
+        function showError(message) {
+          removeAlerts();
+          const alert = document.createElement('div');
+          alert.className = 'alert alert-error';
+          alert.innerHTML = `
+            <span class="alert-icon">⚠️</span>
+            <span class="alert-message">${message}</span>
+            <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+          `;
+          const container = document.querySelector('.login-container');
+          if (container) {
+            container.insertBefore(alert, container.firstChild);
+          }
+          setTimeout(() => {
+            if (alert.parentElement) alert.remove();
+          }, 6000);
+        }
+
+        /**
+         * Show success message
+         */
+        function showSuccess(message) {
+          removeAlerts();
+          const alert = document.createElement('div');
+          alert.className = 'alert alert-success';
+          alert.innerHTML = `
+            <span class="alert-icon">✓</span>
+            <span class="alert-message">${message}</span>
+          `;
+          const container = document.querySelector('.login-container');
+          if (container) {
+            container.insertBefore(alert, container.firstChild);
+          }
+        }
+
+        /**
+         * Remove all alerts
+         */
+        function removeAlerts() {
+          const alerts = document.querySelectorAll('.alert');
+          alerts.forEach(alert => alert.remove());
+        }
+
+        /**
+         * Show/hide loading state
+         */
+        function showLoading(isLoading) {
+          const submitBtn = document.querySelector('.login-btn');
+          if (submitBtn) {
+            if (isLoading) {
+              submitBtn.disabled = true;
+              submitBtn.innerHTML = '<span class="spinner"></span> Creating Account...';
+            } else {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = 'Create Account';
+            }
+          }
+        }
+
+        /**
+         * Validate email format
+         */
+        function isValidEmail(email) {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return emailRegex.test(email);
+        }
+
+        // Real-time validation on page load
+        document.addEventListener('DOMContentLoaded', function() {
+          console.log('Page loaded, initializing form validation');
+          
+          const emailInput = document.getElementById('email');
+          if (emailInput) {
+            emailInput.addEventListener('blur', function() {
+              if (this.value && !isValidEmail(this.value)) {
+                this.classList.add('invalid');
+              } else {
+                this.classList.remove('invalid');
+              }
+            });
+          }
+
+          const passwordInput = document.getElementById('password');
+          const confirmPasswordInput = document.getElementById('confirmPassword');
+          
+          if (confirmPasswordInput && passwordInput) {
+            confirmPasswordInput.addEventListener('input', function() {
+              if (this.value && this.value !== passwordInput.value) {
+                this.classList.add('invalid');
+              } else {
+                this.classList.remove('invalid');
+              }
+            });
+          }
+
+          if (window.google && window.google.accounts) {
+            window.google.accounts.id.initialize({
+              client_id: GOOGLE_CLIENT_ID,
+              callback: handleGoogleSignIn,
+              auto_select: false
+            });
+            console.log('Google Sign-In initialized');
+          } else {
+            console.warn('Google Sign-In library not loaded');
+          }
+        });
     </script>
 </body>
 </html>
