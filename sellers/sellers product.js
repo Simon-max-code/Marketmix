@@ -141,6 +141,31 @@ function toggleProfileDropdown() {
     document.getElementById("in-stock-count").textContent = inStock;
     document.getElementById("low-stock-count").textContent = lowStock;
     document.getElementById("out-of-stock-count").textContent = outStock;
+
+    // Update product notification badge
+    updateProductNotificationBadge(lowStock, outStock);
+  }
+
+  function updateProductNotificationBadge(lowStock, outStock) {
+    // Find the product overview card in the dashboard
+    const cards = document.querySelectorAll('.overview-card');
+    if (cards.length === 0) return; // Card may not exist on this page
+    
+    // Find the product card (usually the 3rd or 4th card) and update its badge
+    cards.forEach((card, index) => {
+      const cardText = card.textContent.toLowerCase();
+      if (cardText.includes('product')) {
+        let badge = card.querySelector('.notification-badge');
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.className = 'notification-badge';
+          card.appendChild(badge);
+        }
+        const totalAlerts = lowStock + outStock;
+        badge.textContent = totalAlerts > 0 ? totalAlerts : '';
+        badge.style.display = totalAlerts > 0 ? 'flex' : 'none';
+      }
+    });
   }
 
   function openAddModal() {

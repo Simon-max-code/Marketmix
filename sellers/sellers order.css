@@ -148,6 +148,11 @@ body {
   overflow-y: auto;
 }
 
+/* When JS toggles the 'show' class, slide the offcanvas into view */
+.offcanvas-menu.show {
+  right: 0;
+}
+
 .offcanvas-close{
   padding: 10px 18px;
   border: none;

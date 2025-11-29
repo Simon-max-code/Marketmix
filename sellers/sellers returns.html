@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Returns & Refunds | MarketMix</title>
+    <meta name="description" content="Manage buyer return requests and refunds on MarketMix. View return details, approve or deny requests.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="sellers product.css">
+    <link rel="stylesheet" href="sellers returns.css">
+    <link rel="shortcut icon" href="images/marketplace blue.avif" type="image/x-icon">
+</head>
+
+<body>
+
+<!-- Navbar --> 
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="#" class="brand-logo">MarketMix</a>
+    <button class="navbar-toggler" id="navbar-toggler" type="button" aria-label="Toggle navigation">
+    <img src="images/elon.jfif" class="navbar-toggler-icon" alt="">
+    </button>
+    <div class="nav-large">
+      <ul class="nav-list">
+        
+<ul class="nav-links">
+  <li><a href="sellers layout.html">Dashboard</a></li>
+  <li><a href="sellers product.html">My Products</a></li>
+  <li><a href="sellers order.html">Orders</a></li>
+  <li><a href="sellers returns.html">Returns & Refunds</a></li>
+  <li><a href="sellers earning.html">Earnings</a></li>
+  <li><a href="sellers setting.html">Shop Settings</a></li>
+</ul>
+       
+      </ul>
+      <div class="nav-actions">
+     
+      </div>
+      
+        <div class="icon-container">
+  <div class="profile-container">
+<img src="images/elon.jfif" alt="Profile" class="profile-icon" onclick="toggleProfileDropdown()">
+
+<div class="profile-dropdown" id="profileDropdown" style="  position: absolute;
+  top: 45px;
+  right: 0;
+  background: rgba(0, 0, 0, 0.9);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  display: none;
+  flex-direction: column;
+   min-width: 170px;
+  border-radius: 5px;
+  z-index: 100;  padding: 0.5rem 1rem;
+  text-decoration: none;
+   color: #fff;
+  transition: background 0.3s;
+   font-size: 1.2rem;
+">
+  <a href="view profile.html">View Profile</a>
+  <a href="sellers setting.html">Account Settings</a>
+  <a href="help.html">Help & Support</a>
+  <a href="logout.html">Logout</a>
+</div>
+</div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Offcanvas Menu (for small screens) -->
+<div class="offcanvas-menu" id="offcanvasMenu">
+  <div class="offcanvas-header">
+    <button class="offcanvas-close" id="offcanvasClose">&times;</button>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="nav-list">
+     <ul class="nav-links">
+  <li><a href="sellers layout.html">Dashboard</a></li>
+  <li><a href="sellers product.html">My Products</a></li>
+  <li><a href="sellers order.html">Orders</a></li>
+  <li><a href="sellers returns.html">Returns & Refunds</a></li>
+  <li><a href="sellers earning.html">Earnings</a></li>
+  <li><a href="sellers setting.html">Shop Settings</a></li>
+
+</ul>
+
+    </ul>
+    <div class="nav-actions">
+   
+    </div>
+    
+      <div class="icon-container">
+ <div class="profile-container">
+<img src="images/elon.jfif" alt="Profile" class="profile-icon" onclick="toggleProfileDropdown()">
+
+<div class="nav-list">
+   <li><a style="text-decoration: none; color: white;" href="view profile.html">View Profile</a></li>
+  <li><a style="text-decoration: none; color: white;" href="sellers setting.html">Account Settings</a></li>
+  <li><a style="text-decoration: none; color: white;" href="help.html">Help & Support</a></li>
+  <li><a style="text-decoration: none; color: white;" href="logout.html">Logout</a></li>
+</div>
+</div>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<main class="returns-container">
+  <section class="returns-section">
+    <h1>Returns & Refunds</h1>
+    
+    <!-- Filter/Search -->
+    <div class="filter-search">
+      <input type="text" id="searchInput" placeholder="Search by Buyer name or Order ID...">
+      <select id="statusFilter">
+        <option value="all">All Status</option>
+        <option value="pending">Pending</option>
+        <option value="approved">Approved</option>
+        <option value="denied">Denied</option>
+      </select>
+    </div>
+
+    <!-- Returns Table -->
+    <div class="returns-table">
+      <div class="table-header">
+        <div class="col-buyer">Buyer Name</div>
+        <div class="col-product">Product</div>
+        <div class="col-order">Order ID</div>
+        <div class="col-amount">Amount</div>
+        <div class="col-status">Status</div>
+        <div class="col-date">Date</div>
+        <div class="col-action">Actions</div>
+      </div>
+      <div class="table-body" id="returnsTableBody">
+        <!-- Populated by JavaScript -->
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Modal Backdrop -->
+<div class="modal-backdrop" id="modalBackdrop"></div>
+
+<!-- Return Details Modal -->
+<div class="modal-dialog" id="returnModal">
+  <div class="modal-wrapper">
+    <div class="modal-header">
+      <h2>Return Request Details</h2>
+      <button class="modal-close" id="closeModalBtn">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="info-group">
+        <h3>Buyer Information</h3>
+        <p><strong>Buyer Name:</strong> <span id="modalBuyerName"></span></p>
+      </div>
+
+      <div class="info-group">
+        <h3>Product Information</h3>
+        <p><strong>Product Name:</strong> <span id="modalProductName"></span></p>
+        <p><strong>Order ID:</strong> <span id="modalOrderId"></span></p>
+        <p><strong>Amount:</strong> <span id="modalAmount"></span></p>
+      </div>
+
+      <div class="info-group">
+        <h3>Return Details</h3>
+        <p><strong>Reason:</strong> <span id="modalReason"></span></p>
+        <p><strong>Notes:</strong> <span id="modalNotes"></span></p>
+      </div>
+
+      <div class="info-group">
+        <h3>Product Image</h3>
+        <div class="image-wrapper">
+          <img id="modalProductImage" src="" alt="Product">
+        </div>
+      </div>
+
+      <div class="info-group">
+        <h3>Current Status</h3>
+        <p><span id="modalStatus" class="status-badge"></span></p>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <div class="status-info">
+        <p><strong>MarketMix Decision:</strong> <span id="adminDecision" class="status-badge"></span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  &copy; 2025 MarketMix. All Rights Reserved.
+</footer>
+
+<script src="sellers product.js"></script>
+<script src="sellers returns.js"></script>
+</body>
+</html>

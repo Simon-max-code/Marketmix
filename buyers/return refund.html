@@ -56,6 +56,45 @@ header {
       margin: 10px 0;
       border-radius: 6px;
       border: 1px solid #ccc;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .image-upload-container {
+      margin: 15px 0;
+    }
+
+    .image-preview {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .image-preview img {
+      max-width: 120px;
+      max-height: 120px;
+      border-radius: 6px;
+      border: 2px solid #F97316;
+      padding: 4px;
+    }
+
+    .product-image-display {
+      margin: 15px 0;
+      text-align: center;
+    }
+
+    .product-image-display img {
+      max-width: 150px;
+      max-height: 150px;
+      border-radius: 6px;
+      border: 2px solid #ddd;
+      padding: 8px;
+    }
+
+    .image-label {
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: block;
     }
 
     form button {
@@ -160,8 +199,14 @@ header {
     <section class="return-form">
       <h3>Request a Return</h3>
       <form id="returnForm">
-        <label for="order-id">Product Name / Order ID</label>
-        <input type="text" id="order-id" name="orderId" required />
+        <label for="shop-name">Seller Shop Name</label>
+        <input type="text" id="shop-name" name="shopName" placeholder="enter shop name" required />
+
+        <label for="product-name">Product Name</label>
+        <input type="text" id="product-name" name="productName" placeholder="eg: wireless Headphones" required />
+
+        <label for="order-id">Order ID</label>
+        <input type="text" id="order-id" name="orderId" placeholder="eg: ORD12345" required />
 
         <label for="reason">Reason for Return</label>
         <select id="reason" name="reason" required>
@@ -175,6 +220,12 @@ header {
         <label for="notes">Additional Notes (optional)</label>
         <textarea id="notes" name="notes"></textarea>
 
+        <div class="image-upload-container">
+          <label for="product-image" class="image-label">📷 Upload Product Image (optional)</label>
+          <input type="file" id="product-image" name="productImage" accept="image/*" />
+          <div class="image-preview" id="imagePreview"></div>
+        </div>
+
         <button type="submit">Submit Request</button>
       </form>
     </section>
@@ -184,20 +235,32 @@ header {
       <h3>Your Return Requests</h3>
 
       <article class="history-item">
+        <p><strong>Shop:</strong> ElectroHub Store</p>
         <p><strong>Product:</strong> Leather Wallet</p>
         <p><strong>Reason:</strong> Wrong Item Delivered</p>
+        <p><strong>Additional Notes:</strong> The item arrived in good condition but it's the wrong color (ordered black, received brown).</p>
         <p><strong>Status:</strong> <span class="status">Approved</span></p>
       </article>
 
       <article class="history-item">
+        <p><strong>Shop:</strong> TechMart Pro</p>
         <p><strong>Product:</strong> Bluetooth Speaker</p>
         <p><strong>Reason:</strong> Received Damaged</p>
+        <p><strong>Additional Notes:</strong> The speaker has cracks on the bottom and doesn't charge properly.</p>
+        <div class="product-image-display">
+          <img src="https://via.placeholder.com/150?text=Damaged+Speaker" alt="Damaged product image">
+        </div>
         <p><strong>Status:</strong> <span class="status pending">Pending</span></p>
       </article>
 
       <article class="history-item">
+        <p><strong>Shop:</strong> FashionFirst</p>
         <p><strong>Product:</strong> Smartwatch</p>
         <p><strong>Reason:</strong> Changed My Mind</p>
+        <p><strong>Additional Notes:</strong> Item is unused and in original packaging.</p>
+        <div class="product-image-display">
+          <img src="https://via.placeholder.com/150?text=Smartwatch" alt="Product image">
+        </div>
         <p><strong>Status:</strong> <span class="status rejected">Rejected</span></p>
       </article>
     </section>
@@ -214,25 +277,69 @@ header {
   const form = document.getElementById('returnForm');
   const historyContainer = document.getElementById('history');
   const toast = document.getElementById('toast');
+  const productImageInput = document.getElementById('product-image');
+  const imagePreview = document.getElementById('imagePreview');
+  let uploadedImageData = null;
+
+  // Handle image preview on file selection
+  productImageInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    imagePreview.innerHTML = '';
+    uploadedImageData = null;
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        uploadedImageData = event.target.result;
+        const img = document.createElement('img');
+        img.src = uploadedImageData;
+        img.alt = 'Product preview';
+        imagePreview.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
 
   form.addEventListener('submit', function(e) {
     e.preventDefault();
 
-    const product = document.getElementById('order-id').value;
+    const shopName = document.getElementById('shop-name').value;
+    const productName = document.getElementById('product-name').value;
+    const orderId = document.getElementById('order-id').value;
     const reason = document.getElementById('reason').value;
+    const notes = document.getElementById('notes').value;
 
     // Append new request to history section
     const newItem = document.createElement('article');
     newItem.classList.add('history-item');
+    
+    let imageHTML = '';
+    if (uploadedImageData) {
+      imageHTML = `<div class="product-image-display"><img src="${uploadedImageData}" alt="Product image"></div>`;
+    }
+
     newItem.innerHTML = `
-      <p><strong>Product:</strong> ${product}</p>
+      <p><strong>Shop:</strong> ${shopName}</p>
+      <p><strong>Product:</strong> ${productName}</p>
+      <p><strong>Order ID:</strong> ${orderId}</p>
       <p><strong>Reason:</strong> ${reason}</p>
+      ${notes ? `<p><strong>Additional Notes:</strong> ${notes}</p>` : ''}
+      ${imageHTML}
       <p><strong>Status:</strong> <span class="status pending">Pending</span></p>
     `;
-    historyContainer.appendChild(newItem);
+    
+    // Insert after the history title (before other items)
+    const historyItems = historyContainer.querySelectorAll('.history-item');
+    if (historyItems.length > 0) {
+      historyItems[0].parentNode.insertBefore(newItem, historyItems[0]);
+    } else {
+      historyContainer.appendChild(newItem);
+    }
 
     // Clear form
     form.reset();
+    imagePreview.innerHTML = '';
+    uploadedImageData = null;
 
     // Show toast
     toast.classList.add('show');

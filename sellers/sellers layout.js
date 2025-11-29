@@ -32,6 +32,9 @@
     });
   });
 
+  // Initialize product badge if available
+  initializeProductBadge();
+
   });
 
  function toggleProfileDropdown() {
@@ -211,3 +214,37 @@ window.addEventListener('click', (e) => {
     activityModal.style.display = 'none';
   }
 });
+
+// Function to initialize and update product badge
+function initializeProductBadge() {
+  const productBadge = document.getElementById('productBadge');
+  if (!productBadge) return; // Badge element may not exist on all pages
+  
+  // Check if we're on a page with product data available
+  // If products array exists (from sellers product.js), update badge
+  if (typeof window.products !== 'undefined') {
+    updateProductBadgeDisplay();
+  } else {
+    // Set a default sample number for demo purposes
+    productBadge.textContent = '2';
+    productBadge.style.display = 'flex';
+  }
+}
+
+function updateProductBadgeDisplay() {
+  if (typeof window.products === 'undefined') return;
+  
+  const productBadge = document.getElementById('productBadge');
+  if (!productBadge) return;
+  
+  // Count low-stock and out-of-stock items
+  let lowStock = 0, outStock = 0;
+  window.products.forEach(product => {
+    if (product.status === 'Low Stock') lowStock++;
+    if (product.status === 'Out of Stock') outStock++;
+  });
+  
+  const totalAlerts = lowStock + outStock;
+  productBadge.textContent = totalAlerts;
+  productBadge.style.display = totalAlerts > 0 ? 'flex' : 'none';
+}
