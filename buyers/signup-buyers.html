@@ -418,7 +418,7 @@
         // CONFIGURATION
         // =====================================================
         const API_BASE_URL = 'https://marketmix-backend-production.up.railway.app/api';
-        const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID_HERE'; // Replace with your actual Google Client ID
+        const GOOGLE_CLIENT_ID = '849940344676-n4kcsnk7ueqj3jlnbfm51nts7csg915r.apps.googleusercontent.com'; // Replace with your actual Google Client ID
         
         console.log('🚀 MarketMix Signup - API Base URL:', API_BASE_URL);
 
@@ -809,8 +809,8 @@
         // 2. Replace GOOGLE_CLIENT_ID at the top of this file
         // 3. Uncomment the code below
         
-        /*
-        if (window.google && GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID_HERE') {
+        
+        if (window.google && GOOGLE_CLIENT_ID !== '849940344676-n4kcsnk7ueqj3jlnbfm51nts7csg915r.apps.googleusercontent.com') {
             window.google.accounts.id.initialize({
                 client_id: GOOGLE_CLIENT_ID,
                 callback: handleGoogleSignIn,
@@ -894,10 +894,10 @@
             }).join(''));
             return JSON.parse(jsonPayload);
         }
-        */
+    
     </script>
     
     <!-- Uncomment when you add Google Client ID -->
-    <!-- <script src="https://accounts.google.com/gsi/client" async defer></script> -->
+     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </body>
 </html>
