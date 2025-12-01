@@ -284,9 +284,41 @@
       const half = Math.ceil(items.length / 2);
       if (bestGrid) bestGrid.innerHTML = items.slice(0, half).map(renderProductCard).join('');
       if (newGrid) newGrid.innerHTML = items.slice(half).map(renderProductCard).join('');
+
+      // Also populate hero slides (use first 3 items) and "You Might Like" carousel
+      renderHeroSlides(items.slice(0, 3));
+      renderYouMightLike(items.slice(3, 9));
     } catch (err) {
       console.error('Error loading landing products:', err);
     }
+  }
+
+  // Render hero slides into #heroSlides
+  function renderHeroSlides(items) {
+    const container = document.getElementById('heroSlides');
+    if (!container || !items || items.length === 0) return;
+
+    // Keep an overlay hero-card but replace slides
+    const heroCard = container.querySelector('.hero-card') ? container.querySelector('.hero-card').outerHTML : '';
+    const slidesHtml = items.map((p, i) => `
+      <div class="hero-slide${i === 0 ? ' active' : ''}" style="background-image:url('${p.image || p.main_image_url || ''}')" role="img" aria-label="${escapeHtml(p.name)}"></div>
+    `).join('');
+
+    container.innerHTML = slidesHtml + heroCard;
+  }
+
+  // Render "You Might Like" carousel into #youLikeTrack
+  function renderYouMightLike(items) {
+    const track = document.getElementById('youLikeTrack');
+    if (!track || !items) return;
+    track.innerHTML = items.map(p => `
+      <div class="you-card" data-product-id="${p.id}" data-name="${escapeHtml(p.name)}" data-price="${p.price}">
+        <img src="${p.image || p.main_image_url || ''}" alt="${escapeHtml(p.name)}" />
+        <h3>${escapeHtml(p.name)}</h3>
+        <p class="price">$${typeof p.price === 'number' ? p.price.toFixed(2) : p.price}</p>
+        <button class="add-to-cart">Add to Cart</button>
+      </div>
+    `).join('');
   }
 
   function renderProductCard(product) {
@@ -315,7 +347,7 @@
   }
 
   // Kick off loading products for landing
-  loadLandingProducts(8);
+  loadLandingProducts(12);
 
       // ===== BACK TO TOP BUTTON =====
       (function() {

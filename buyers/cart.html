@@ -209,7 +209,7 @@
     <div class="totals-card">
       <div class="total">Total: $0.00</div>
       <div class="actions">
-        <a href="checkout.html" class="btn btn-primary">Proceed to Checkout</a>
+        <a href="checkout.html" id="proceedCheckout" class="btn btn-primary">Proceed to Checkout</a>
         <a href="reviews ratings.html" class="btn btn-outline">Go to Reviews & Ratings</a>
       </div>
     </div>
@@ -350,6 +350,26 @@
     // Initial load - load backend cart if logged in, otherwise show localStorage
     loadBackendCart();
     updateCartCount();
+
+    // Checkout gate: require login/signup before proceeding to checkout
+    (function attachCheckoutGate(){
+      const proceed = document.getElementById('proceedCheckout');
+      if (!proceed) return;
+      proceed.addEventListener('click', (e) => {
+        try {
+          const token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
+          if (!token) {
+            e.preventDefault();
+            // Save current path so we can redirect after login
+            localStorage.setItem('after_login_redirect', 'buyers/checkout.html');
+            // Redirect to login/signup page
+            window.location.href = './buyers/login for buyers.html?next=checkout.html';
+          }
+        } catch (err) {
+          console.error('Checkout gate error', err);
+        }
+      });
+    })();
   </script>
 </body>
 </html>
