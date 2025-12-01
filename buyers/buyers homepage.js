@@ -3,6 +3,44 @@
 // Wrap initialization in DOMContentLoaded to avoid null element errors
 window.addEventListener('DOMContentLoaded', () => {
 
+  // Load and render products from API
+  async function loadFlashProducts() {
+    try {
+      const container = document.getElementById('flashProducts');
+      if (!container) return;
+
+      const response = await fetch(`${CONFIG.API_BASE_URL}/products?limit=5`);
+      const data = await response.json();
+
+      if (!response.ok || !data.data || data.data.length === 0) {
+        container.innerHTML = '<p style="text-align:center; padding: 20px; color: #666;">No products available</p>';
+        return;
+      }
+
+      // Render flash product cards
+      container.innerHTML = data.data.map(product => `
+        <div class="flash-card" data-product-id="${product.id}">
+          <img src="${product.image || 'marketplace.png'}" alt="${product.name}">
+          <h4>${product.name}</h4>
+          <p class="price">$${product.price}</p>
+          <button>Add to Cart</button>
+        </div>
+      `).join('');
+
+      // Re-attach event listeners to new buttons
+      attachCartListeners();
+    } catch (error) {
+      console.error('Error loading flash products:', error);
+      const container = document.getElementById('flashProducts');
+      if (container) {
+        container.innerHTML = '<p style="text-align:center; padding: 20px; color: #666;">Error loading products</p>';
+      }
+    }
+  }
+
+  // Load products early
+  loadFlashProducts();
+
   // Countdown Timer
   function startCountdown(duration, display) {
     let timer = duration, hours, minutes, seconds;
@@ -310,30 +348,37 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Attach listeners to all "Add to Cart" buttons (guarded)
-  const addButtons = document.querySelectorAll('.add-to-cart, .flash-card button, .recommended-section button') || [];
-  addButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const card = button.closest('.product-card, .flash-card, .recommended-item');
-      if (!card) return;
-      const titleEl = card.querySelector('h3, h4');
-      const priceEl = card.querySelector('.price');
-      const imgEl = card.querySelector('img');
+  // Attach listeners to all "Add to Cart" buttons (guarded) - can be called after dynamic rendering
+  function attachCartListeners() {
+    const addButtons = document.querySelectorAll('.add-to-cart, .flash-card button, .recommended-section button') || [];
+    addButtons.forEach(button => {
+      // Remove existing listener to avoid duplicates
+      button.onclick = null;
+      button.addEventListener('click', () => {
+        const card = button.closest('.product-card, .flash-card, .recommended-item');
+        if (!card) return;
+        const titleEl = card.querySelector('h3, h4');
+        const priceEl = card.querySelector('.price');
+        const imgEl = card.querySelector('img');
 
-      const name = titleEl ? titleEl.textContent.trim() : 'Product';
-      let price = 0;
-      if (priceEl) {
-        const priceText = priceEl.textContent.replace(/[^0-9.,-]/g, '').replace(',', '.').trim();
-        price = parseFloat(priceText) || 0;
-      }
-      const image = imgEl ? (imgEl.src || '') : '';
+        const name = titleEl ? titleEl.textContent.trim() : 'Product';
+        let price = 0;
+        if (priceEl) {
+          const priceText = priceEl.textContent.replace(/[^0-9.,-]/g, '').replace(',', '.').trim();
+          price = parseFloat(priceText) || 0;
+        }
+        const image = imgEl ? (imgEl.src || '') : '';
 
-      // Prefer a real product_id if present on the card
-      const productId = card.dataset && card.dataset.productId ? card.dataset.productId : null;
-      const product = { name, price, image, quantity: 1, productId };
-      addToCart(product);
+        // Prefer a real product_id if present on the card
+        const productId = card.dataset && card.dataset.productId ? card.dataset.productId : null;
+        const product = { name, price, image, quantity: 1, productId };
+        addToCart(product);
+      });
     });
-  });
+  }
+
+  // Attach listeners initially
+  attachCartListeners();
 
   // Initial cart count update on page load
   updateCartCount();
