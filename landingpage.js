@@ -275,7 +275,12 @@
       const json = await res.json();
       const items = json.data || [];
 
-      if (items.length === 0) return;
+      if (!items || items.length === 0) {
+        console.warn('Landing: no products returned from API');
+        return;
+      }
+
+      console.log(`Landing: fetched ${items.length} products`);
 
       const bestGrid = document.querySelector('.best-selling-grid');
       const newGrid = document.querySelector('.new-arrivals-grid');
@@ -285,9 +290,16 @@
       if (bestGrid) bestGrid.innerHTML = items.slice(0, half).map(renderProductCard).join('');
       if (newGrid) newGrid.innerHTML = items.slice(half).map(renderProductCard).join('');
 
-      // Also populate hero slides (use first 3 items) and "You Might Like" carousel
-      renderHeroSlides(items.slice(0, 3));
-      renderYouMightLike(items.slice(3, 9));
+      // Also populate hero slides (use up to first 3 items) and "You Might Like" carousel
+      const heroItems = items.slice(0, 3);
+      if (heroItems.length > 0) renderHeroSlides(heroItems);
+
+      let youLikeItems = items.slice(3, 9);
+      if (!youLikeItems || youLikeItems.length === 0) {
+        // Fallback: use remaining items or repeat first few so the section isn't empty
+        youLikeItems = items.slice(0, Math.min(items.length, 6));
+      }
+      renderYouMightLike(youLikeItems);
     } catch (err) {
       console.error('Error loading landing products:', err);
     }
