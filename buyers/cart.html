@@ -219,8 +219,9 @@
     &copy; 2025 MarketMix. All Rights Reserved.
   </footer>
 
+  <script src="config.js"></script>
   <script>
-    // Load cart from localStorage
+    // Load cart from localStorage first
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
     // Update cart count in bottom nav
@@ -237,6 +238,50 @@
     function saveCart() {
       localStorage.setItem('cart', JSON.stringify(cart));
       updateCartCount();
+    }
+
+    // Load cart from backend API
+    async function loadBackendCart() {
+      try {
+        const token = Auth.getToken();
+        if (!token) {
+          console.log('User not logged in, showing localStorage cart only');
+          renderCart();
+          return;
+        }
+
+        const response = await fetch(`${CONFIG.API_BASE_URL}/cart`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          console.warn('Failed to load backend cart');
+          renderCart();
+          return;
+        }
+
+        const data = await response.json();
+        console.log('✅ Backend cart loaded:', data);
+
+        // If backend has items, use them
+        if (data.data && data.data.items && data.data.items.length > 0) {
+          cart = data.data.items.map(item => ({
+            name: item.name,
+            price: item.price,
+            image: item.image,
+            quantity: item.quantity
+          }));
+          saveCart();
+        }
+
+        renderCart();
+      } catch (error) {
+        console.error('Error loading backend cart:', error);
+        renderCart();
+      }
     }
 
     // Render cart items
@@ -296,16 +341,14 @@
   totalEl.textContent = `Total: $${total.toFixed(2)}`;
 }
 
-
-
     // Save and re-render
     function saveAndRender() {
       saveCart();
       renderCart();
     }
 
-    // Initial render
-    renderCart();
+    // Initial load - load backend cart if logged in, otherwise show localStorage
+    loadBackendCart();
     updateCartCount();
   </script>
 </body>

@@ -232,9 +232,68 @@ window.addEventListener('DOMContentLoaded', () => {
     updateCartCount();
   }
 
+  // Function to add item to backend API
+  async function addToBackendCart(product) {
+    try {
+      // Check if user is logged in
+      const token = Auth.getToken();
+      if (!token) {
+        showToast('Please login to add items to cart');
+        setTimeout(() => {
+          window.location.href = 'login for buyers.html';
+        }, 1500);
+        return false;
+      }
+
+      // Since frontend doesn't have product IDs from database,
+      // we'll create a temporary ID based on product name for demo purposes
+      // In a real scenario, products would come from your backend with IDs
+      const tempProductId = btoa(product.name).substring(0, 36);
+
+      const response = await fetch(`${CONFIG.API_BASE_URL}/cart/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          product_id: tempProductId,
+          quantity: 1
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error('Backend error:', data.message);
+        showToast(`Error: ${data.message}`);
+        return false;
+      }
+
+      console.log('✅ Item added to backend:', data);
+      return true;
+    } catch (error) {
+      console.error('Error adding to backend cart:', error);
+      showToast('Error adding to cart. Check console.');
+      return false;
+    }
+  }
+
   // Add item to cart (with quantity handling)
-  function addToCart(product) {
+  async function addToCart(product) {
     if (!product || !product.name) return;
+
+    // First, try to add to backend if logged in
+    const token = Auth.getToken();
+    if (token) {
+      const backendSuccess = await addToBackendCart(product);
+      if (!backendSuccess) {
+        // If backend fails, still save locally
+        showToast('Saved locally (backend sync failed)');
+      }
+    }
+
+    // Always save to localStorage for offline support
     const existing = cart.find(item => item.name === product.name);
     if (existing) {
       existing.quantity = (existing.quantity || 1) + 1;
@@ -243,7 +302,12 @@ window.addEventListener('DOMContentLoaded', () => {
       cart.push(product);
     }
     saveCart();
-    showToast(`${product.name} added to cart`);
+    
+    if (!token) {
+      showToast(`${product.name} added to cart (login to save)`);
+    } else {
+      showToast(`${product.name} added to cart`);
+    }
   }
 
   // Attach listeners to all "Add to Cart" buttons (guarded)
