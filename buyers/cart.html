@@ -361,7 +361,14 @@
           e.preventDefault();
           e.stopPropagation();
 
-          const token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
+          // Allow forced-login test via URL param: ?force_login=1
+          const _params = new URLSearchParams(window.location.search || '');
+          const _forceLogin = _params.get('force_login') === '1';
+          let token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
+          if (_forceLogin) {
+            console.log('Checkout gate: force_login param present — forcing login flow for testing');
+            token = null;
+          }
           // If no token at all, redirect to login immediately
           if (!token) {
             console.log('Checkout gate: no token, redirecting to login');
