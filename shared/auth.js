@@ -31,25 +31,67 @@ function showNotification(message, type = 'success') {
 }
 
 // Handle form submission with notification and redirect
-function handleFormSubmit(event, formType, redirectUrl) {
+// Get API base safely (CONFIG is defined in buyers/config.js)
+function apiBase() {
+  if (window.CONFIG && CONFIG.API_BASE_URL) return CONFIG.API_BASE_URL;
+  // Fallback to relative path
+  return '/api';
+}
+
+// Handle form submission - performs real login against backend
+async function handleFormSubmit(event, formType, redirectUrl) {
     event.preventDefault();
-    
+
     // Get form inputs
     const form = event.target;
-    const email = form.querySelector('input[type="email"]').value;
+    const email = form.querySelector('input[type="email"]').value.trim();
     const password = form.querySelector('input[type="password"]').value;
-    
+
     // Basic validation
     if (!email || !password) {
         showNotification('Please fill in all fields', 'error');
         return;
     }
-    
-    // Show success and redirect
-    showNotification(`${formType} successful!`);
-    setTimeout(() => {
-        window.location.href = redirectUrl;
-    }, 1000);
+
+    try {
+        const res = await fetch(`${apiBase()}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        const json = await res.json();
+
+        if (!res.ok) {
+            const msg = (json && json.message) ? json.message : 'Login failed';
+            showNotification(msg, 'error');
+            return;
+        }
+
+        // Backend returns { status, message, data: { user, token } }
+        const token = json?.data?.token;
+        const user = json?.data?.user;
+
+        if (!token) {
+            showNotification('Login succeeded but no token received', 'error');
+            return;
+        }
+
+        // Save token and user using same keys as CONFIG if available
+        const tokenKey = (window.CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.TOKEN) ? CONFIG.STORAGE_KEYS.TOKEN : 'token';
+        const userKey = (window.CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.USER) ? CONFIG.STORAGE_KEYS.USER : 'user';
+        const roleKey = (window.CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.USER_ROLE) ? CONFIG.STORAGE_KEYS.USER_ROLE : 'userRole';
+
+        localStorage.setItem(tokenKey, token);
+        localStorage.setItem(userKey, JSON.stringify(user || {}));
+        if (user && user.role) localStorage.setItem(roleKey, user.role);
+
+        showNotification('Login successful');
+        setTimeout(() => { window.location.href = redirectUrl; }, 800);
+    } catch (err) {
+        console.error('Login error:', err);
+        showNotification('Network or server error during login', 'error');
+    }
 }
 
 // Handle Google sign-in with notification and redirect
