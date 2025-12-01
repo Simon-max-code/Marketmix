@@ -355,24 +355,53 @@
     (function attachCheckoutGate(){
       const proceed = document.getElementById('proceedCheckout');
       if (!proceed) return;
-      proceed.addEventListener('click', (e) => {
+
+      proceed.addEventListener('click', async (e) => {
         try {
+          e.preventDefault();
+          e.stopPropagation();
+
           const token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
+          // If no token at all, redirect to login immediately
           if (!token) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Checkout gate: user not logged in, redirecting to login');
-            // Save current path so we can redirect after login
+            console.log('Checkout gate: no token, redirecting to login');
             localStorage.setItem('after_login_redirect', 'buyers/checkout.html');
-            // Redirect to login/signup page
             window.location.href = './buyers/login for buyers.html?next=checkout.html';
             return false;
           }
-          console.log('Checkout gate: user logged in, proceeding to checkout');
+
+          // Quick verification: try to fetch protected cart endpoint to confirm token validity
+          console.log('Checkout gate: verifying token with backend...');
+          const resp = await fetch(`${CONFIG.API_BASE_URL}/cart`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+
+          if (resp.status === 401 || resp.status === 403) {
+            console.log('Checkout gate: token invalid or expired, redirecting to login');
+            localStorage.setItem('after_login_redirect', 'buyers/checkout.html');
+            // clear auth to force fresh login
+            if (window.Auth && typeof Auth.logout === 'function') Auth.logout();
+            else {
+              localStorage.removeItem((CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.TOKEN) ? CONFIG.STORAGE_KEYS.TOKEN : 'token');
+              localStorage.removeItem((CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.USER) ? CONFIG.STORAGE_KEYS.USER : 'user');
+            }
+            window.location.href = './buyers/login for buyers.html?next=checkout.html';
+            return false;
+          }
+
+          // Any other OK-ish response means the user is authenticated — proceed to checkout
+          console.log('Checkout gate: token valid, navigating to checkout');
+          window.location.href = 'checkout.html';
+          return true;
         } catch (err) {
           console.error('Checkout gate error', err);
+          // On error, treat as not authenticated
+          localStorage.setItem('after_login_redirect', 'buyers/checkout.html');
+          window.location.href = './buyers/login for buyers.html?next=checkout.html';
+          return false;
         }
-      }, true); // Use capture phase to intercept earlier
+      }, true);
     })();
   </script>
 </body>
