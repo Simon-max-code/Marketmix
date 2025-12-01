@@ -168,88 +168,154 @@
 
       // ===== ADD TO CART FUNCTIONALITY =====
     
-  // Select all Add to Cart buttons
-  const addToCartButtons = document.querySelectorAll('.add-to-cart');
+  // Centralized cart state (local) and helper to update UI
   const cartCount = document.getElementById('mm-cart-count');
-
-  // Get cart from localStorage or start new
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-  // Function to update cart count in navbar
   function updateCartCount() {
-    cartCount.textContent = cart.reduce((total, item) => total + item.quantity, 0);
+    if (!cartCount) return;
+    cartCount.textContent = cart.reduce((total, item) => total + (item.quantity || 0), 0);
   }
 
-  // Initial update when page loads
+  function showToast(message) {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: #10b981;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+      z-index: 10000;
+      font-weight: 600;
+      font-size: 14px;
+      animation: slideIn 0.3s ease;
+    `;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.animation = 'slideOut 0.3s ease';
+      setTimeout(() => toast.remove(), 300);
+    }, 2000);
+  }
+
+  // Delegated click handler for Add to Cart buttons (works for dynamic content)
+  document.addEventListener('click', (e) => {
+    const button = e.target.closest('.add-to-cart');
+    if (!button) return;
+    e.preventDefault();
+
+    const card = button.closest('.product-card, .you-card');
+    if (!card) return;
+
+    let name = '';
+    let price = 0;
+    let image = '';
+
+    if (card.classList.contains('product-card')) {
+      name = card.querySelector('.product-name')?.textContent.trim() || card.dataset.name || '';
+      price = parseFloat(card.querySelector('.price')?.textContent.replace(/[^0-9.]/g, '')) || parseFloat(card.dataset.price) || 0;
+      image = card.querySelector('img')?.src || card.dataset.image || '';
+    } else if (card.classList.contains('you-card')) {
+      name = card.querySelector('h3')?.textContent.trim() || '';
+      price = parseFloat(card.querySelector('.price')?.textContent.replace(/[^0-9.]/g, '')) || 0;
+      image = card.querySelector('img')?.src || '';
+    }
+
+    const productId = card.dataset && card.dataset.productId ? card.dataset.productId : null;
+    const productObj = { name, price, image, quantity: 1, productId };
+
+    // Try backend sync if logged in and productId is valid
+    (async () => {
+      try {
+        const token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
+        const base = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend-production.up.railway.app/api';
+        if (token && productObj.productId) {
+          const resp = await fetch(`${base}/cart/add`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ product_id: productObj.productId, quantity: 1 })
+          });
+          if (!resp.ok) {
+            const d = await resp.json().catch(() => null);
+            console.warn('Landing: backend add-to-cart failed', resp.status, d);
+          } else {
+            console.log('Landing: added to backend cart');
+          }
+        }
+      } catch (err) {
+        console.error('Landing page: error adding to backend cart', err);
+      }
+    })();
+
+    const existing = cart.find(item => item.name === name);
+    if (existing) existing.quantity = (existing.quantity || 0) + 1;
+    else cart.push(productObj);
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount();
+
+    button.textContent = 'Added!';
+    setTimeout(() => (button.textContent = 'Add to Cart'), 1000);
+    showToast('Product added to cart!');
+  });
+
+  // Initial cart count
   updateCartCount();
 
-  // Listen to each Add to Cart button
-  addToCartButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      let name = '';
-      let price = 0;
-      let image = '';
+  // Load products from backend and render into the grids
+  async function loadLandingProducts(limit = 8) {
+    try {
+      const base = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend-production.up.railway.app/api';
+      const res = await fetch(`${base}/products?limit=${limit}`);
+      if (!res.ok) throw new Error('Failed to fetch products');
+      const json = await res.json();
+      const items = json.data || [];
 
-      // Detect if it's a .product-card or .you-card
-      const card = button.closest('.product-card, .you-card');
+      if (items.length === 0) return;
 
-      if (card.classList.contains('product-card')) {
-        name = card.querySelector('.product-name')?.textContent.trim();
-        price = parseFloat(card.querySelector('.price')?.textContent.replace(/[^0-9.]/g, ''));
-        image = card.querySelector('img')?.src;
-      } else if (card.classList.contains('you-card')) {
-        name = card.querySelector('h3')?.textContent.trim();
-        price = parseFloat(card.querySelector('.price')?.textContent.replace(/[^0-9.]/g, ''));
-        image = card.querySelector('img')?.src;
-      }
+      const bestGrid = document.querySelector('.best-selling-grid');
+      const newGrid = document.querySelector('.new-arrivals-grid');
 
-      // Check if item already exists in cart
-      const existing = cart.find(item => item.name === name);
+      // Render into best selling (first half) and new arrivals (second half)
+      const half = Math.ceil(items.length / 2);
+      if (bestGrid) bestGrid.innerHTML = items.slice(0, half).map(renderProductCard).join('');
+      if (newGrid) newGrid.innerHTML = items.slice(half).map(renderProductCard).join('');
+    } catch (err) {
+      console.error('Error loading landing products:', err);
+    }
+  }
 
-      if (existing) {
-        existing.quantity += 1;
-      } else {
-        cart.push({ name, price, image, quantity: 1 });
-      }
+  function renderProductCard(product) {
+    const img = product.image || product.main_image_url || 'marketplace.png';
+    const price = typeof product.price === 'number' ? product.price.toFixed(2) : product.price;
+    return `
+      <div class="product-card" data-product-id="${product.id}" data-name="${escapeHtml(product.name)}" data-price="${price}">
+        <img src="${img}" alt="${escapeHtml(product.name)}">
+        <div class="product-info">
+          <div class="product-name">${escapeHtml(product.name)}</div>
+          <div class="product-desc">${escapeHtml(product.description || '')}</div>
+          <div class="meta">
+            <div class="price">$${price}</div>
+            <div class="rating">★★★★★</div>
+          </div>
+        </div>
+        <button class="add-to-cart">Add to Cart</button>
+      </div>`;
+  }
 
-      // Save to localStorage
-      localStorage.setItem('cart', JSON.stringify(cart));
+  function escapeHtml(text) {
+    if (!text) return '';
+    return String(text).replace(/[&<>"']/g, function (c) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c];
+    });
+  }
 
-      // Update the number on cart icon
-      updateCartCount();
-
-      // Optional: quick feedback
-      button.textContent = 'Added!';
-      setTimeout(() => (button.textContent = 'Add to Cart'), 1000);
-
-          showToast('Product added to cart!');
-        });
-        
-        function showToast(message) {
-          const toast = document.createElement('div');
-          toast.style.cssText = `
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            background: #10b981;
-            color: white;
-            padding: 12px 16px;
-            border-radius: 8px;
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
-            z-index: 10000;
-            font-weight: 600;
-            font-size: 14px;
-            animation: slideIn 0.3s ease;
-          `;
-          toast.textContent = message;
-          document.body.appendChild(toast);
-          
-          setTimeout(() => {
-            toast.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => toast.remove(), 300);
-          }, 2000);
-        }
-      })();
+  // Kick off loading products for landing
+  loadLandingProducts(8);
 
       // ===== BACK TO TOP BUTTON =====
       (function() {
