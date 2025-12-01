@@ -96,6 +96,20 @@ async function handleFormSubmit(event, formType, redirectUrl) {
                     finalRedirectUrl = savedRedirect.startsWith('/') ? savedRedirect : ('/' + savedRedirect);
                     localStorage.removeItem('after_login_redirect'); // Clear it after use
                     console.log('Login: redirecting to saved URL:', finalRedirectUrl);
+                } else {
+                    // If no saved redirect, check URL query param `next` (e.g. ?next=checkout.html)
+                    try {
+                        const params = new URLSearchParams(window.location.search || '');
+                        const next = params.get('next');
+                        if (next) {
+                            // If the login page lives under /buyers/, keep next under that folder
+                            const base = window.location.pathname.includes('/buyers/') ? '/buyers/' : '/';
+                            finalRedirectUrl = next.startsWith('/') ? next : (base + next);
+                            console.log('Login: using next query param redirect ->', finalRedirectUrl);
+                        }
+                    } catch (e) {
+                        console.warn('Login: failed to parse next query param', e);
+                    }
                 }
 
                 setTimeout(() => { window.location.href = finalRedirectUrl; }, 800);
