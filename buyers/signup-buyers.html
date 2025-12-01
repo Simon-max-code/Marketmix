@@ -6,7 +6,7 @@
     <title>Sign Up | MarketMix</title>
     <link rel="stylesheet" href="login for buyers.css">
     <link rel="stylesheet" href="../shared/notifications.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <style>
         /* ===== INPUT STYLES ===== */
         .input-row {
@@ -403,10 +403,7 @@
             <p class="or">Or continue with</p>
 
             <div class="social-login" id="google-signin-container">
-                <button type="button" class="login-btn" style="background-color: #fff; color: #333; border: 2px solid #e0e0e0;">
-                    <i class="fab fa-google" style="margin-right: 8px;"></i>
-                    Sign up with Google
-                </button>
+                <!-- Google Sign-In button will be rendered here -->
             </div>
 
             <p class="signup-link">Already have an account? <a href="login for buyers.html">Log in</a></p>
@@ -458,13 +455,17 @@
                 return;
             }
 
-            // Prepare signup data
+            // Prepare signup data for buyers (no email verification required)
             const signupData = {
                 firstName: firstName,
                 lastName: lastName,
                 email: email.toLowerCase(),
                 password: password,
-                role: 'buyer'
+                role: 'buyer',
+                is_verified: true,  // Buyers don't need email verification
+                is_deleted: false,
+                avatar_url: null,
+                google_id: null
             };
 
             console.log('📤 Sending signup request...');
@@ -493,27 +494,9 @@
                     console.log('✅ User registered successfully');
                     showAlert('success', 'Account created successfully! Redirecting...');
 
-                    // Redirect after 1.5 seconds - respect saved redirect or ?next param
+                    // Redirect after 1.5 seconds
                     setTimeout(() => {
-                        // Determine final redirect (prefer saved redirect)
-                        let finalRedirect = '/buyers/buyers homepage.html';
-                        const saved = localStorage.getItem('after_login_redirect');
-                        if (saved) {
-                            finalRedirect = saved.startsWith('/') ? saved : ('/' + saved);
-                            localStorage.removeItem('after_login_redirect');
-                        } else {
-                            try {
-                                const params = new URLSearchParams(window.location.search || '');
-                                const next = params.get('next');
-                                if (next) {
-                                    const base = window.location.pathname.includes('/buyers/') ? '/buyers/' : '/';
-                                    finalRedirect = next.startsWith('/') ? next : (base + next);
-                                }
-                            } catch (e) {
-                                console.warn('Redirect parse error', e);
-                            }
-                        }
-                        window.location.href = finalRedirect;
+                        window.location.href = 'buyers homepage.html';
                     }, 1500);
                 } else {
                     const errorMsg = getUserFriendlyError(data.message || 'Failed to create account');
@@ -858,23 +841,7 @@
                     storeAuthData(data.data.user, data.data.token);
                     showAlert('success', 'Signed up with Google! Redirecting...');
                     setTimeout(() => {
-                        // Respect saved redirect or ?next param after Google signup
-                        let finalRedirect = '/buyers/buyers homepage.html';
-                        const saved = localStorage.getItem('after_login_redirect');
-                        if (saved) {
-                            finalRedirect = saved.startsWith('/') ? saved : ('/' + saved);
-                            localStorage.removeItem('after_login_redirect');
-                        } else {
-                            try {
-                                const params = new URLSearchParams(window.location.search || '');
-                                const next = params.get('next');
-                                if (next) {
-                                    const base = window.location.pathname.includes('/buyers/') ? '/buyers/' : '/';
-                                    finalRedirect = next.startsWith('/') ? next : (base + next);
-                                }
-                            } catch (e) { console.warn('Redirect parse error', e); }
-                        }
-                        window.location.href = finalRedirect;
+                        window.location.href = 'buyers homepage.html';
                     }, 1500);
                 } else {
                     showAlert('error', getUserFriendlyError(data.message));
@@ -894,10 +861,10 @@
             }).join(''));
             return JSON.parse(jsonPayload);
         }
-    
+        
     </script>
     
     <!-- Uncomment when you add Google Client ID -->
-     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script> 
 </body>
 </html>
