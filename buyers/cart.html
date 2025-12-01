@@ -390,8 +390,35 @@
             return false;
           }
 
-          // Any other OK-ish response means the user is authenticated — proceed to checkout
-          console.log('Checkout gate: token valid, navigating to checkout');
+          // Token appears valid — now check the user's role (and optional verification)
+          let user = null;
+          try {
+            user = (window.Auth && typeof Auth.getUser === 'function') ? Auth.getUser() : JSON.parse(localStorage.getItem((CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.USER) ? CONFIG.STORAGE_KEYS.USER : 'user') || 'null');
+          } catch (e) {
+            console.warn('Checkout gate: failed to parse user from storage', e);
+            user = null;
+          }
+
+          // Role check: only buyers allowed to checkout
+          if (!user || user.role !== 'buyer') {
+            console.log('Checkout gate: user missing buyer role, redirecting to buyer login/signup');
+            localStorage.setItem('after_login_redirect', 'buyers/checkout.html');
+            window.location.href = './buyers/login for buyers.html?next=checkout.html';
+            return false;
+          }
+
+          // Optional verification check: if your config requires email/profile verification
+          if (CONFIG && CONFIG.REQUIRE_EMAIL_VERIFICATION) {
+            if (!user.is_verified) {
+              console.log('Checkout gate: buyer not verified, redirecting to login/verification');
+              localStorage.setItem('after_login_redirect', 'buyers/checkout.html');
+              window.location.href = './buyers/login for buyers.html?next=checkout.html';
+              return false;
+            }
+          }
+
+          // All checks passed — proceed to checkout
+          console.log('Checkout gate: user is buyer and verified (if required), navigating to checkout');
           window.location.href = 'checkout.html';
           return true;
         } catch (err) {
