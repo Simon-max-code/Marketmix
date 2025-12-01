@@ -360,15 +360,19 @@
           const token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
           if (!token) {
             e.preventDefault();
+            e.stopPropagation();
+            console.log('Checkout gate: user not logged in, redirecting to login');
             // Save current path so we can redirect after login
             localStorage.setItem('after_login_redirect', 'buyers/checkout.html');
             // Redirect to login/signup page
             window.location.href = './buyers/login for buyers.html?next=checkout.html';
+            return false;
           }
+          console.log('Checkout gate: user logged in, proceeding to checkout');
         } catch (err) {
           console.error('Checkout gate error', err);
         }
-      });
+      }, true); // Use capture phase to intercept earlier
     })();
   </script>
 </body>

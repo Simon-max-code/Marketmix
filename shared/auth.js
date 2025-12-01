@@ -87,7 +87,17 @@ async function handleFormSubmit(event, formType, redirectUrl) {
         if (user && user.role) localStorage.setItem(roleKey, user.role);
 
         showNotification('Login successful');
-        setTimeout(() => { window.location.href = redirectUrl; }, 800);
+        
+        // Check if there's a redirect URL saved (from checkout gate or other sources)
+        let finalRedirectUrl = redirectUrl;
+        const savedRedirect = localStorage.getItem('after_login_redirect');
+        if (savedRedirect) {
+          finalRedirectUrl = savedRedirect;
+          localStorage.removeItem('after_login_redirect'); // Clear it after use
+          console.log('Login: redirecting to saved URL:', finalRedirectUrl);
+        }
+        
+        setTimeout(() => { window.location.href = finalRedirectUrl; }, 800);
     } catch (err) {
         console.error('Login error:', err);
         showNotification('Network or server error during login', 'error');
@@ -97,7 +107,17 @@ async function handleFormSubmit(event, formType, redirectUrl) {
 // Handle Google sign-in with notification and redirect
 function handleGoogleSignIn(formType, redirectUrl) {
     showNotification(`${formType} with Google successful!`);
+    
+    // Check if there's a redirect URL saved (from checkout gate or other sources)
+    let finalRedirectUrl = redirectUrl;
+    const savedRedirect = localStorage.getItem('after_login_redirect');
+    if (savedRedirect) {
+      finalRedirectUrl = savedRedirect;
+      localStorage.removeItem('after_login_redirect'); // Clear it after use
+      console.log('Google login: redirecting to saved URL:', finalRedirectUrl);
+    }
+    
     setTimeout(() => {
-        window.location.href = redirectUrl;
+        window.location.href = finalRedirectUrl;
     }, 1000);
 }

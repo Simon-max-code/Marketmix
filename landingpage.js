@@ -290,14 +290,10 @@
       if (bestGrid) bestGrid.innerHTML = items.slice(0, half).map(renderProductCard).join('');
       if (newGrid) newGrid.innerHTML = items.slice(half).map(renderProductCard).join('');
 
-      // Also populate hero slides (use up to first 3 items) and "You Might Like" carousel
-      const heroItems = items.slice(0, 3);
-      if (heroItems.length > 0) renderHeroSlides(heroItems);
-
-      let youLikeItems = items.slice(3, 9);
+      // Only populate "You Might Like" carousel (hero is for banners only, not products)
+      let youLikeItems = items.slice(0, 9);
       if (!youLikeItems || youLikeItems.length === 0) {
-        // Fallback: use remaining items or repeat first few so the section isn't empty
-        youLikeItems = items.slice(0, Math.min(items.length, 6));
+        youLikeItems = items;
       }
       renderYouMightLike(youLikeItems);
     } catch (err) {
