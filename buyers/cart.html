@@ -366,7 +366,7 @@
           if (!token) {
             console.log('Checkout gate: no token, redirecting to login');
             localStorage.setItem('after_login_redirect', 'buyers/checkout.html');
-            window.location.href = './buyers/login for buyers.html?next=checkout.html';
+            window.location.href = '/buyers/login for buyers.html?next=checkout.html';
             return false;
           }
 
@@ -386,7 +386,7 @@
               localStorage.removeItem((CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.TOKEN) ? CONFIG.STORAGE_KEYS.TOKEN : 'token');
               localStorage.removeItem((CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.USER) ? CONFIG.STORAGE_KEYS.USER : 'user');
             }
-            window.location.href = './buyers/login for buyers.html?next=checkout.html';
+            window.location.href = '/buyers/login for buyers.html?next=checkout.html';
             return false;
           }
 
@@ -403,7 +403,7 @@
           if (!user || user.role !== 'buyer') {
             console.log('Checkout gate: user missing buyer role, redirecting to buyer login/signup');
             localStorage.setItem('after_login_redirect', 'buyers/checkout.html');
-            window.location.href = './buyers/login for buyers.html?next=checkout.html';
+            window.location.href = '/buyers/login for buyers.html?next=checkout.html';
             return false;
           }
 
@@ -412,7 +412,7 @@
             if (!user.is_verified) {
               console.log('Checkout gate: buyer not verified, redirecting to login/verification');
               localStorage.setItem('after_login_redirect', 'buyers/checkout.html');
-              window.location.href = './buyers/login for buyers.html?next=checkout.html';
+              window.location.href = '/buyers/login for buyers.html?next=checkout.html';
               return false;
             }
           }
@@ -425,7 +425,7 @@
           console.error('Checkout gate error', err);
           // On error, treat as not authenticated
           localStorage.setItem('after_login_redirect', 'buyers/checkout.html');
-          window.location.href = './buyers/login for buyers.html?next=checkout.html';
+          window.location.href = '/buyers/login for buyers.html?next=checkout.html';
           return false;
         }
       }, true);
