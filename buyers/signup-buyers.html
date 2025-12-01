@@ -493,9 +493,27 @@
                     console.log('✅ User registered successfully');
                     showAlert('success', 'Account created successfully! Redirecting...');
 
-                    // Redirect after 1.5 seconds
+                    // Redirect after 1.5 seconds - respect saved redirect or ?next param
                     setTimeout(() => {
-                        window.location.href = 'buyers homepage.html';
+                        // Determine final redirect (prefer saved redirect)
+                        let finalRedirect = '/buyers/buyers homepage.html';
+                        const saved = localStorage.getItem('after_login_redirect');
+                        if (saved) {
+                            finalRedirect = saved.startsWith('/') ? saved : ('/' + saved);
+                            localStorage.removeItem('after_login_redirect');
+                        } else {
+                            try {
+                                const params = new URLSearchParams(window.location.search || '');
+                                const next = params.get('next');
+                                if (next) {
+                                    const base = window.location.pathname.includes('/buyers/') ? '/buyers/' : '/';
+                                    finalRedirect = next.startsWith('/') ? next : (base + next);
+                                }
+                            } catch (e) {
+                                console.warn('Redirect parse error', e);
+                            }
+                        }
+                        window.location.href = finalRedirect;
                     }, 1500);
                 } else {
                     const errorMsg = getUserFriendlyError(data.message || 'Failed to create account');
@@ -840,7 +858,23 @@
                     storeAuthData(data.data.user, data.data.token);
                     showAlert('success', 'Signed up with Google! Redirecting...');
                     setTimeout(() => {
-                        window.location.href = 'buyers homepage.html';
+                        // Respect saved redirect or ?next param after Google signup
+                        let finalRedirect = '/buyers/buyers homepage.html';
+                        const saved = localStorage.getItem('after_login_redirect');
+                        if (saved) {
+                            finalRedirect = saved.startsWith('/') ? saved : ('/' + saved);
+                            localStorage.removeItem('after_login_redirect');
+                        } else {
+                            try {
+                                const params = new URLSearchParams(window.location.search || '');
+                                const next = params.get('next');
+                                if (next) {
+                                    const base = window.location.pathname.includes('/buyers/') ? '/buyers/' : '/';
+                                    finalRedirect = next.startsWith('/') ? next : (base + next);
+                                }
+                            } catch (e) { console.warn('Redirect parse error', e); }
+                        }
+                        window.location.href = finalRedirect;
                     }, 1500);
                 } else {
                     showAlert('error', getUserFriendlyError(data.message));
