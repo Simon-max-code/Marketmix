@@ -6,6 +6,7 @@
     <title>Sign Up | MarketMix</title>
     <link rel="stylesheet" href="login for buyers.css">
     <link rel="stylesheet" href="../shared/notifications.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <style>
         /* ===== INPUT STYLES ===== */
@@ -793,7 +794,7 @@
         // 3. Uncomment the code below
         
         
-        if (window.google && GOOGLE_CLIENT_ID !== '849940344676-n4kcsnk7ueqj3jlnbfm51nts7csg915r.apps.googleusercontent.com') {
+        if (window.google) {
             window.google.accounts.id.initialize({
                 client_id: GOOGLE_CLIENT_ID,
                 callback: handleGoogleSignIn,
