@@ -88,16 +88,17 @@ async function handleFormSubmit(event, formType, redirectUrl) {
 
         showNotification('Login successful');
         
-        // Check if there's a redirect URL saved (from checkout gate or other sources)
-        let finalRedirectUrl = redirectUrl;
-        const savedRedirect = localStorage.getItem('after_login_redirect');
-        if (savedRedirect) {
-          finalRedirectUrl = savedRedirect;
-          localStorage.removeItem('after_login_redirect'); // Clear it after use
-          console.log('Login: redirecting to saved URL:', finalRedirectUrl);
-        }
-        
-        setTimeout(() => { window.location.href = finalRedirectUrl; }, 800);
+                // Check if there's a redirect URL saved (from checkout gate or other sources)
+                let finalRedirectUrl = redirectUrl;
+                const savedRedirect = localStorage.getItem('after_login_redirect');
+                if (savedRedirect) {
+                    // Normalize to absolute path so redirects don't resolve relative to current folder
+                    finalRedirectUrl = savedRedirect.startsWith('/') ? savedRedirect : ('/' + savedRedirect);
+                    localStorage.removeItem('after_login_redirect'); // Clear it after use
+                    console.log('Login: redirecting to saved URL:', finalRedirectUrl);
+                }
+
+                setTimeout(() => { window.location.href = finalRedirectUrl; }, 800);
     } catch (err) {
         console.error('Login error:', err);
         showNotification('Network or server error during login', 'error');

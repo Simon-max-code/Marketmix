@@ -365,7 +365,7 @@
           // If no token at all, redirect to login immediately
           if (!token) {
             console.log('Checkout gate: no token, redirecting to login');
-            localStorage.setItem('after_login_redirect', 'buyers/checkout.html');
+            localStorage.setItem('after_login_redirect', '/buyers/checkout.html');
             window.location.href = '/buyers/login for buyers.html?next=checkout.html';
             return false;
           }
@@ -379,7 +379,7 @@
 
           if (resp.status === 401 || resp.status === 403) {
             console.log('Checkout gate: token invalid or expired, redirecting to login');
-            localStorage.setItem('after_login_redirect', 'buyers/checkout.html');
+            localStorage.setItem('after_login_redirect', '/buyers/checkout.html');
             // clear auth to force fresh login
             if (window.Auth && typeof Auth.logout === 'function') Auth.logout();
             else {
@@ -402,7 +402,7 @@
           // Role check: only buyers allowed to checkout
           if (!user || user.role !== 'buyer') {
             console.log('Checkout gate: user missing buyer role, redirecting to buyer login/signup');
-            localStorage.setItem('after_login_redirect', 'buyers/checkout.html');
+            localStorage.setItem('after_login_redirect', '/buyers/checkout.html');
             window.location.href = '/buyers/login for buyers.html?next=checkout.html';
             return false;
           }
@@ -411,7 +411,7 @@
           if (CONFIG && CONFIG.REQUIRE_EMAIL_VERIFICATION) {
             if (!user.is_verified) {
               console.log('Checkout gate: buyer not verified, redirecting to login/verification');
-              localStorage.setItem('after_login_redirect', 'buyers/checkout.html');
+              localStorage.setItem('after_login_redirect', '/buyers/checkout.html');
               window.location.href = '/buyers/login for buyers.html?next=checkout.html';
               return false;
             }
@@ -424,7 +424,7 @@
         } catch (err) {
           console.error('Checkout gate error', err);
           // On error, treat as not authenticated
-          localStorage.setItem('after_login_redirect', 'buyers/checkout.html');
+          localStorage.setItem('after_login_redirect', '/buyers/checkout.html');
           window.location.href = '/buyers/login for buyers.html?next=checkout.html';
           return false;
         }
