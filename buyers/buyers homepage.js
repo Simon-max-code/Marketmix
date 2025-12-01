@@ -245,10 +245,9 @@ window.addEventListener('DOMContentLoaded', () => {
         return false;
       }
 
-      // Since frontend doesn't have product IDs from database,
-      // we'll create a temporary ID based on product name for demo purposes
-      // In a real scenario, products would come from your backend with IDs
+      // Prefer a real product id when provided by the markup; otherwise create a temporary id
       const tempProductId = btoa(product.name).substring(0, 36);
+      const productIdToSend = product.productId || tempProductId;
 
       const response = await fetch(`${CONFIG.API_BASE_URL}/cart/add`, {
         method: 'POST',
@@ -257,8 +256,9 @@ window.addEventListener('DOMContentLoaded', () => {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          product_id: tempProductId,
-          quantity: 1
+          product_id: productIdToSend,
+          quantity: 1,
+          metadata: { name: product.name, image: product.image }
         })
       });
 
@@ -328,7 +328,9 @@ window.addEventListener('DOMContentLoaded', () => {
       }
       const image = imgEl ? (imgEl.src || '') : '';
 
-      const product = { name, price, image, quantity: 1 };
+      // Prefer a real product_id if present on the card
+      const productId = card.dataset && card.dataset.productId ? card.dataset.productId : null;
+      const product = { name, price, image, quantity: 1, productId };
       addToCart(product);
     });
   });
