@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>logout.html</title>
+</head>
+<body>
+    logging out....
+    <script>// =====================================================
+// MARKETMIX LOGOUT FUNCTIONALITY
+// =====================================================
+
+const API_BASE_URL = 'https://marketmix-backend-production.up.railway.app/api';
+
+/**
+ * Logout user completely
+ * - Calls backend logout endpoint
+ * - Clears all localStorage data
+ * - Redirects to appropriate login page
+ */
+async function logout() {
+    console.log('🚪 Logout initiated...');
+    
+    try {
+        // Get token for backend request
+        const token = localStorage.getItem('token');
+        const userRole = localStorage.getItem('userRole');
+        
+        // Call backend logout endpoint (with activity logging)
+        if (token) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Backend logout successful');
+                } else {
+                    console.warn('⚠️ Backend logout failed, continuing with local logout');
+                }
+            } catch (error) {
+                console.warn('⚠️ Backend logout error:', error);
+                // Continue with local logout even if backend fails
+            }
+        }
+        
+        // Clear ALL localStorage data
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('authData');
+        localStorage.clear(); // Clear any other data
+        
+        console.log('✅ LocalStorage cleared');
+        
+        // Determine redirect URL based on user role
+        let redirectUrl = '/buyers/login for buyers.html'; // Default
+        
+        if (userRole === 'seller') {
+            redirectUrl = '/sellers/seller-login.html';
+        } else if (userRole === 'admin') {
+            redirectUrl = '/admin/admin-login.html';
+        }
+        
+        console.log(`🔄 Redirecting to: ${redirectUrl}`);
+        
+        // Add logout success parameter to URL
+        window.location.href = redirectUrl + '?logout=success';
+        
+    } catch (error) {
+        console.error('❌ Logout error:', error);
+        
+        // Force logout even if error occurs
+        localStorage.clear();
+        window.location.href = '/buyers/login for buyers.html?logout=error';
+    }
+}
+
+/**
+ * Check if user is logged in
+ * Call this on protected pages to verify authentication
+ */
+function checkAuth() {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    
+    if (!token || !user) {
+        console.log('❌ Not authenticated, redirecting to login...');
+        
+        // Save current page URL to redirect back after login
+        const currentPath = window.location.pathname;
+        localStorage.setItem('after_login_redirect', currentPath);
+        
+        // Redirect to login
+        const userRole = localStorage.getItem('userRole') || 'buyer';
+        if (userRole === 'seller') {
+            window.location.href = '/sellers/seller-login.html?redirect=true';
+        } else {
+            window.location.href = '/buyers/login for buyers.html?redirect=true';
+        }
+        
+        return false;
+    }
+    
+    // Check if token expired
+    const authData = JSON.parse(localStorage.getItem('authData') || '{}');
+    if (authData.expiresAt && Date.now() > authData.expiresAt) {
+        console.log('❌ Token expired, logging out...');
+        logout();
+        return false;
+    }
+    
+    return true;
+}
+
+/**
+ * Get current user data
+ */
+function getCurrentUser() {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return null;
+    
+    try {
+        return JSON.parse(userStr);
+    } catch (error) {
+        console.error('Error parsing user data:', error);
+        return null;
+    }
+}
+
+// Export functions for use in other files
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { logout, checkAuth, getCurrentUser };
+}</script>
+</body>
+</html>
