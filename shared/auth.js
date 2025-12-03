@@ -38,6 +38,54 @@ function apiBase() {
   return '/api';
 }
 
+// Merge localStorage cart with server cart after login
+async function mergeCartOnLogin(token) {
+  try {
+    const cartData = localStorage.getItem('cart');
+    if (!cartData) {
+      console.log('Auth: no local cart to merge');
+      return;
+    }
+
+    let items = [];
+    try {
+      items = JSON.parse(cartData);
+    } catch (e) {
+      console.warn('Auth: invalid cart data in localStorage', e);
+      return;
+    }
+
+    if (!Array.isArray(items) || items.length === 0) {
+      console.log('Auth: local cart is empty');
+      return;
+    }
+
+    console.log('Auth: merging local cart with server...', items.length, 'items');
+
+    const res = await fetch(`${apiBase()}/cart/merge`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ items })
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => null);
+      console.warn('Auth: cart merge failed', res.status, errData);
+      return;
+    }
+
+    const data = await res.json();
+    console.log('Auth: cart merge successful', data.data);
+
+    // Clear localStorage cart after successful merge
+    localStorage.removeItem('cart');
+    console.log('Auth: cleared local cart after merge');
+  } catch (err) {
+    console.error('Auth: error during cart merge', err);
+    // Don't fail login if merge fails — user can still proceed
+  }
+}
+
 // Handle form submission - performs real login against backend
 async function handleFormSubmit(event, formType, redirectUrl) {
     event.preventDefault();
@@ -85,6 +133,9 @@ async function handleFormSubmit(event, formType, redirectUrl) {
         localStorage.setItem(tokenKey, token);
         localStorage.setItem(userKey, JSON.stringify(user || {}));
         if (user && user.role) localStorage.setItem(roleKey, user.role);
+
+        // Merge cart: if localStorage has cart items, sync them to server
+        await mergeCartOnLogin(token);
 
         showNotification('Login successful');
         

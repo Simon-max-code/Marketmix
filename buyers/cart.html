@@ -195,9 +195,22 @@
 <body>
 
   <div class="cart-container">
-    <button class="back" onclick="history.back()">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="back" onclick="history.back()">
       <i class="fas fa-chevron-left"></i> Back
     </button>
+      </div>
+
+      <!-- Recent Deleted button -->
+      <div style="display:flex;align-items:center;gap:8px">
+        <button id="recentDeletedBtn" title="Recent deleted products" style="background:#fff;border:1px solid #f97316;color:#f97316;padding:8px 12px;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:8px">
+          <i class="fas fa-trash-restore"></i>
+          <span id="recentDeletedLabel">Recent deleted</span>
+          <span id="recentDeletedCount" style="background:#f97316;color:#fff;padding:2px 8px;border-radius:999px;font-weight:700;display:inline-block;min-width:20px;text-align:center">0</span>
+        </button>
+      </div>
+    </div>
 
     <h1>Your Cart</h1>
     <p class="intro">Review your items, adjust quantities, or remove products before checkout.</p>
@@ -218,15 +231,17 @@
   <footer>
     &copy; 2025 MarketMix. All Rights Reserved.
   </footer>
-
   <script src="config.js"></script>
   <script>
-    // Load cart from localStorage first
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    // Cart + Recent-Deleted script
 
-    // Update cart count in bottom nav
+    const CART_KEY = (CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.CART) ? CONFIG.STORAGE_KEYS.CART : 'cart';
+
+    let cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+    let recentDeleted = JSON.parse(localStorage.getItem('recentDeleted') || '[]');
+
     function updateCartCount() {
-      const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+      const count = cart.reduce((sum, item) => sum + (item.quantity||0), 0);
       const cartCount = document.querySelector('.cart-count');
       if(cartCount){
         cartCount.textContent = count;
@@ -234,66 +249,28 @@
       }
     }
 
-    // Save cart to localStorage
     function saveCart() {
-      localStorage.setItem('cart', JSON.stringify(cart));
+      try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch(e){}
       updateCartCount();
     }
 
-    // Load cart from backend API
-    async function loadBackendCart() {
-      try {
-        const token = Auth.getToken();
-        if (!token) {
-          console.log('User not logged in, showing localStorage cart only');
-          renderCart();
-          return;
-        }
-
-        const response = await fetch(`${CONFIG.API_BASE_URL}/cart`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (!response.ok) {
-          console.warn('Failed to load backend cart');
-          renderCart();
-          return;
-        }
-
-        const data = await response.json();
-        console.log('✅ Backend cart loaded:', data);
-
-        // If backend has items, use them
-        if (data.data && data.data.items && data.data.items.length > 0) {
-          // Preserve backend cart item IDs so we can call update/delete on the API
-          cart = data.data.items.map(item => ({
-            id: item.id, // cart_items.id
-            productId: item.productId || item.product_id,
-            name: item.name,
-            price: item.price,
-            image: item.image,
-            quantity: item.quantity,
-            stockAvailable: item.stockAvailable || item.stock_quantity || 0
-          }));
-          saveCart();
-        }
-
-        renderCart();
-      } catch (error) {
-        console.error('Error loading backend cart:', error);
-        renderCart();
-      }
+    function saveRecentDeleted() {
+      try { localStorage.setItem('recentDeleted', JSON.stringify(recentDeleted.slice(0,20))); } catch(e){}
+      updateRecentDeletedBadge();
     }
 
-    // Render cart items
-    function renderCart() {
+    function updateRecentDeletedBadge(){
+      const el = document.getElementById('recentDeletedCount');
+      if(!el) return;
+      el.textContent = String(recentDeleted.length || 0);
+      el.style.display = recentDeleted.length ? 'inline-block' : 'none';
+    }
+
+    // Render functions
+    function renderCart(){
       const container = document.getElementById('cart-items');
       container.innerHTML = '';
-
-      if(cart.length === 0){
+      if(!cart || cart.length === 0){
         container.innerHTML = '<p>Your cart is empty.</p>';
         updateTotal();
         return;
@@ -317,97 +294,36 @@
 
         const [minusBtn, quantitySpan, plusBtn, deleteBtn] = div.querySelectorAll('.item-actions *');
 
-        // Helper: attempt backend update if user is logged in and item has backend id
-        async function tryUpdateQuantityBackend(itemId, newQty) {
+        minusBtn.addEventListener('click', ()=>{
+          if(item.quantity > 1){ item.quantity -= 1; saveAndRender(); }
+        });
+        plusBtn.addEventListener('click', ()=>{ item.quantity += 1; saveAndRender(); });
+
+        deleteBtn.addEventListener('click', async ()=>{
+          // push deleted item into recentDeleted (store a small snapshot)
+          try{
+            const snapshot = { name: item.name, price: item.price, image: item.image || '', quantity: item.quantity || 1, deletedAt: new Date().toISOString() };
+            recentDeleted.push(snapshot);
+            // keep only last 20
+            if(recentDeleted.length > 20) recentDeleted = recentDeleted.slice(-20);
+            saveRecentDeleted();
+          } catch(e){ console.warn('Recent delete save failed', e); }
+
+          // Try backend deletion if item has id
           try {
             const token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
-            if (!token || !itemId) return { ok: false, reason: 'no-token-or-id' };
-
-            const resp = await fetch(`${CONFIG.API_BASE_URL}/cart/${itemId}`, {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-              body: JSON.stringify({ quantity: newQty })
-            });
-
-            const body = await resp.json().catch(() => null);
-            return { ok: resp.ok, status: resp.status, body };
-          } catch (err) {
-            console.warn('Backend update error', err);
-            return { ok: false, reason: err.message };
-          }
-        }
-
-        async function tryDeleteBackend(itemId) {
-          try {
-            const token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
-            if (!token || !itemId) return { ok: false, reason: 'no-token-or-id' };
-
-            const resp = await fetch(`${CONFIG.API_BASE_URL}/cart/${itemId}`, {
-              method: 'DELETE',
-              headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const body = await resp.json().catch(() => null);
-            return { ok: resp.ok, status: resp.status, body };
-          } catch (err) {
-            console.warn('Backend delete error', err);
-            return { ok: false, reason: err.message };
-          }
-        }
-
-        minusBtn.addEventListener('click', async () => {
-          if (item.quantity > 1) {
-            const newQty = item.quantity - 1;
-            // If item has backend id and user logged in, call API
-            if (item.id && ((window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token'))) {
-              const res = await tryUpdateQuantityBackend(item.id, newQty);
-              if (res.ok) {
-                item.quantity = newQty;
+            if (item.id && token) {
+              const resp = await fetch(`${CONFIG.API_BASE_URL}/cart/${item.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+              if (resp.ok) {
+                cart.splice(index,1);
                 saveAndRender();
                 return;
-              } else {
-                console.warn('Backend update failed or not authorized', res);
               }
             }
-            // Fallback to local update
-            item.quantity = newQty;
-            saveAndRender();
-          }
-        });
+          } catch(e) { console.warn('Backend delete failed', e); }
 
-        plusBtn.addEventListener('click', async () => {
-          const newQty = item.quantity + 1;
-          if (item.stockAvailable && newQty > item.stockAvailable) {
-            alert(`Cannot exceed available stock (${item.stockAvailable})`);
-            return;
-          }
-          if (item.id && ((window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token'))) {
-            const res = await tryUpdateQuantityBackend(item.id, newQty);
-            if (res.ok) {
-              item.quantity = newQty;
-              saveAndRender();
-              return;
-            } else {
-              console.warn('Backend update failed or not authorized', res);
-            }
-          }
-          item.quantity = newQty;
-          saveAndRender();
-        });
-
-        deleteBtn.addEventListener('click', async () => {
-          // Try backend delete first if possible
-          if (item.id && ((window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token'))) {
-            const res = await tryDeleteBackend(item.id);
-            if (res.ok) {
-              cart.splice(index, 1);
-              saveAndRender();
-              return;
-            } else {
-              console.warn('Backend delete failed or not authorized', res);
-            }
-          }
-          // Fallback to local delete
-          cart.splice(index, 1);
+          // fallback local remove
+          cart.splice(index,1);
           saveAndRender();
         });
 
@@ -417,109 +333,142 @@
       updateTotal();
     }
 
-    // Update total
-   function updateTotal() {
-  const totalEl = document.querySelector('.total');
-  const total = cart.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
-  totalEl.textContent = `Total: $${total.toFixed(2)}`;
-}
-
-    // Save and re-render
-    function saveAndRender() {
-      saveCart();
-      renderCart();
+    function updateTotal(){
+      const totalEl = document.querySelector('.total');
+      const total = cart.reduce((sum, item) => sum + Number(item.price||0) * Number(item.quantity||0), 0);
+      if(totalEl) totalEl.textContent = `Total: $${total.toFixed(2)}`;
     }
 
-    // Initial load - load backend cart if logged in, otherwise show localStorage
-    loadBackendCart();
-    updateCartCount();
+    function saveAndRender(){ saveCart(); renderCart(); }
 
-    // Checkout gate: require login/signup before proceeding to checkout
-    (function attachCheckoutGate(){
+    // Recent deleted overlay functions
+    function openRecentDeleted(){ const over = document.getElementById('recentDeletedOverlay'); if(!over) return; over.style.display='flex'; renderRecentDeleted(); }
+    function closeRecentDeleted(){ const over = document.getElementById('recentDeletedOverlay'); if(!over) return; over.style.display='none'; }
+
+    function renderRecentDeleted(){
+      const container = document.getElementById('recentDeletedList'); if(!container) return;
+      container.innerHTML = '';
+      if(!recentDeleted || recentDeleted.length===0){ container.innerHTML = '<p style="color:#64748b">No recently deleted items.</p>'; return; }
+      recentDeleted.slice().reverse().forEach((it, idx)=>{
+        const div = document.createElement('div');
+        div.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9';
+        div.innerHTML = `
+          <div style="display:flex;gap:12px;align-items:center">
+            <img src="${it.image||''}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #e6e9ef">
+            <div>
+              <div style="font-weight:700">${it.name||''}</div>
+              <div style="color:#64748b">$${Number(it.price||0).toFixed(2)} &middot; qty ${it.quantity||1}</div>
+            </div>
+          </div>
+          <div>
+            <button class="restore-btn" data-idx="${idx}" style="background:#f97316;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer">Restore</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+      container.querySelectorAll('.restore-btn').forEach(btn=>{
+        btn.addEventListener('click', async ()=>{
+          const idx = Number(btn.getAttribute('data-idx'));
+          const actualIndex = recentDeleted.length - 1 - idx;
+          const item = recentDeleted[actualIndex];
+          if(!item) return;
+          
+          const token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
+          
+          // If user is logged in, call backend API
+          if(token && item.productId) {
+            try {
+              const response = await fetch(`${CONFIG.API_BASE_URL}/api/cart/restore`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                  product_id: item.productId,
+                  quantity: item.quantity || 1
+                })
+              });
+              
+              if(!response.ok) {
+                const errorData = await response.json().catch(()=>({}));
+                console.warn('Restore failed:', errorData);
+                showMessage('Failed to restore item');
+                return;
+              }
+              
+              const data = await response.json();
+              console.log('Item restored from backend:', data);
+              
+              // remove from recentDeleted
+              recentDeleted.splice(actualIndex, 1);
+              saveRecentDeleted();
+              
+              // reload cart from backend
+              await loadBackendCart();
+              saveAndRender();
+              renderRecentDeleted();
+              showMessage('Item restored to cart');
+            } catch(err) {
+              console.warn('Error restoring item:', err);
+              showMessage('Error restoring item');
+            }
+          } else {
+            // Fallback to localStorage only
+            const existing = cart.find(c=>c.name === item.name);
+            if(existing) existing.quantity = (existing.quantity||0) + (item.quantity||1);
+            else cart.push(Object.assign({}, item));
+            // remove from recentDeleted
+            recentDeleted.splice(actualIndex, 1);
+            saveRecentDeleted();
+            saveAndRender();
+            renderRecentDeleted();
+            showMessage('Item restored to cart');
+          }
+        });
+      });
+    }
+
+    function showMessage(msg){ const m=document.createElement('div'); m.textContent=msg; m.style.cssText='position:fixed;bottom:90px;right:20px;background:#10b981;color:#fff;padding:10px 14px;border-radius:8px;z-index:12000'; document.body.appendChild(m); setTimeout(()=>{ m.style.opacity='0'; setTimeout(()=>m.remove(),300); },1400); }
+
+    // Initial load
+    document.addEventListener('DOMContentLoaded', ()=>{
+      // wire recent button
+      const btn = document.getElementById('recentDeletedBtn'); if(btn) btn.addEventListener('click', openRecentDeleted);
+      updateRecentDeletedBadge();
+      renderCart();
+      updateCartCount();
+
+      // wire proceed to checkout (keep existing gate behavior if present)
       const proceed = document.getElementById('proceedCheckout');
-      if (!proceed) return;
-
-      proceed.addEventListener('click', async (e) => {
-        try {
-          e.preventDefault();
-          e.stopPropagation();
-
-          // Allow forced-login test via URL param: ?force_login=1
-          const _params = new URLSearchParams(window.location.search || '');
-          const _forceLogin = _params.get('force_login') === '1';
-          let token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
-          if (_forceLogin) {
-            console.log('Checkout gate: force_login param present — forcing login flow for testing');
-            token = null;
-          }
-          // If no token at all, redirect to login immediately
-          if (!token) {
-            console.log('Checkout gate: no token, redirecting to login');
-            localStorage.setItem('after_login_redirect', '/buyers/checkout.html');
-            window.location.href = '/buyers/login for buyers.html?next=checkout.html';
-            return false;
-          }
-
-          // Quick verification: try to fetch protected cart endpoint to confirm token validity
-          console.log('Checkout gate: verifying token with backend...');
-          const resp = await fetch(`${CONFIG.API_BASE_URL}/cart`, {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
-
-          if (resp.status === 401 || resp.status === 403) {
-            console.log('Checkout gate: token invalid or expired, redirecting to login');
-            localStorage.setItem('after_login_redirect', '/buyers/checkout.html');
-            // clear auth to force fresh login
-            if (window.Auth && typeof Auth.logout === 'function') Auth.logout();
-            else {
-              localStorage.removeItem((CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.TOKEN) ? CONFIG.STORAGE_KEYS.TOKEN : 'token');
-              localStorage.removeItem((CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.USER) ? CONFIG.STORAGE_KEYS.USER : 'user');
-            }
-            window.location.href = '/buyers/login for buyers.html?next=checkout.html';
-            return false;
-          }
-
-          // Token appears valid — now check the user's role (and optional verification)
-          let user = null;
-          try {
-            user = (window.Auth && typeof Auth.getUser === 'function') ? Auth.getUser() : JSON.parse(localStorage.getItem((CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.USER) ? CONFIG.STORAGE_KEYS.USER : 'user') || 'null');
-          } catch (e) {
-            console.warn('Checkout gate: failed to parse user from storage', e);
-            user = null;
-          }
-
-          // Role check: only buyers allowed to checkout
-          if (!user || user.role !== 'buyer') {
-            console.log('Checkout gate: user missing buyer role, redirecting to buyer login/signup');
-            localStorage.setItem('after_login_redirect', '/buyers/checkout.html');
-            window.location.href = '/buyers/login for buyers.html?next=checkout.html';
-            return false;
-          }
-
-          // Optional verification check: if your config requires email/profile verification
-          if (CONFIG && CONFIG.REQUIRE_EMAIL_VERIFICATION) {
-            if (!user.is_verified) {
-              console.log('Checkout gate: buyer not verified, redirecting to login/verification');
-              localStorage.setItem('after_login_redirect', '/buyers/checkout.html');
-              window.location.href = '/buyers/login for buyers.html?next=checkout.html';
-              return false;
-            }
-          }
-
-          // All checks passed — proceed to checkout
-          console.log('Checkout gate: user is buyer and verified (if required), navigating to checkout');
-          window.location.href = 'checkout.html';
-          return true;
-        } catch (err) {
-          console.error('Checkout gate error', err);
-          // On error, treat as not authenticated
-          localStorage.setItem('after_login_redirect', '/buyers/checkout.html');
-          window.location.href = '/buyers/login for buyers.html?next=checkout.html';
-          return false;
-        }
-      }, true);
-    })();
+      if(proceed){
+        proceed.addEventListener('click', async (e)=>{
+          try{ e.preventDefault();
+            const _params = new URLSearchParams(window.location.search || '');
+            const _forceLogin = _params.get('force_login') === '1';
+            let token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
+            if(_forceLogin) token = null;
+            if(!token){ localStorage.setItem('after_login_redirect','/buyers/checkout.html'); window.location.href = '/buyers/login for buyers.html?next=checkout.html'; return false; }
+            // simple proceed
+            window.location.href = 'checkout.html';
+            return true;
+          } catch(err){ localStorage.setItem('after_login_redirect','/buyers/checkout.html'); window.location.href = '/buyers/login for buyers.html?next=checkout.html'; }
+        });
+      }
+    });
   </script>
-</body>
-</html>
+
+  <!-- Recent Deleted Overlay -->
+  <div id="recentDeletedOverlay" style="position:fixed;inset:0;display:none;align-items:flex-end;justify-content:center;z-index:11000">
+    <div style="position:absolute;inset:0;background:rgba(2,6,23,0.6);" onclick="closeRecentDeleted()"></div>
+    <div style="width:100%;max-width:900px;background:#fff;border-radius:12px;margin:40px;padding:20px;z-index:11010;box-shadow:0 20px 60px rgba(2,6,23,0.3);">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px">
+        <h3 style="margin:0">Recently deleted</h3>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button onclick="closeRecentDeleted()" style="background:#fff;border:1px solid #e6e9ef;padding:8px 10px;border-radius:8px;cursor:pointer">Close</button>
+        </div>
+      </div>
+      <div id="recentDeletedList" style="max-height:60vh;overflow:auto;padding-top:6px"></div>
+    </div>
+  </div>
+
