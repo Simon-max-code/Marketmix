@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logging Out | MarketMix</title>
+     <!-- 🔒 BLOCK UNAUTHORIZED USERS -->
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.replace("login for buyers.html");
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .logout-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #f0f0f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 30px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #4CAF50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 20px;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .redirect-message {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #999;
+        }
+
+        .error-container {
+            display: none;
+        }
+
+        .error-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #f44336;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="logout-container">
+        <!-- Loading State -->
+        <div id="loadingState">
+            <div class="spinner"></div>
+            <h1>Logging out...</h1>
+            <p>Please wait while we securely log you out.</p>
+        </div>
+
+        <!-- Success State -->
+        <div id="successState" style="display: none;">
+            <div class="success-icon">✓</div>
+            <h1>Logged Out Successfully</h1>
+            <p>You have been securely logged out of your account.</p>
+            <p class="redirect-message">Redirecting to login page in <span id="countdown">3</span> seconds...</p>
+            <a href="#" id="loginLink" class="btn">Go to Login Now</a>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" style="display: none;">
+            <div class="error-icon">⚠</div>
+            <h1>Logout Error</h1>
+            <p>We encountered an issue, but you've been logged out locally.</p>
+            <a href="#" id="errorLoginLink" class="btn">Go to Login</a>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================
+        // LOGOUT HANDLER
+        // =====================================================
+        const API_BASE_URL = 'https://marketmix-backend-production.up.railway.app/api';
+
+        async function performLogout() {
+            console.log('🚪 Logout page loaded - starting logout process...');
+            
+            try {
+                // Get token and user role from localStorage
+                const token = localStorage.getItem('token');
+                const userRole = localStorage.getItem('userRole') || 'buyer';
+                
+                // Determine the correct login page
+                let loginPage = 'login for buyers.html';
+                if (userRole === 'seller') {
+                    loginPage = '../sellers/seller-login.html';
+                } else if (userRole === 'admin') {
+                    loginPage = '../admin/admin-login.html';
+                }
+                
+                // Call backend logout endpoint if token exists
+                if (token) {
+                    try {
+                        console.log('📤 Calling backend logout endpoint...');
+                        const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            console.log('✅ Backend logout successful');
+                        } else {
+                            console.warn('⚠️ Backend logout failed, continuing with local logout');
+                        }
+                    } catch (error) {
+                        console.warn('⚠️ Backend logout error:', error);
+                        // Continue with local logout even if backend fails
+                    }
+                }
+                
+                // Clear ALL localStorage data
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('authData');
+                localStorage.removeItem('after_login_redirect');
+                localStorage.clear();
+                
+                console.log('✅ LocalStorage cleared');
+                
+                // Show success state
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('successState').style.display = 'block';
+                
+                // Update login links
+                document.getElementById('loginLink').href = loginPage;
+                document.getElementById('errorLoginLink').href = loginPage;
+                
+                // Countdown and redirect
+                let countdown = 3;
+                const countdownElement = document.getElementById('countdown');
+                
+                const countdownInterval = setInterval(() => {
+                    countdown--;
+                    countdownElement.textContent = countdown;
+                    
+                    if (countdown <= 0) {
+                        clearInterval(countdownInterval);
+                        window.location.href = loginPage + '?logout=success';
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                console.error('❌ Logout error:', error);
+                
+                // Force logout even if error occurs
+                localStorage.clear();
+                
+                // Show error state
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('errorState').style.display = 'block';
+                
+                // Set error login link
+                const loginPage = 'login for buyers.html';
+                document.getElementById('errorLoginLink').href = loginPage;
+            }
+        }
+
+        // Start logout immediately when page loads
+        window.addEventListener('DOMContentLoaded', performLogout);
+    </script>
+</body>
+</html>

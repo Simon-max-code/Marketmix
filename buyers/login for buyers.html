@@ -6,9 +6,8 @@
     <title>Buyer Login | MarketMix</title>
     <link rel="stylesheet" href="login for buyers.css">
     <link rel="stylesheet" href="../shared/notifications.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="config.js" defer></script>
-    <script src="../shared/auth.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+   
 </head>
 <body>
 
@@ -17,34 +16,362 @@
             <img src="images/logo Picture1.png" alt="MarketMix Logo" class="marketmix-logo">
         </div>
         <h2>Login to Your Account</h2>
-        <!-- <p>Log in to MarketMix</p> -->
 
-        <form onsubmit="handleFormSubmit(event, 'Login', 'buyers homepage.html')">
+        <form id="loginForm">
             <div class="input-group">
                 <label for="email">Email address</label>
-                <input type="email" id="email" placeholder="Enter your email" required>
+                <input type="email" id="email" placeholder="Enter your email" required autocomplete="email">
             </div>
 
             <div class="input-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Enter your password" required>
+                <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
+                <button type="button" class="password-toggle" onclick="togglePasswordVisibility()">
+                    <i class="fas fa-eye"></i>
+                </button>
                 <a href="forgot-password.html" class="forgot-password">Forgot password?</a>
             </div>
 
-            <button type="submit" class="login-btn">Login to your account</button>
+            <button type="submit" class="login-btn" id="loginBtn">Login to your account</button>
 
             <p class="or">Or continue with</p>
 
-            <div class="social-login">
-                <button type="button" id="google-login" class="google-btn" onclick="handleGoogleSignIn('Login', 'buyers homepage.html')">
-                    <img src="images/google-icon.png" alt="Google Icon"> Continue with Google
-                </button>
+            <div class="social-login" id="google-signin-container">
+                <!-- Google Sign-In button will be rendered here -->
             </div>
 
             <p class="signup-link">Don't have an account? <a href="signup-buyers.html">Sign up</a></p>
         </form>
     </div>
 
+    <script>
+        // =====================================================
+        // CONFIGURATION
+        // =====================================================
+        const API_BASE_URL = 'https://marketmix-backend-production.up.railway.app/api';
+        const GOOGLE_CLIENT_ID = '849940344676-n4kcsnk7ueqj3jlnbfm51nts7csg915r.apps.googleusercontent.com';
+        
+        console.log('🚀 MarketMix Login - API Base URL:', API_BASE_URL);
+
+        // Rate limiting
+        let lastSubmitTime = 0;
+        const SUBMIT_COOLDOWN = 2000; // 2 seconds between submissions
+
+        // =====================================================
+        // EMAIL/PASSWORD LOGIN
+        // =====================================================
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            console.log('📝 Login form submitted');
+
+            // Rate limiting check
+            const now = Date.now();
+            if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
+                showAlert('error', 'Please wait a moment before trying again');
+                return;
+            }
+            lastSubmitTime = now;
+
+            // Get form values
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            console.log('📋 Login attempt for:', email);
+
+            // Basic validation
+            if (!email || !password) {
+                showAlert('error', 'Please enter both email and password');
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                showAlert('error', 'Please enter a valid email address');
+                return;
+            }
+
+            // Prepare login data
+            const loginData = {
+                email: email.toLowerCase(),
+                password: password
+            };
+
+            console.log('📤 Sending login request...');
+
+            try {
+                showLoading(true);
+
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(loginData)
+                });
+
+                console.log('📥 Response status:', response.status);
+                const data = await response.json();
+                console.log('📥 Response data:', data);
+
+                showLoading(false);
+
+                if (response.ok && data.status === 'success') {
+                    // Store user data securely
+                    storeAuthData(data.data.user, data.data.token);
+                    
+                    console.log('✅ User logged in successfully');
+                    showAlert('success', 'Login successful! Redirecting...');
+
+                    // Redirect after 1 second
+                    setTimeout(() => {
+                        window.location.href = 'buyers homepage.html';
+                    }, 1000);
+                } else {
+                    const errorMsg = getUserFriendlyError(data.message || 'Login failed');
+                    console.error('❌ Login error:', errorMsg);
+                    showAlert('error', errorMsg);
+                }
+            } catch (error) {
+                console.error('❌ Network error:', error);
+                showLoading(false);
+                showAlert('error', 'Connection problem. Please check your internet and try again.');
+            }
+        });
+
+        // =====================================================
+        // GOOGLE SIGN-IN
+        // =====================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎯 Page loaded, initializing...');
+            
+            // Auto-focus email field
+            document.getElementById('email').focus();
+            
+            // Initialize Google Sign-In
+            if (window.google && window.google.accounts) {
+                try {
+                    window.google.accounts.id.initialize({
+                        client_id: GOOGLE_CLIENT_ID,
+                        callback: handleGoogleSignIn,
+                        auto_select: false
+                    });
+                    
+                    window.google.accounts.id.renderButton(
+                        document.getElementById('google-signin-container'),
+                        { 
+                            theme: 'outline', 
+                            size: 'large',
+                            text: 'signin_with',
+                            shape: 'rectangular',
+                            logo_alignment: 'left'
+                        }
+                    );
+                    console.log('✅ Google Sign-In initialized successfully');
+                } catch (error) {
+                    console.error('❌ Google Sign-In initialization error:', error);
+                }
+            } else {
+                console.warn('⚠️ Google Sign-In library not loaded yet');
+            }
+        });
+
+        async function handleGoogleSignIn(response) {
+            console.log('🔐 Google Sign-In initiated');
+            showLoading(true);
+            
+            try {
+                const token = response.credential;
+                const decoded = parseJwt(token);
+                
+                console.log('📋 Google user info:', { 
+                    name: decoded.name, 
+                    email: decoded.email 
+                });
+                
+                const loginData = {
+                    email: decoded.email,
+                    googleId: decoded.sub
+                };
+
+                console.log('📤 Sending Google login request...');
+                
+                const apiResponse = await fetch(`${API_BASE_URL}/auth/google-login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(loginData)
+                });
+
+                console.log('📥 Google login response status:', apiResponse.status);
+                const data = await apiResponse.json();
+                console.log('📥 Google login response data:', data);
+
+                showLoading(false);
+
+                if (apiResponse.ok && data.status === 'success') {
+                    storeAuthData(data.data.user, data.data.token);
+                    showAlert('success', 'Logged in with Google! Redirecting...');
+                    setTimeout(() => {
+                        window.location.href = 'buyers homepage.html';
+                    }, 1000);
+                } else {
+                    // If user doesn't exist, suggest signup
+                    if (data.message && data.message.includes('not found')) {
+                        showAlert('error', 'Account not found. Please sign up first.');
+                    } else {
+                        showAlert('error', getUserFriendlyError(data.message));
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Google sign-in error:', error);
+                showLoading(false);
+                showAlert('error', 'Google Sign-In failed. Please try again.');
+            }
+        }
+
+        function parseJwt(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        }
+
+        // =====================================================
+        // HELPER FUNCTIONS
+        // =====================================================
+        function togglePasswordVisibility() {
+            const input = document.getElementById('password');
+            const icon = event.target.closest('button').querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function showAlert(type, message) {
+            removeAlerts();
+            
+            const icons = {
+                error: '⚠️',
+                success: '✓',
+                info: 'ℹ️'
+            };
+            
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <span class="alert-icon">${icons[type]}</span>
+                <span class="alert-message">${message}</span>
+                ${type !== 'success' ? '<button class="alert-close" onclick="this.parentElement.remove()">×</button>' : ''}
+            `;
+            
+            const container = document.querySelector('.login-container');
+            if (container) {
+                container.insertBefore(alert, container.firstChild);
+            }
+            
+            setTimeout(() => {
+                if (alert.parentElement) alert.remove();
+            }, 6000);
+        }
+
+        function removeAlerts() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => alert.remove());
+        }
+
+        function showLoading(isLoading) {
+            const loginBtn = document.getElementById('loginBtn');
+            if (loginBtn) {
+                if (isLoading) {
+                    loginBtn.disabled = true;
+                    loginBtn.innerHTML = '<span class="spinner"></span> Logging in...';
+                } else {
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = 'Login to your account';
+                }
+            }
+        }
+
+        function storeAuthData(user, token) {
+            try {
+                const authData = {
+                    user,
+                    token,
+                    expiresAt: Date.now() + (24 * 60 * 60 * 1000), // 24 hours
+                    role: user.role
+                };
+                localStorage.setItem('user', JSON.stringify(user));
+                localStorage.setItem('token', token);
+                localStorage.setItem('userRole', user.role);
+                localStorage.setItem('authData', JSON.stringify(authData));
+                console.log('💾 Auth data stored successfully');
+            } catch (error) {
+                console.error('❌ Failed to store auth data:', error);
+            }
+        }
+
+        function getUserFriendlyError(backendMessage) {
+            const errorMap = {
+                'invalid email or password': 'Invalid email or password. Please try again.',
+                'invalid': 'Invalid email or password. Please try again.',
+                'not found': 'Account not found. Please sign up first.',
+                'google sign-in': 'This account uses Google Sign-In. Please use the "Continue with Google" button.',
+                'deleted': 'This account has been deleted. Please contact support.',
+                'network': 'Connection problem. Please check your internet.',
+                'timeout': 'Request took too long. Please try again.'
+            };
+            
+            const lowerMessage = backendMessage.toLowerCase();
+            for (const [key, value] of Object.entries(errorMap)) {
+                if (lowerMessage.includes(key)) {
+                    return value;
+                }
+            }
+            
+            return backendMessage || 'Login failed. Please try again.';
+        }
+
+        // Real-time email validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const emailInput = document.getElementById('email');
+            emailInput.addEventListener('input', function() {
+                if (this.value.length > 3) {
+                    if (isValidEmail(this.value)) {
+                        this.classList.remove('invalid');
+                        this.classList.add('valid');
+                    } else {
+                        this.classList.add('invalid');
+                        this.classList.remove('valid');
+                    }
+                } else {
+                    this.classList.remove('invalid', 'valid');
+                }
+            });
+        });
+
+    </script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+
+      <script>
+    // Check if redirected from logout
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('logout') === 'success') {
+    showAlert('success', 'You have been logged out successfully');
+    // Clean URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+}
+</script>
 
 </body>
 </html>
