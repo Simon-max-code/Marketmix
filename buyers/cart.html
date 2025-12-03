@@ -268,11 +268,15 @@
 
         // If backend has items, use them
         if (data.data && data.data.items && data.data.items.length > 0) {
+          // Preserve backend cart item IDs so we can call update/delete on the API
           cart = data.data.items.map(item => ({
+            id: item.id, // cart_items.id
+            productId: item.productId || item.product_id,
             name: item.name,
             price: item.price,
             image: item.image,
-            quantity: item.quantity
+            quantity: item.quantity,
+            stockAvailable: item.stockAvailable || item.stock_quantity || 0
           }));
           saveCart();
         }
@@ -313,17 +317,96 @@
 
         const [minusBtn, quantitySpan, plusBtn, deleteBtn] = div.querySelectorAll('.item-actions *');
 
-        minusBtn.addEventListener('click', () => {
-          if(item.quantity > 1) item.quantity--;
+        // Helper: attempt backend update if user is logged in and item has backend id
+        async function tryUpdateQuantityBackend(itemId, newQty) {
+          try {
+            const token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
+            if (!token || !itemId) return { ok: false, reason: 'no-token-or-id' };
+
+            const resp = await fetch(`${CONFIG.API_BASE_URL}/cart/${itemId}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+              body: JSON.stringify({ quantity: newQty })
+            });
+
+            const body = await resp.json().catch(() => null);
+            return { ok: resp.ok, status: resp.status, body };
+          } catch (err) {
+            console.warn('Backend update error', err);
+            return { ok: false, reason: err.message };
+          }
+        }
+
+        async function tryDeleteBackend(itemId) {
+          try {
+            const token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
+            if (!token || !itemId) return { ok: false, reason: 'no-token-or-id' };
+
+            const resp = await fetch(`${CONFIG.API_BASE_URL}/cart/${itemId}`, {
+              method: 'DELETE',
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const body = await resp.json().catch(() => null);
+            return { ok: resp.ok, status: resp.status, body };
+          } catch (err) {
+            console.warn('Backend delete error', err);
+            return { ok: false, reason: err.message };
+          }
+        }
+
+        minusBtn.addEventListener('click', async () => {
+          if (item.quantity > 1) {
+            const newQty = item.quantity - 1;
+            // If item has backend id and user logged in, call API
+            if (item.id && ((window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token'))) {
+              const res = await tryUpdateQuantityBackend(item.id, newQty);
+              if (res.ok) {
+                item.quantity = newQty;
+                saveAndRender();
+                return;
+              } else {
+                console.warn('Backend update failed or not authorized', res);
+              }
+            }
+            // Fallback to local update
+            item.quantity = newQty;
+            saveAndRender();
+          }
+        });
+
+        plusBtn.addEventListener('click', async () => {
+          const newQty = item.quantity + 1;
+          if (item.stockAvailable && newQty > item.stockAvailable) {
+            alert(`Cannot exceed available stock (${item.stockAvailable})`);
+            return;
+          }
+          if (item.id && ((window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token'))) {
+            const res = await tryUpdateQuantityBackend(item.id, newQty);
+            if (res.ok) {
+              item.quantity = newQty;
+              saveAndRender();
+              return;
+            } else {
+              console.warn('Backend update failed or not authorized', res);
+            }
+          }
+          item.quantity = newQty;
           saveAndRender();
         });
 
-        plusBtn.addEventListener('click', () => {
-          item.quantity++;
-          saveAndRender();
-        });
-
-        deleteBtn.addEventListener('click', () => {
+        deleteBtn.addEventListener('click', async () => {
+          // Try backend delete first if possible
+          if (item.id && ((window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token'))) {
+            const res = await tryDeleteBackend(item.id);
+            if (res.ok) {
+              cart.splice(index, 1);
+              saveAndRender();
+              return;
+            } else {
+              console.warn('Backend delete failed or not authorized', res);
+            }
+          }
+          // Fallback to local delete
           cart.splice(index, 1);
           saveAndRender();
         });
