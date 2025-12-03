@@ -4,7 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Saved Payments - MarketMix</title>
-
+   <!-- 🔒 BLOCK UNAUTHORIZED USERS -->
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.replace("login for buyers.html");
+        }
+    </script>
 <style>
   :root {
     --bg-light:  #FFF7ED;
