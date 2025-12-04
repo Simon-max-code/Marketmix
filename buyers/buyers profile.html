@@ -357,22 +357,25 @@
 
         const data = await response.json();
 
-        if (response.ok && data.status === 'success') {
-          console.log('✅ Phone number saved successfully');
+      if (response.ok && data.status === 'success') {
+  console.log('✅ Phone number saved successfully');
 
-          // Update localStorage
-          const user = JSON.parse(localStorage.getItem('user') || '{}');
-          user.phone = phone;
-          localStorage.setItem('user', JSON.stringify(user));
+  // Update localStorage
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  user.phone = phone;
+  localStorage.setItem('user', JSON.stringify(user));
 
-          // Update UI - hide input and show phone display
-          document.getElementById('phoneNumber').textContent = phone;
-          document.getElementById('phoneDisplay').style.display = 'block';
-          document.getElementById('phoneInputContainer').style.display = 'none';
-          document.getElementById('phoneInput').value = '';
+  // Update UI
+  document.getElementById('phoneNumber').textContent = phone;
 
-          showAlert('success', 'Phone number saved successfully!');
-        } else {
+  // 🔥 HIDE INPUT & SHOW THE PHONE TEXT AGAIN
+  document.getElementById('phoneDisplay').style.display = 'block';
+  document.getElementById('phoneInputContainer').style.display = 'none';
+  document.getElementById('phoneInput').value = '';
+
+  showAlert('success', 'Phone number saved successfully!');
+}
+ else {
           throw new Error(data.message || 'Failed to save phone number');
         }
 
