@@ -168,11 +168,8 @@
         <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
         <p>
           <strong>Phone:</strong> 
-          <span id="phoneDisplay">
+          <span id="phoneDisplay" style="cursor: pointer; color: #2B6CB0;">
             <span id="phoneNumber">Loading...</span>
-            <button id="addPhoneBtn" class="btn-add-phone" style="display: none;" onclick="showPhoneInput()">
-              <i class="fas fa-plus"></i> Add Phone Number
-            </button>
           </span>
           <span id="phoneInputContainer" style="display: none;">
             <div class="phone-input-group">
@@ -248,10 +245,8 @@
         // Handle phone number
         if (user.phone) {
           document.getElementById('phoneNumber').textContent = user.phone;
-          document.getElementById('addPhoneBtn').style.display = 'none';
         } else {
-          document.getElementById('phoneNumber').textContent = '';
-          document.getElementById('addPhoneBtn').style.display = 'inline-block';
+          document.getElementById('phoneNumber').textContent = 'Not added yet';
         }
 
         // Format member since date
@@ -290,10 +285,8 @@
             // Update phone display
             if (freshUser.phone) {
               document.getElementById('phoneNumber').textContent = freshUser.phone;
-              document.getElementById('addPhoneBtn').style.display = 'none';
             } else {
-              document.getElementById('phoneNumber').textContent = '';
-              document.getElementById('addPhoneBtn').style.display = 'inline-block';
+              document.getElementById('phoneNumber').textContent = 'Not added yet';
             }
 
             if (freshUser.createdAt) {
@@ -372,14 +365,13 @@
           user.phone = phone;
           localStorage.setItem('user', JSON.stringify(user));
 
-          // Update UI
+          // Update UI - hide input and show phone display
           document.getElementById('phoneNumber').textContent = phone;
           document.getElementById('phoneDisplay').style.display = 'block';
           document.getElementById('phoneInputContainer').style.display = 'none';
           document.getElementById('phoneInput').value = '';
-          document.getElementById('addPhoneBtn').style.display = 'none';
 
-          showAlert('success', 'Phone number added successfully!');
+          showAlert('success', 'Phone number saved successfully!');
         } else {
           throw new Error(data.message || 'Failed to save phone number');
         }
@@ -436,6 +428,19 @@
             e.preventDefault();
             savePhoneNumber();
           }
+        });
+      }
+
+      // Make phone number clickable to edit
+      const phoneDisplay = document.getElementById('phoneDisplay');
+      if (phoneDisplay) {
+        phoneDisplay.addEventListener('click', function() {
+          const phoneNumber = document.getElementById('phoneNumber').textContent;
+          if (phoneNumber && phoneNumber !== 'Not added yet') {
+            // Load current phone into input
+            document.getElementById('phoneInput').value = phoneNumber;
+          }
+          showPhoneInput();
         });
       }
     });
