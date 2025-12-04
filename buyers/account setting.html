@@ -866,16 +866,18 @@
         });
 
         const data = await response.json();
+        
+if (response.ok && data.status === 'success') {
+  // Update localStorage with the response from backend
+  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const updatedUser = {
+    ...currentUser,
+    ...data.data.user  // Use the user object from backend response
+  };
+  localStorage.setItem('user', JSON.stringify(updatedUser));
 
-        if (response.ok && data.status === 'success') {
-          // Update localStorage
-          const user = JSON.parse(localStorage.getItem('user') || '{}');
-          user.firstName = firstName;
-          user.lastName = lastName;
-          localStorage.setItem('user', JSON.stringify(user));
-
-          showAlert('success', 'Profile updated successfully!');
-        } else {
+  showAlert('success', 'Profile updated successfully!');
+     }else {
           throw new Error(data.message || 'Failed to update profile');
         }
 
