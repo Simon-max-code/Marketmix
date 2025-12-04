@@ -351,13 +351,16 @@
         deleteBtn.addEventListener('click', async ()=>{
           // push deleted item into recentDeleted (store a small snapshot)
           try{
-            const snapshot = { 
-              productId: item.id || item.productId, 
-              name: item.name, 
-              price: item.price, 
-              image: item.image || '', 
-              quantity: item.quantity || 1, 
-              deletedAt: new Date().toISOString() 
+            const snapshot = {
+              // cart item id (backend cart_items id) if present
+              cartItemId: item.id || null,
+              // product id (the actual product's id) if present
+              productId: item.productId || item.product_id || null,
+              name: item.name,
+              price: item.price,
+              image: item.image || '',
+              quantity: item.quantity || 1,
+              deletedAt: new Date().toISOString()
             };
             recentDeleted.push(snapshot);
             // keep only last 20
@@ -434,6 +437,8 @@
           // If user is logged in, call backend API
           if(token && item.productId) {
             try {
+              // debug: show what we're sending
+              console.log('Restore: POST', `${CONFIG.API_BASE_URL}/cart/add`, { product_id: item.productId, quantity: item.quantity || 1 });
               const response = await fetch(`${CONFIG.API_BASE_URL}/cart/add`, {
                 method: 'POST',
                 headers: {
