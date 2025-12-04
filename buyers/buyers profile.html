@@ -4,11 +4,160 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Buyer Account - MarketMix</title>
-  <link rel="stylesheet" href="buyers profile .css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   
   <style>
-    /* Additional styles for phone input and buttons */
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: #FFF7ED;
+      color: #333;
+    }
+
+    /* === Container === */
+    .profile-container {
+      max-width: 900px;
+      margin: 100px auto;
+      padding: 30px;
+      background: white;
+      box-shadow: 0 0 15px rgba(0,0,0,0.08);
+      border-radius: 12px;
+    }
+
+    .profile-container h2 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2em;
+      font-weight: 700;
+    }
+
+    /* === Profile Card === */
+    .profile-card {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
+
+    .profile-card img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      border: 4px solid #ff6600;
+      object-fit: cover;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .profile-card .info p {
+      font-size: 16px;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    /* === Account Links === */
+    .account-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 20px;
+    }
+
+    .link-card {
+      background:#f6eac7;
+      border-radius: 10px;
+      padding: 18px 20px;
+      text-decoration: none;
+      color: #333;
+      font-weight: 600;
+      box-shadow: 0px 1px 0px 1px rgb(70, 69, 69);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .link-card i {
+      font-size: 20px;
+      color: #ff6600;
+      width: 25px;
+      text-align: center;
+    }
+
+    .link-card:hover {
+      background-color: #ff6600;
+      color: #fff;
+      transform: translateY(-3px);
+    }
+
+    .link-card:hover i {
+      color: #fff;
+    }
+
+    /* === Responsive === */
+    @media (max-width: 600px) {
+      .profile-container {
+        margin: 50px 15px;
+        padding: 20px;
+      }
+
+      .profile-card img {
+        width: 120px;
+        height: 120px;
+      }
+
+      .link-card {
+        padding: 15px;
+        font-size: 15px;
+      }
+    }
+
+    /*footer*/
+    footer {
+      background: rgba(0, 0, 0, 0.7);
+      color: #f8fafc;
+      text-align: center;
+      padding: 25px 15px;
+      margin-top: 60px;
+      font-size: 15px;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #F97316;
+      color: #000;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 2px;
+      transition: 0.3s;
+    }
+
+    .back-btn i {
+      font-size: 18px;
+    }
+
+    .back-btn:hover {
+      background: #EA580C;
+      transform: translateY(-2px);
+    }
+
+    /* === PHONE INPUT STYLES === */
+    #phoneDisplay {
+      cursor: pointer;
+      color: #2B6CB0;
+      text-decoration: underline;
+    }
+
+    #phoneDisplay:hover {
+      color: #1e4d7b;
+    }
+
     .phone-input-group {
       display: flex;
       gap: 10px;
@@ -168,10 +317,11 @@
         <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
         <p>
           <strong>Phone:</strong> 
-          <span id="phoneDisplay" style="cursor: pointer; color: #2B6CB0;">
+          <!-- ✅ FIXED: Removed nested span structure -->
+          <span id="phoneDisplay">
             <span id="phoneNumber">Loading...</span>
           </span>
-          <span id="phoneInputContainer" style="display: none;">
+          <div id="phoneInputContainer" style="display: none;">
             <div class="phone-input-group">
               <input 
                 type="tel" 
@@ -180,20 +330,21 @@
                 pattern="[0-9+\s\-()]+"
                 maxlength="20"
               />
-              <button id="savePhoneBtn" class="btn-save-phone" onclick="savePhoneNumber()">
+              <button id="savePhoneBtn" class="btn-save-phone">
                 <i class="fas fa-check"></i> Save
               </button>
               <button class="btn-add-phone" onclick="cancelPhoneInput()">Cancel</button>
             </div>
-          </span>
+          </div>
         </p>
         <p><strong>Member Since:</strong> <span id="memberSince">Loading...</span></p>
       </div>
     </div>
-  <!-- Navigation Links -->
+
+    <!-- Navigation Links -->
     <div class="account-links">
-                  <a href="cart.html" class="link-card"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
-                        <a href="buyers wishlist.html" class="link-card"><i class="fa-solid fa-heart"></i> Wishlist</a>
+      <a href="cart.html" class="link-card"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
+      <a href="buyers wishlist.html" class="link-card"><i class="fa-solid fa-heart"></i> Wishlist</a>
       <a href="buyers order & tracking.html" class="link-card"><i class="fa-solid fa-box"></i> Order Tracking</a>
       <a href="return refund.html" class="link-card"><i class="fa-solid fa-rotate-left"></i> Returns & Refunds</a>
       <a href="shipping infor.html" class="link-card"><i class="fa-solid fa-truck"></i> Shipping Info</a>
@@ -201,11 +352,8 @@
       <a href="purchase history.html" class="link-card"><i class="fa-solid fa-receipt"></i> Purchase History</a>
       <a href="reviews ratings.html" class="link-card"><i class="fa-solid fa-star"></i> Reviews & Ratings</a>
       <a href="account setting.html" class="link-card"><i class="fa-solid fa-gear"></i> Account Settings</a>
-      <a  href="logout.html" class="link-card"><i class="fa fa-sign-out" aria-hidden="true"></i> logout</a>
-
+      <a href="logout.html" class="link-card"><i class="fa fa-sign-out" aria-hidden="true"></i> logout</a>
     </div>
-
-    
   </div>
 
   <footer>
@@ -224,6 +372,7 @@
     document.addEventListener('DOMContentLoaded', async function() {
       console.log('📄 Loading buyer profile...');
       await loadUserProfile();
+      setupPhoneClickHandler();
     });
 
     async function loadUserProfile() {
@@ -306,96 +455,128 @@
       }
     }
 
-async function savePhoneNumber() {
-  const phoneInput = document.getElementById('phoneInput');
-  const phone = phoneInput.value.trim();
+    // =====================================================
+    // PHONE NUMBER MANAGEMENT - ✅ FIXED!
+    // =====================================================
+    function setupPhoneClickHandler() {
+      const phoneDisplay = document.getElementById('phoneDisplay');
+      if (phoneDisplay) {
+        phoneDisplay.addEventListener('click', function() {
+          const phoneNumber = document.getElementById('phoneNumber').textContent;
+          if (phoneNumber && phoneNumber !== 'Not added yet' && phoneNumber !== 'Loading...') {
+            document.getElementById('phoneInput').value = phoneNumber;
+          }
+          showPhoneInput();
+        });
+      }
 
-  // Validate phone number
-  if (!phone) {
-    showAlert('error', 'Please enter a phone number');
-    return;
-  }
+      // Setup save button
+      const saveBtn = document.getElementById('savePhoneBtn');
+      if (saveBtn) {
+        saveBtn.addEventListener('click', savePhoneNumber);
+      }
 
-  if (phone.length < 10) {
-    showAlert('error', 'Please enter a valid phone number');
-    return;
-  }
+      // Setup input validation
+      const phoneInput = document.getElementById('phoneInput');
+      if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+          this.value = this.value.replace(/[^0-9+\s\-()]/g, '');
+        });
 
-  console.log('📞 Saving phone number:', phone);
-
-  const saveBtn = document.getElementById('savePhoneBtn');
-
-  try {
-    const token = localStorage.getItem('token');
-
-    // Show loading state
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = '<span class="spinner-small"></span> Saving...';
-
-    const response = await fetch(`${API_BASE_URL}/auth/update-phone`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ phone })
-    });
-
-    const data = await response.json();
-
-    if (response.ok && data.status === 'success') {
-      console.log('✅ Phone number saved successfully');
-
-      // Update localStorage
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
-      user.phone = phone;
-      localStorage.setItem('user', JSON.stringify(user));
-
-      // Update UI - display the new phone number
-      document.getElementById('phoneNumber').textContent = phone;
-
-    // 🔥 HIDE INPUT & SHOW THE PHONE TEXT AGAIN
-document.getElementById('phoneDisplay').style.display = 'inline'; // Changed from 'block'
-document.getElementById('phoneInputContainer').style.display = 'none';
-document.getElementById('phoneInput').value = '';
-
-      // Show success message
-      showAlert('success', 'Phone number saved successfully!');
-
-    } else {
-      throw new Error(data.message || 'Failed to save phone number');
+        phoneInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            savePhoneNumber();
+          }
+        });
+      }
     }
 
-  } catch (error) {
-    console.error('❌ Error saving phone:', error);
-    showAlert('error', error.message || 'Could not save phone number. Please try again.');
-  } finally {
-    // Reset button state
-    saveBtn.disabled = false;
-    saveBtn.innerHTML = '<i class="fas fa-check"></i> Save';
-  }
-}
+    function showPhoneInput() {
+      console.log('🔄 Showing phone input...');
+      document.getElementById('phoneDisplay').style.display = 'none';
+      document.getElementById('phoneInputContainer').style.display = 'block';
+      document.getElementById('phoneInput').focus();
+    }
 
+    function cancelPhoneInput() {
+      console.log('❌ Canceling phone input...');
+      document.getElementById('phoneDisplay').style.display = 'inline';
+      document.getElementById('phoneInputContainer').style.display = 'none';
+      document.getElementById('phoneInput').value = '';
+    }
 
+    async function savePhoneNumber() {
+      const phoneInput = document.getElementById('phoneInput');
+      const phone = phoneInput.value.trim();
 
+      // Validate phone number
+      if (!phone) {
+        showAlert('error', 'Please enter a phone number');
+        return;
+      }
 
+      if (phone.length < 10) {
+        showAlert('error', 'Please enter a valid phone number');
+        return;
+      }
 
+      console.log('📞 Saving phone number:', phone);
 
-    // =====================================================
-    // PHONE NUMBER MANAGEMENT
-    // =====================================================
-  function showPhoneInput() {
-  document.getElementById('phoneDisplay').style.display = 'none';
-  document.getElementById('phoneInputContainer').style.display = 'inline'; // Changed from 'block'
-  document.getElementById('phoneInput').focus();
-}
+      const saveBtn = document.getElementById('savePhoneBtn');
 
-function cancelPhoneInput() {
-  document.getElementById('phoneDisplay').style.display = 'inline'; // Changed from 'block'
-  document.getElementById('phoneInputContainer').style.display = 'none';
-  document.getElementById('phoneInput').value = '';
-}
-  
+      try {
+        const token = localStorage.getItem('token');
+
+        // Show loading state
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="spinner-small"></span> Saving...';
+
+        const response = await fetch(`${API_BASE_URL}/auth/update-phone`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ phone })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'success') {
+          console.log('✅ Phone number saved successfully');
+
+          // Update localStorage
+          const user = JSON.parse(localStorage.getItem('user') || '{}');
+          user.phone = phone;
+          localStorage.setItem('user', JSON.stringify(user));
+
+          // Update UI - display the new phone number
+          document.getElementById('phoneNumber').textContent = phone;
+
+          // 🔥 HIDE INPUT & SHOW THE PHONE TEXT AGAIN
+          console.log('🔄 Hiding input, showing display...');
+          document.getElementById('phoneDisplay').style.display = 'inline';
+          document.getElementById('phoneInputContainer').style.display = 'none';
+          document.getElementById('phoneInput').value = '';
+
+          // Show success message
+          showAlert('success', 'Phone number saved successfully!');
+
+        } else {
+          throw new Error(data.message || 'Failed to save phone number');
+        }
+
+      } catch (error) {
+        console.error('❌ Error saving phone:', error);
+        showAlert('error', error.message || 'Could not save phone number. Please try again.');
+      } finally {
+        // Reset button state
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fas fa-check"></i> Save';
+      }
+    }
+
     // =====================================================
     // ALERT FUNCTIONS
     // =====================================================
@@ -419,40 +600,6 @@ function cancelPhoneInput() {
         alert.remove();
       }, 5000);
     }
-
-    // =====================================================
-    // PHONE INPUT - ALLOW ONLY NUMBERS AND SPECIAL CHARS
-    // =====================================================
-    document.addEventListener('DOMContentLoaded', function() {
-      const phoneInput = document.getElementById('phoneInput');
-      if (phoneInput) {
-        phoneInput.addEventListener('input', function(e) {
-          // Allow only numbers, +, spaces, hyphens, and parentheses
-          this.value = this.value.replace(/[^0-9+\s\-()]/g, '');
-        });
-
-        // Submit on Enter key
-        phoneInput.addEventListener('keypress', function(e) {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            savePhoneNumber();
-          }
-        });
-      }
-
-      // Make phone number clickable to edit
-      const phoneDisplay = document.getElementById('phoneDisplay');
-      if (phoneDisplay) {
-        phoneDisplay.addEventListener('click', function() {
-          const phoneNumber = document.getElementById('phoneNumber').textContent;
-          if (phoneNumber && phoneNumber !== 'Not added yet') {
-            // Load current phone into input
-            document.getElementById('phoneInput').value = phoneNumber;
-          }
-          showPhoneInput();
-        });
-      }
-    });
   </script>
 </body>
 </html>
