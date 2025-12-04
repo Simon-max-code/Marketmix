@@ -5,44 +5,161 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Buyer Account Settings</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-   <!-- 🔒 BLOCK UNAUTHORIZED USERS -->
-    <script>
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.replace("login for buyers.html");
-        }
-    </script>
+  
+  <!-- 🔒 BLOCK UNAUTHORIZED USERS -->
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.replace("login for buyers.html");
+    }
+  </script>
+
   <style>
+    :root {
+      --accent: #F97316;
+      --accent-hover: #EA580C;
+      --danger: #e63946;
+      --danger-hover: #c71d2a;
+      --success: #10b981;
+      --border: #e2e8f0;
+      --text: #333;
+      --muted: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background-color: #fff7ed;
+      color: var(--text);
     }
 
     .settings-container {
-      max-width: 800px;
+      max-width: 900px;
       margin: 50px auto;
       background: #fff;
-      border-radius: 10px;
-      padding: 30px;
+      border-radius: 12px;
+      padding: 40px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     }
 
-    .settings-container h2 {
-      margin-bottom: 25px;
-      font-size: 24px;
-      color: #333;
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-bottom: 20px;
+    }
+
+    .back i {
+      font-size: 18px;
+    }
+
+    .back:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: 28px;
+      color: var(--text);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 30px;
+      font-size: 15px;
+    }
+
+    /* Alert Styles */
+    .alert {
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .alert-success {
+      background-color: #d1fae5;
+      border: 1px solid #6ee7b7;
+      color: #065f46;
+    }
+
+    .alert-error {
+      background-color: #fee2e2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+
+    .alert-info {
+      background-color: #dbeafe;
+      border: 1px solid #93c5fd;
+      color: #1e40af;
+    }
+
+    /* Settings Sections */
+    .settings-section {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 25px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .settings-section h3 {
+      margin: 0 0 20px;
+      font-size: 18px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .settings-section h3 i {
+      color: var(--accent);
+      font-size: 20px;
     }
 
     .settings-group {
-      margin-bottom: 30px;
+      margin-bottom: 20px;
+    }
+
+    .settings-group:last-child {
+      margin-bottom: 0;
     }
 
     label {
       display: block;
-      font-weight: bold;
+      font-weight: 600;
       margin-bottom: 8px;
       color: #555;
+      font-size: 14px;
     }
 
     input[type="text"],
@@ -50,60 +167,321 @@
     input[type="password"],
     select {
       width: 100%;
-      padding: 10px 15px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      padding: 12px 15px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
       font-size: 15px;
+      transition: border-color 0.3s;
+      background: white;
     }
 
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    input:disabled {
+      background: #f1f5f9;
+      cursor: not-allowed;
+      color: var(--muted);
+    }
+
+    .input-hint {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 5px;
+    }
+
+    /* Two Column Layout */
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    @media (max-width: 600px) {
+      .row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Notification Toggles */
     .toggle-options {
       display: flex;
-      gap: 15px;
+      flex-direction: column;
+      gap: 12px;
       margin-top: 10px;
     }
 
-    .toggle-options label {
+    .toggle-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 15px;
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+
+    .toggle-option:hover {
+      border-color: var(--accent);
+    }
+
+    .toggle-option label {
+      margin: 0;
       font-weight: normal;
       display: flex;
       align-items: center;
-      gap: 6px;
-      color: #444;
-    }
-
-    .save-btn {
-      background: #F97316;
-      color: #000;
-      border: none;
-      padding: 12px 25px;
-      font-size: 16px;
-      border-radius: 6px;
+      gap: 10px;
       cursor: pointer;
-      transition: 0.3s;
     }
 
-    .save-btn:hover {
-      background: #EA580C;
+    /* Custom Toggle Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 26px;
     }
 
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 26px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: var(--danger-hover);
+    }
+
+    .section-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      display: inline-block;
+    }
+
+    .spinner-dark {
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      border-top-color: rgba(0, 0, 0, 0.6);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Loading Overlay */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      gap: 15px;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #f0f0f0;
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    /* Danger Zone */
     .danger-zone {
       margin-top: 40px;
-      border-top: 1px solid #ddd;
-      padding-top: 20px;
+      padding: 25px;
+      border: 2px solid var(--danger);
+      border-radius: 10px;
+      background: #fff5f5;
     }
 
-    .danger-zone button {
-      background: #e63946;
-      color: white;
-      border: none;
-      padding: 10px 20px;
+    .danger-zone h3 {
+      margin: 0 0 15px;
+      color: var(--danger);
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .danger-zone p {
+      margin: 0 0 15px;
+      color: #666;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Delete Account Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .modal-header i {
+      font-size: 32px;
+      color: var(--danger);
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 20px;
+      color: var(--text);
+    }
+
+    .modal-body {
+      margin-bottom: 25px;
+    }
+
+    .modal-body p {
+      color: #666;
+      line-height: 1.6;
+      margin: 0 0 15px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    footer {
+      background: rgba(0, 0, 0, 0.7);
+      color: #f8fafc;
+      text-align: center;
+      padding: 25px 15px;
+      margin-top: 60px;
       font-size: 15px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .danger-zone button:hover {
-      background: #c71d2a;
     }
 
     @media (max-width: 600px) {
@@ -112,122 +490,689 @@
         padding: 20px;
       }
 
-      .save-btn, .danger-zone button {
+      .section-actions {
+        flex-direction: column;
+      }
+
+      .btn {
         width: 100%;
+        justify-content: center;
       }
     }
-      /*footer*/
-  
-    footer {
-     background: rgba(0, 0, 0, 0.7);
-      color: #f8fafc;
-      text-align: center;
-      padding: 25px 15px;
-      margin-top: 60px;
-      font-size: 15px;
-    }
-    .back {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #F97316; /* your site yellow theme */
-  color: #000;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 10px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.back i {
-  font-size: 18px;
-}
-
-.back:hover {
-  background: #EA580C;
-  transform: translateY(-2px);
-}
   </style>
 </head>
 <body>
 
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p style="color: var(--muted);">Loading your settings...</p>
+  </div>
+
   <div class="settings-container">
-     <button class="back" onclick="history.back()">
-  <i class="fas fa-chevron-left"></i> Back
-</button>
+    <button class="back" onclick="history.back()">
+      <i class="fas fa-chevron-left"></i> Back
+    </button>
+
     <h2>Account Settings</h2>
+    <p class="subtitle">Manage your account preferences and security settings</p>
 
-    <!-- Personal Info -->
-    <div class="settings-group">
-      <label for="fullName">Full Name</label>
-      <input type="text" id="fullName" placeholder="John Doe" />
-    </div>
+    <!-- Alert Container -->
+    <div id="alertContainer"></div>
 
-    <div class="settings-group">
-      <label for="email">Email Address</label>
-      <input type="email" id="email" placeholder="johndoe@example.com" disabled />
-    </div>
+    <!-- Personal Information Section -->
+    <div class="settings-section">
+      <h3><i class="fas fa-user"></i> Personal Information</h3>
+      
+      <div class="row">
+        <div class="settings-group">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" placeholder="John" />
+        </div>
 
-    <!-- Password Change -->
-    <div class="settings-group">
-      <label for="currentPassword">Current Password</label>
-      <input type="password" id="currentPassword" placeholder="••••••" />
-    </div>
+        <div class="settings-group">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" placeholder="Doe" />
+        </div>
+      </div>
 
-    <div class="settings-group">
-      <label for="newPassword">New Password</label>
-      <input type="password" id="newPassword" placeholder="New password" />
-    </div>
+      <div class="settings-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="johndoe@example.com" disabled />
+        <p class="input-hint">Email cannot be changed. Contact support if needed.</p>
+      </div>
 
-    <div class="settings-group">
-      <label for="confirmPassword">Confirm New Password</label>
-      <input type="password" id="confirmPassword" placeholder="Confirm password" />
-    </div>
-
-    <!-- Shipping Address -->
-    <div class="settings-group">
-      <label for="address">Shipping Address</label>
-      <input type="text" id="address" placeholder="123 Market Street" />
-    </div>
-
-    <div class="settings-group">
-      <label for="city">City</label>
-      <input type="text" id="city" placeholder="Lagos" />
-    </div>
-
-    <div class="settings-group">
-      <label for="country">Country</label>
-      <select id="country">
-        <option>Nigeria</option>
-        <option>Ghana</option>
-        <option>Kenya</option>
-        <option>South Africa</option>
-      </select>
-    </div>
-
-    <!-- Notifications -->
-    <div class="settings-group">
-      <label>Notification Preferences</label>
-      <div class="toggle-options">
-        <label><input type="checkbox" checked /> Email Alerts</label>
-        <label><input type="checkbox" /> SMS Alerts</label>
-        <label><input type="checkbox" checked /> In-App Notifications</label>
+      <div class="section-actions">
+        <button class="btn btn-primary" id="saveProfileBtn">
+          <i class="fas fa-save"></i> Save Profile
+        </button>
       </div>
     </div>
 
-    <button class="save-btn">Save Changes</button>
+    <!-- Password Change Section -->
+    <div class="settings-section">
+      <h3><i class="fas fa-lock"></i> Change Password</h3>
+      
+      <div class="settings-group">
+        <label for="currentPassword">Current Password</label>
+        <input type="password" id="currentPassword" placeholder="Enter current password" />
+      </div>
+
+      <div class="settings-group">
+        <label for="newPassword">New Password</label>
+        <input type="password" id="newPassword" placeholder="Enter new password" />
+        <p class="input-hint">Password must be at least 8 characters long</p>
+      </div>
+
+      <div class="settings-group">
+        <label for="confirmPassword">Confirm New Password</label>
+        <input type="password" id="confirmPassword" placeholder="Confirm new password" />
+      </div>
+
+      <div class="section-actions">
+        <button class="btn btn-primary" id="changePasswordBtn">
+          <i class="fas fa-key"></i> Change Password
+        </button>
+      </div>
+    </div>
+
+    <!-- Shipping Address Section -->
+    <div class="settings-section">
+      <h3><i class="fas fa-map-marker-alt"></i> Shipping Address</h3>
+      
+      <div class="settings-group">
+        <label for="address">Street Address</label>
+        <input type="text" id="address" placeholder="123 Market Street" />
+      </div>
+
+      <div class="row">
+        <div class="settings-group">
+          <label for="city">City</label>
+          <input type="text" id="city" placeholder="Lagos" />
+        </div>
+
+        <div class="settings-group">
+          <label for="state">State/Province</label>
+          <input type="text" id="state" placeholder="Lagos State" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="settings-group">
+          <label for="postalCode">Postal Code</label>
+          <input type="text" id="postalCode" placeholder="100001" />
+        </div>
+
+        <div class="settings-group">
+          <label for="country">Country</label>
+          <select id="country">
+            <option value="Nigeria">Nigeria</option>
+            <option value="Ghana">Ghana</option>
+            <option value="Kenya">Kenya</option>
+            <option value="South Africa">South Africa</option>
+            <option value="Egypt">Egypt</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-actions">
+        <button class="btn btn-primary" id="saveAddressBtn">
+          <i class="fas fa-save"></i> Save Address
+        </button>
+      </div>
+    </div>
+
+    <!-- Notification Preferences Section -->
+    <div class="settings-section">
+      <h3><i class="fas fa-bell"></i> Notification Preferences</h3>
+      
+      <div class="toggle-options">
+        <div class="toggle-option">
+          <label>
+            <i class="fas fa-envelope"></i>
+            <span>
+              <strong>Email Notifications</strong>
+              <p style="margin:0;font-size:13px;color:var(--muted)">Receive order updates and promotions via email</p>
+            </span>
+          </label>
+          <label class="switch">
+            <input type="checkbox" id="emailNotifications" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-option">
+          <label>
+            <i class="fas fa-sms"></i>
+            <span>
+              <strong>SMS Alerts</strong>
+              <p style="margin:0;font-size:13px;color:var(--muted)">Get important order updates via SMS</p>
+            </span>
+          </label>
+          <label class="switch">
+            <input type="checkbox" id="smsNotifications">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-option">
+          <label>
+            <i class="fas fa-mobile-alt"></i>
+            <span>
+              <strong>In-App Notifications</strong>
+              <p style="margin:0;font-size:13px;color:var(--muted)">Show notifications within the app</p>
+            </span>
+          </label>
+          <label class="switch">
+            <input type="checkbox" id="inAppNotifications" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="section-actions">
+        <button class="btn btn-primary" id="saveNotificationsBtn">
+          <i class="fas fa-save"></i> Save Preferences
+        </button>
+      </div>
+    </div>
 
     <!-- Danger Zone -->
     <div class="danger-zone">
-      <p><strong>Danger Zone</strong></p>
-      <button onclick="confirm('Are you sure you want to delete your account?')">Delete Account</button>
+      <h3><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
+      <p>
+        <strong>Delete Account:</strong> Once you delete your account, there is no going back. 
+        This will permanently delete your profile, orders, and all associated data.
+      </p>
+      <button class="btn btn-danger" id="deleteAccountBtn">
+        <i class="fas fa-trash-alt"></i> Delete My Account
+      </button>
+    </div>
+  </div>
+
+  <!-- Delete Account Confirmation Modal -->
+  <div id="deleteModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h3>Delete Account</h3>
+      </div>
+      <div class="modal-body">
+        <p><strong>Are you absolutely sure?</strong></p>
+        <p>This action cannot be undone. This will permanently delete your account and remove all your data from our servers.</p>
+        
+        <div class="settings-group">
+          <label for="confirmDeletePassword">Enter your password to confirm</label>
+          <input type="password" id="confirmDeletePassword" placeholder="Enter password" />
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" style="background:#e2e8f0;color:#000" onclick="closeDeleteModal()">
+          Cancel
+        </button>
+        <button class="btn btn-danger" id="confirmDeleteBtn">
+          <i class="fas fa-trash-alt"></i> Delete Account
+        </button>
+      </div>
     </div>
   </div>
 
   <footer>
-  © MarketMix 2025
-</footer>
+    © MarketMix 2025
+  </footer>
+
+  <script>
+    // =====================================================
+    // CONFIGURATION
+    // =====================================================
+    const API_BASE_URL = 'https://marketmix-backend-production.up.railway.app/api';
+
+    // =====================================================
+    // UTILITY FUNCTIONS
+    // =====================================================
+    function showAlert(type, message) {
+      const alertContainer = document.getElementById('alertContainer');
+      alertContainer.innerHTML = '';
+
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        <span>${message}</span>
+      `;
+
+      alertContainer.appendChild(alert);
+
+      // Scroll to top to see alert
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Auto-remove after 5 seconds
+      setTimeout(() => {
+        alert.remove();
+      }, 5000);
+    }
+
+    function setButtonLoading(button, loading, text = '') {
+      if (loading) {
+        button.disabled = true;
+        button.dataset.originalText = button.innerHTML;
+        button.innerHTML = `<span class="spinner"></span> ${text || 'Processing...'}`;
+      } else {
+        button.disabled = false;
+        button.innerHTML = button.dataset.originalText || text;
+      }
+    }
+
+    // =====================================================
+    // LOAD USER DATA
+    // =====================================================
+    async function loadUserData() {
+      try {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        // Load from localStorage first for instant display
+        if (user.firstName) document.getElementById('firstName').value = user.firstName;
+        if (user.lastName) document.getElementById('lastName').value = user.lastName;
+        if (user.email) document.getElementById('email').value = user.email;
+        
+        // Load address data
+        if (user.address) document.getElementById('address').value = user.address;
+        if (user.city) document.getElementById('city').value = user.city;
+        if (user.state) document.getElementById('state').value = user.state;
+        if (user.postalCode) document.getElementById('postalCode').value = user.postalCode;
+        if (user.country) document.getElementById('country').value = user.country;
+
+        // Load notification preferences
+        if (user.notificationPreferences) {
+          const prefs = user.notificationPreferences;
+          document.getElementById('emailNotifications').checked = prefs.email !== false;
+          document.getElementById('smsNotifications').checked = prefs.sms === true;
+          document.getElementById('inAppNotifications').checked = prefs.inApp !== false;
+        }
+
+        // Fetch fresh data from backend
+        const response = await fetch(`${API_BASE_URL}/auth/me`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.status === 'success' && data.data.user) {
+            const freshUser = data.data.user;
+            
+            // Update localStorage
+            localStorage.setItem('user', JSON.stringify(freshUser));
+
+            // Update form fields
+            if (freshUser.firstName) document.getElementById('firstName').value = freshUser.firstName;
+            if (freshUser.lastName) document.getElementById('lastName').value = freshUser.lastName;
+            if (freshUser.email) document.getElementById('email').value = freshUser.email;
+            
+            // Update address
+            if (freshUser.address) document.getElementById('address').value = freshUser.address;
+            if (freshUser.city) document.getElementById('city').value = freshUser.city;
+            if (freshUser.state) document.getElementById('state').value = freshUser.state;
+            if (freshUser.postalCode) document.getElementById('postalCode').value = freshUser.postalCode;
+            if (freshUser.country) document.getElementById('country').value = freshUser.country;
+
+            // Update notifications
+            if (freshUser.notificationPreferences) {
+              const prefs = freshUser.notificationPreferences;
+              document.getElementById('emailNotifications').checked = prefs.email !== false;
+              document.getElementById('smsNotifications').checked = prefs.sms === true;
+              document.getElementById('inAppNotifications').checked = prefs.inApp !== false;
+            }
+          }
+        }
+
+        document.getElementById('loadingOverlay').style.display = 'none';
+
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        document.getElementById('loadingOverlay').style.display = 'none';
+        showAlert('error', 'Could not load your settings. Please refresh the page.');
+      }
+    }
+
+    // =====================================================
+    // SAVE PROFILE
+    // =====================================================
+    async function saveProfile() {
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+
+      if (!firstName || !lastName) {
+        showAlert('error', 'Please enter both first and last name');
+        return;
+      }
+
+      const saveBtn = document.getElementById('saveProfileBtn');
+      setButtonLoading(saveBtn, true, 'Saving...');
+
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE_URL}/auth/update-profile`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ firstName, lastName })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'success') {
+          // Update localStorage
+          const user = JSON.parse(localStorage.getItem('user') || '{}');
+          user.firstName = firstName;
+          user.lastName = lastName;
+          localStorage.setItem('user', JSON.stringify(user));
+
+          showAlert('success', 'Profile updated successfully!');
+        } else {
+          throw new Error(data.message || 'Failed to update profile');
+        }
+
+      } catch (error) {
+        console.error('Error updating profile:', error);
+        showAlert('error', error.message || 'Could not update profile. Please try again.');
+      } finally {
+        setButtonLoading(saveBtn, false);
+      }
+    }
+
+    // =====================================================
+    // CHANGE PASSWORD
+    // =====================================================
+    async function changePassword() {
+      const currentPassword = document.getElementById('currentPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      // Validation
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        showAlert('error', 'Please fill in all password fields');
+        return;
+      }
+
+      if (newPassword.length < 8) {
+        showAlert('error', 'New password must be at least 8 characters long');
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        showAlert('error', 'New passwords do not match');
+        return;
+      }
+
+      if (currentPassword === newPassword) {
+        showAlert('error', 'New password must be different from current password');
+        return;
+      }
+
+      const changeBtn = document.getElementById('changePasswordBtn');
+      setButtonLoading(changeBtn, true, 'Changing...');
+
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE_URL}/auth/change-password`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            currentPassword,
+            newPassword
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'success') {
+          showAlert('success', 'Password changed successfully!');
+          
+          // Clear password fields
+          document.getElementById('currentPassword').value = '';
+          document.getElementById('newPassword').value = '';
+          document.getElementById('confirmPassword').value = '';
+        } else {
+          throw new Error(data.message || 'Failed to change password');
+        }
+
+      } catch (error) {
+        console.error('Error changing password:', error);
+        showAlert('error', error.message || 'Could not change password. Please check your current password and try again.');
+      } finally {
+        setButtonLoading(changeBtn, false);
+      }
+    }
+
+    // =====================================================
+    // SAVE ADDRESS
+    // =====================================================
+    async function saveAddress() {
+      const address = document.getElementById('address').value.trim();
+      const city = document.getElementById('city').value.trim();
+      const state = document.getElementById('state').value.trim();
+      const postalCode = document.getElementById('postalCode').value.trim();
+      const country = document.getElementById('country').value;
+
+      if (!address || !city || !country) {
+        showAlert('error', 'Please fill in at least address, city, and country');
+        return;
+      }
+
+      const saveBtn = document.getElementById('saveAddressBtn');
+      setButtonLoading(saveBtn, true, 'Saving...');
+
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE_URL}/auth/update-address`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            address,
+            city,
+            state,
+            postalCode,
+            country
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'success') {
+          // Update localStorage
+          const user = JSON.parse(localStorage.getItem('user') || '{}');
+          user.address = address;
+          user.city = city;
+          user.state = state;
+          user.postalCode = postalCode;
+          user.country = country;
+          localStorage.setItem('user', JSON.stringify(user));
+
+          showAlert('success', 'Shipping address updated successfully!');
+        } else {
+          throw new Error(data.message || 'Failed to update address');
+        }
+
+      } catch (error) {
+        console.error('Error updating address:', error);
+        showAlert('error', error.message || 'Could not update address. Please try again.');
+      } finally {
+        setButtonLoading(saveBtn, false);
+      }
+    }
+
+    // =====================================================
+    // SAVE NOTIFICATION PREFERENCES
+    // =====================================================
+    async function saveNotifications() {
+      const emailNotifications = document.getElementById('emailNotifications').checked;
+      const smsNotifications = document.getElementById('smsNotifications').checked;
+      const inAppNotifications = document.getElementById('inAppNotifications').checked;
+
+      const saveBtn = document.getElementById('saveNotificationsBtn');
+      setButtonLoading(saveBtn, true, 'Saving...');
+
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE_URL}/auth/notification-preferences`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: emailNotifications,
+            sms: smsNotifications,
+            inApp: inAppNotifications
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'success') {
+          // Update localStorage
+          const user = JSON.parse(localStorage.getItem('user') || '{}');
+          user.notificationPreferences = {
+            email: emailNotifications,
+            sms: smsNotifications,
+            inApp: inAppNotifications
+          };
+          localStorage.setItem('user', JSON.stringify(user));
+
+          showAlert('success', 'Notification preferences updated successfully!');
+        } else {
+          throw new Error(data.message || 'Failed to update preferences');
+        }
+
+      } catch (error) {
+        console.error('Error updating notifications:', error);
+        showAlert('error', error.message || 'Could not update preferences. Please try again.');
+      } finally {
+        setButtonLoading(saveBtn, false);
+      }
+    }
+
+    // =====================================================
+    // DELETE ACCOUNT
+    // =====================================================
+    function openDeleteModal() {
+      document.getElementById('deleteModal').classList.add('show');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').classList.remove('show');
+      document.getElementById('confirmDeletePassword').value = '';
+    }
+
+    async function deleteAccount() {
+      const password = document.getElementById('confirmDeletePassword').value;
+
+      if (!password) {
+        showAlert('error', 'Please enter your password to confirm deletion');
+        return;
+      }
+
+      const confirmBtn = document.getElementById('confirmDeleteBtn');
+      setButtonLoading(confirmBtn, true, 'Deleting...');
+
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE_URL}/auth/delete-account`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'success') {
+          // Clear all user data
+          localStorage.clear();
+          
+          showAlert('success', 'Account deleted successfully. Redirecting...');
+          
+          // Redirect to login after 2 seconds
+          setTimeout(() => {
+            window.location.href = 'login for buyers.html';
+          }, 2000);
+        } else {
+          throw new Error(data.message || 'Failed to delete account');
+        }
+
+      } catch (error) {
+        console.error('Error deleting account:', error);
+        showAlert('error', error.message || 'Could not delete account. Please check your password and try again.');
+        setButtonLoading(confirmBtn, false);
+      }
+    }
+
+    // =====================================================
+    // EVENT LISTENERS
+    // =====================================================
+    document.addEventListener('DOMContentLoaded', function() {
+      // Load user data on page load
+      loadUserData();
+
+      // Save profile button
+      document.getElementById('saveProfileBtn').addEventListener('click', saveProfile);
+
+      // Change password button
+      document.getElementById('changePasswordBtn').addEventListener('click', changePassword);
+
+      // Save address button
+      document.getElementById('saveAddressBtn').addEventListener('click', saveAddress);
+
+      // Save notifications button
+      document.getElementById('saveNotificationsBtn').addEventListener('click', saveNotifications);
+
+      // Delete account button
+      document.getElementById('deleteAccountBtn').addEventListener('click', openDeleteModal);
+
+      // Confirm delete button
+      document.getElementById('confirmDeleteBtn').addEventListener('click', deleteAccount);
+
+      // Close modal on background click
+      document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeDeleteModal();
+        }
+      });
+
+      // Enter key in password fields
+      ['currentPassword', 'newPassword', 'confirmPassword'].forEach(id => {
+        document.getElementById(id).addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            changePassword();
+          }
+        });
+      });
+
+      // Enter key in delete password field
+      document.getElementById('confirmDeletePassword').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          deleteAccount();
+        }
+      });
+    });
+  </script>
 
 </body>
 </html>
