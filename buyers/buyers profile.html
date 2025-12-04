@@ -354,10 +354,10 @@ async function savePhoneNumber() {
       // Update UI - display the new phone number
       document.getElementById('phoneNumber').textContent = phone;
 
-      // 🔥 HIDE INPUT & SHOW THE PHONE TEXT AGAIN
-      document.getElementById('phoneDisplay').style.display = 'block';
-      document.getElementById('phoneInputContainer').style.display = 'none';
-      document.getElementById('phoneInput').value = '';
+    // 🔥 HIDE INPUT & SHOW THE PHONE TEXT AGAIN
+document.getElementById('phoneDisplay').style.display = 'inline'; // Changed from 'block'
+document.getElementById('phoneInputContainer').style.display = 'none';
+document.getElementById('phoneInput').value = '';
 
       // Show success message
       showAlert('success', 'Phone number saved successfully!');
@@ -384,18 +384,17 @@ async function savePhoneNumber() {
     // =====================================================
     // PHONE NUMBER MANAGEMENT
     // =====================================================
-    function showPhoneInput() {
-      document.getElementById('phoneDisplay').style.display = 'none';
-      document.getElementById('phoneInputContainer').style.display = 'block';
-      document.getElementById('phoneInput').focus();
-    }
+  function showPhoneInput() {
+  document.getElementById('phoneDisplay').style.display = 'none';
+  document.getElementById('phoneInputContainer').style.display = 'inline'; // Changed from 'block'
+  document.getElementById('phoneInput').focus();
+}
 
-    function cancelPhoneInput() {
-      document.getElementById('phoneDisplay').style.display = 'block';
-      document.getElementById('phoneInputContainer').style.display = 'none';
-      document.getElementById('phoneInput').value = '';
-    }
-
+function cancelPhoneInput() {
+  document.getElementById('phoneDisplay').style.display = 'inline'; // Changed from 'block'
+  document.getElementById('phoneInputContainer').style.display = 'none';
+  document.getElementById('phoneInput').value = '';
+}
   
     // =====================================================
     // ALERT FUNCTIONS
