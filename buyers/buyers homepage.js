@@ -82,6 +82,18 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   showSlides();
 
+  // Update cart count when returning to this page (back/forward cache) or when window gains focus
+  window.addEventListener('pageshow', () => {
+    syncCartFromStorage();
+  });
+  window.addEventListener('focus', () => {
+    syncCartFromStorage();
+  });
+  // Listen to storage events from other tabs/windows
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'cart') syncCartFromStorage();
+  });
+
 
   // for search input
   function doSearch() {
@@ -268,6 +280,23 @@ window.addEventListener('DOMContentLoaded', () => {
   function saveCart() {
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCount();
+  }
+
+  // Sync cart from localStorage (useful when returning via back button or other pages)
+  function syncCartFromStorage() {
+    try {
+      const stored = JSON.parse(localStorage.getItem('cart')) || [];
+      // only assign if different to avoid unnecessary updates
+      const changed = JSON.stringify(stored) !== JSON.stringify(cart);
+      if (changed) {
+        cart = stored;
+        updateCartCount();
+      }
+    } catch (e) {
+      console.warn('syncCartFromStorage failed', e);
+      cart = [];
+      updateCartCount();
+    }
   }
 
   // Function to add item to backend API
