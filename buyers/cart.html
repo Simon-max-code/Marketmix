@@ -192,6 +192,90 @@
       margin-top: 60px;
       font-size: 15px;
     }
+
+    /* 🔥 EMPTY CART POPUP STYLES */
+    .empty-cart-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .empty-cart-popup.show {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .popup-content {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .popup-icon {
+      font-size: 64px;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .popup-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0 0 12px;
+    }
+
+    .popup-message {
+      color: var(--muted);
+      font-size: 1rem;
+      margin: 0 0 24px;
+      line-height: 1.5;
+    }
+
+    .popup-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .popup-btn:hover {
+      background: var(--accent-600);
+      transform: translateY(-2px);
+    }
   </style>
 </head>
 <body>
@@ -224,9 +308,23 @@
     <div class="totals-card">
       <div class="total">Total: $0.00</div>
       <div class="actions">
-        <a href="checkout.html" id="proceedCheckout" class="btn btn-primary">Proceed to Checkout</a>
+        <a href="#" id="proceedCheckout" class="btn btn-primary">Proceed to Checkout</a>
         <a href="reviews ratings.html" class="btn btn-outline">Go to Reviews & Ratings</a>
       </div>
+    </div>
+  </div>
+
+  <!-- 🔥 EMPTY CART POPUP -->
+  <div id="emptyCartPopup" class="empty-cart-popup">
+    <div class="popup-content">
+      <div class="popup-icon">
+        <i class="fas fa-shopping-cart"></i>
+      </div>
+      <h2 class="popup-title">Cart is Empty</h2>
+      <p class="popup-message">You haven't added any products to your cart yet. Browse our products and add items to get started!</p>
+      <button class="popup-btn" onclick="redirectToHomepage()">
+        <i class="fas fa-home"></i> Go to Homepage
+      </button>
     </div>
   </div>
 
@@ -288,6 +386,19 @@
       pruneRecentDeleted();
       el.textContent = String(recentDeleted.length || 0);
       el.style.display = recentDeleted.length ? 'inline-block' : 'none';
+    }
+
+    // 🔥 SHOW EMPTY CART POPUP
+    function showEmptyCartPopup() {
+      const popup = document.getElementById('emptyCartPopup');
+      if (popup) {
+        popup.classList.add('show');
+      }
+    }
+
+    // 🔥 REDIRECT TO HOMEPAGE
+    function redirectToHomepage() {
+      window.location.href = 'buyer homepage.html';
     }
 
     // Render functions
@@ -459,7 +570,6 @@
           // If user is logged in, call backend API
           if(token && item.productId) {
             try {
-              // debug: show what we're sending
               console.log('Restore: POST', `${CONFIG.API_BASE_URL}/cart/add`, { product_id: item.productId, quantity: item.quantity || 1 });
               const response = await fetch(`${CONFIG.API_BASE_URL}/cart/add`, {
                 method: 'POST',
@@ -476,18 +586,15 @@
               if(!response.ok) {
                 const errorData = await response.json().catch(()=>({}));
                 console.warn('Restore failed:', errorData);
-                // Fallback: restore locally if backend cannot restore (product missing/inactive)
                 const existingLocal = cart.find(c=>c.productId === item.productId || c.name === item.name);
                 if (existingLocal) existingLocal.quantity = (existingLocal.quantity||0) + (item.quantity||1);
                 else cart.push({
-                  // don't have backend id, store productId so future ops can reference product
                   productId: item.productId || null,
                   name: item.name,
                   price: item.price,
                   quantity: item.quantity || 1,
                   image: item.image || ''
                 });
-                // remove from recentDeleted and save
                 recentDeleted.splice(actualIndex, 1);
                 saveRecentDeleted();
                 saveAndRender();
@@ -499,11 +606,9 @@
               const data = await response.json();
               console.log('Item restored from backend:', data);
               
-              // remove from recentDeleted
               recentDeleted.splice(actualIndex, 1);
               saveRecentDeleted();
               
-              // reload cart from backend
               await loadBackendCart();
               saveAndRender();
               renderRecentDeleted();
@@ -513,11 +618,9 @@
               showMessage('Error restoring item');
             }
           } else {
-            // Fallback to localStorage only
             const existing = cart.find(c=>c.name === item.name);
             if(existing) existing.quantity = (existing.quantity||0) + (item.quantity||1);
             else cart.push(Object.assign({}, item));
-            // remove from recentDeleted
             recentDeleted.splice(actualIndex, 1);
             saveRecentDeleted();
             saveAndRender();
@@ -546,7 +649,6 @@
         const payload = await resp.json().catch(()=>null);
         if (!payload || !payload.data || !Array.isArray(payload.data.items)) return false;
 
-        // Map backend items into local `cart` shape (ensure we keep backend cart item `id`)
         cart = payload.data.items.map(it => ({
           id: it.id,
           productId: it.productId || it.product_id,
@@ -566,32 +668,35 @@
 
     // Initial load
     document.addEventListener('DOMContentLoaded', async ()=>{
-      // wire recent button
       const btn = document.getElementById('recentDeletedBtn'); if(btn) btn.addEventListener('click', openRecentDeleted);
-      // prune expired recentDeleted items on initial load and persist
       try { pruneRecentDeleted(); localStorage.setItem('recentDeleted', JSON.stringify(recentDeleted.slice(0,20))); } catch(e){}
       updateRecentDeletedBadge();
 
-      // If user is authenticated, try to load cart from backend (this will call saveAndRender())
       const token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
       const loaded = token ? await loadBackendCart().catch(()=>false) : false;
       if (!loaded) {
-        // fallback to local storage cart
         renderCart();
         updateCartCount();
       }
 
-      // wire proceed to checkout (keep existing gate behavior if present)
+      // 🔥 PROCEED TO CHECKOUT WITH EMPTY CART CHECK
       const proceed = document.getElementById('proceedCheckout');
       if(proceed){
         proceed.addEventListener('click', async (e)=>{
-          try{ e.preventDefault();
+          e.preventDefault();
+          
+          // 🔥 CHECK IF CART IS EMPTY
+          if (!cart || cart.length === 0) {
+            showEmptyCartPopup();
+            return false;
+          }
+
+          try{
             const _params = new URLSearchParams(window.location.search || '');
             const _forceLogin = _params.get('force_login') === '1';
             let token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
             if(_forceLogin) token = null;
             if(!token){ localStorage.setItem('after_login_redirect','/buyers/checkout.html'); window.location.href = '/buyers/login for buyers.html?next=checkout.html'; return false; }
-            // simple proceed
             window.location.href = 'checkout.html';
             return true;
           } catch(err){ localStorage.setItem('after_login_redirect','/buyers/checkout.html'); window.location.href = '/buyers/login for buyers.html?next=checkout.html'; }
@@ -614,3 +719,5 @@
     </div>
   </div>
 
+</body>
+</html>
