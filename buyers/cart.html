@@ -242,6 +242,24 @@
     let cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
     let recentDeleted = JSON.parse(localStorage.getItem('recentDeleted') || '[]');
 
+    // Recent-deleted TTL (5 days)
+    const RECENT_DELETED_TTL_MS = 5 * 24 * 60 * 60 * 1000; // 5 days in milliseconds
+
+    function pruneRecentDeleted() {
+      try {
+        const now = Date.now();
+        recentDeleted = (recentDeleted || []).filter(item => {
+          if (!item || !item.deletedAt) return false;
+          const t = new Date(item.deletedAt).getTime();
+          if (isNaN(t)) return false;
+          return (now - t) < RECENT_DELETED_TTL_MS;
+        });
+      } catch (e) {
+        console.warn('pruneRecentDeleted failed', e);
+        recentDeleted = [];
+      }
+    }
+
     function updateCartCount() {
       const count = cart.reduce((sum, item) => sum + (item.quantity||0), 0);
       const cartCount = document.querySelector('.cart-count');
@@ -257,13 +275,17 @@
     }
 
     function saveRecentDeleted() {
-      try { localStorage.setItem('recentDeleted', JSON.stringify(recentDeleted.slice(0,20))); } catch(e){}
+      try { 
+        pruneRecentDeleted();
+        localStorage.setItem('recentDeleted', JSON.stringify(recentDeleted.slice(0,20))); 
+      } catch(e){}
       updateRecentDeletedBadge();
     }
 
     function updateRecentDeletedBadge(){
       const el = document.getElementById('recentDeletedCount');
       if(!el) return;
+      pruneRecentDeleted();
       el.textContent = String(recentDeleted.length || 0);
       el.style.display = recentDeleted.length ? 'inline-block' : 'none';
     }
@@ -546,6 +568,8 @@
     document.addEventListener('DOMContentLoaded', async ()=>{
       // wire recent button
       const btn = document.getElementById('recentDeletedBtn'); if(btn) btn.addEventListener('click', openRecentDeleted);
+      // prune expired recentDeleted items on initial load and persist
+      try { pruneRecentDeleted(); localStorage.setItem('recentDeleted', JSON.stringify(recentDeleted.slice(0,20))); } catch(e){}
       updateRecentDeletedBadge();
 
       // If user is authenticated, try to load cart from backend (this will call saveAndRender())
