@@ -487,13 +487,54 @@
 
     function showMessage(msg){ const m=document.createElement('div'); m.textContent=msg; m.style.cssText='position:fixed;bottom:90px;right:20px;background:#10b981;color:#fff;padding:10px 14px;border-radius:8px;z-index:12000'; document.body.appendChild(m); setTimeout(()=>{ m.style.opacity='0'; setTimeout(()=>m.remove(),300); },1400); }
 
+    // Load cart from backend for authenticated users
+    async function loadBackendCart() {
+      try {
+        const token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
+        if (!token) return false;
+
+        const resp = await fetch(`${CONFIG.API_BASE_URL}/cart`, {
+          method: 'GET',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!resp.ok) return false;
+
+        const payload = await resp.json().catch(()=>null);
+        if (!payload || !payload.data || !Array.isArray(payload.data.items)) return false;
+
+        // Map backend items into local `cart` shape (ensure we keep backend cart item `id`)
+        cart = payload.data.items.map(it => ({
+          id: it.id,
+          productId: it.productId || it.product_id,
+          name: it.name || it.productName || '',
+          price: it.price || it.unitPrice || 0,
+          quantity: it.quantity || 1,
+          image: it.image || it.main_image_url || ''
+        }));
+
+        saveAndRender();
+        return true;
+      } catch (err) {
+        console.warn('loadBackendCart failed', err);
+        return false;
+      }
+    }
+
     // Initial load
-    document.addEventListener('DOMContentLoaded', ()=>{
+    document.addEventListener('DOMContentLoaded', async ()=>{
       // wire recent button
       const btn = document.getElementById('recentDeletedBtn'); if(btn) btn.addEventListener('click', openRecentDeleted);
       updateRecentDeletedBadge();
-      renderCart();
-      updateCartCount();
+
+      // If user is authenticated, try to load cart from backend (this will call saveAndRender())
+      const token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
+      const loaded = token ? await loadBackendCart().catch(()=>false) : false;
+      if (!loaded) {
+        // fallback to local storage cart
+        renderCart();
+        updateCartCount();
+      }
 
       // wire proceed to checkout (keep existing gate behavior if present)
       const proceed = document.getElementById('proceedCheckout');
