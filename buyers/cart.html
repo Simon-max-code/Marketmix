@@ -296,15 +296,69 @@
 
         const [minusBtn, quantitySpan, plusBtn, deleteBtn] = div.querySelectorAll('.item-actions *');
 
-        minusBtn.addEventListener('click', ()=>{
-          if(item.quantity > 1){ item.quantity -= 1; saveAndRender(); }
+        minusBtn.addEventListener('click', async ()=>{
+          if(item.quantity > 1){ 
+            item.quantity -= 1; 
+            
+            // Try backend update if item has id
+            try {
+              const token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
+              if (item.id && token) {
+                const resp = await fetch(`${CONFIG.API_BASE_URL}/cart/${item.id}`, { 
+                  method: 'PUT', 
+                  headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                  },
+                  body: JSON.stringify({ quantity: item.quantity })
+                });
+                if (resp.ok) {
+                  saveAndRender();
+                  return;
+                }
+              }
+            } catch(e) { console.warn('Backend update failed', e); }
+            
+            saveAndRender();
+          }
         });
-        plusBtn.addEventListener('click', ()=>{ item.quantity += 1; saveAndRender(); });
+
+        plusBtn.addEventListener('click', async ()=>{ 
+          item.quantity += 1; 
+          
+          // Try backend update if item has id
+          try {
+            const token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
+            if (item.id && token) {
+              const resp = await fetch(`${CONFIG.API_BASE_URL}/cart/${item.id}`, { 
+                method: 'PUT', 
+                headers: { 
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({ quantity: item.quantity })
+              });
+              if (resp.ok) {
+                saveAndRender();
+                return;
+              }
+            }
+          } catch(e) { console.warn('Backend update failed', e); }
+          
+          saveAndRender();
+        });
 
         deleteBtn.addEventListener('click', async ()=>{
           // push deleted item into recentDeleted (store a small snapshot)
           try{
-            const snapshot = { name: item.name, price: item.price, image: item.image || '', quantity: item.quantity || 1, deletedAt: new Date().toISOString() };
+            const snapshot = { 
+              productId: item.id || item.productId, 
+              name: item.name, 
+              price: item.price, 
+              image: item.image || '', 
+              quantity: item.quantity || 1, 
+              deletedAt: new Date().toISOString() 
+            };
             recentDeleted.push(snapshot);
             // keep only last 20
             if(recentDeleted.length > 20) recentDeleted = recentDeleted.slice(-20);
@@ -380,7 +434,7 @@
           // If user is logged in, call backend API
           if(token && item.productId) {
             try {
-              const response = await fetch(`${CONFIG.API_BASE_URL}/api/cart/restore`, {
+              const response = await fetch(`${CONFIG.API_BASE_URL}/cart/add`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
