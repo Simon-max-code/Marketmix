@@ -6,33 +6,194 @@
   <title>Buyer Account - MarketMix</title>
   <link rel="stylesheet" href="buyers profile .css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-      <!-- 🔒 BLOCK UNAUTHORIZED USERS -->
-    <script>
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.replace("login for buyers.html");
-        }
-    </script>
+  
+  <style>
+    /* Additional styles for phone input and buttons */
+    .phone-input-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 5px;
+    }
+
+    .phone-input-group input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    .phone-input-group input:focus {
+      outline: none;
+      border-color: #4CAF50;
+    }
+
+    .btn-save-phone {
+      padding: 8px 16px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-save-phone:hover {
+      background: #45a049;
+    }
+
+    .btn-save-phone:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-add-phone {
+      color: #2B6CB0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: underline;
+      padding: 0;
+    }
+
+    .btn-add-phone:hover {
+      color: #1e4d7b;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .alert-success {
+      background-color: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+
+    .alert-error {
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+
+    .spinner-small {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #f0f0f0;
+      border-top-color: #667eea;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+  </style>
+  
+  <!-- 🔒 BLOCK UNAUTHORIZED USERS -->
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.replace("login for buyers.html");
+    }
+  </script>
 </head>
 <body>
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-spinner"></div>
+  </div>
+
   <button class="back-btn" onclick="history.back()">
-      <i class="fas fa-chevron-left"></i> Back
-    </button>
+    <i class="fas fa-chevron-left"></i> Back
+  </button>
+  
   <div class="profile-container">
     <h2>My Account</h2>
 
+    <!-- Alert Container -->
+    <div id="alertContainer"></div>
+
     <!-- Profile Card -->
     <div class="profile-card">
-      <img src="elon.jfif" alt="Buyer Image">
+      <img id="profileImage" src="elon.jfif" alt="Buyer Image">
       <div class="info">
-        <p><strong>Name:</strong> Sarah Johnson</p>
-        <p><strong>Email:</strong> sarah@marketmix.com</p>
-        <p><strong>Phone:</strong> +234 812 345 6789</p>
-        <p><strong>Member Since:</strong> January 10, 2024</p>
+        <p><strong>Name:</strong> <span id="userName">Loading...</span></p>
+        <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
+        <p>
+          <strong>Phone:</strong> 
+          <span id="phoneDisplay">
+            <span id="phoneNumber">Loading...</span>
+            <button id="addPhoneBtn" class="btn-add-phone" style="display: none;" onclick="showPhoneInput()">
+              <i class="fas fa-plus"></i> Add Phone Number
+            </button>
+          </span>
+          <span id="phoneInputContainer" style="display: none;">
+            <div class="phone-input-group">
+              <input 
+                type="tel" 
+                id="phoneInput" 
+                placeholder="+234 812 345 6789"
+                pattern="[0-9+\s\-()]+"
+                maxlength="20"
+              />
+              <button id="savePhoneBtn" class="btn-save-phone" onclick="savePhoneNumber()">
+                <i class="fas fa-check"></i> Save
+              </button>
+              <button class="btn-add-phone" onclick="cancelPhoneInput()">Cancel</button>
+            </div>
+          </span>
+        </p>
+        <p><strong>Member Since:</strong> <span id="memberSince">Loading...</span></p>
       </div>
     </div>
-
-    <!-- Navigation Links -->
+  <!-- Navigation Links -->
     <div class="account-links">
                   <a href="cart.html" class="link-card"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
                         <a href="buyers wishlist.html" class="link-card"><i class="fa-solid fa-heart"></i> Wishlist</a>
@@ -46,9 +207,238 @@
       <a  href="logout.html" class="link-card"><i class="fa fa-sign-out" aria-hidden="true"></i> logout</a>
 
     </div>
+
+    
   </div>
+
   <footer>
-  © MarketMix 2025
-</footer>
+    © MarketMix 2025
+  </footer>
+
+  <script>
+    // =====================================================
+    // CONFIGURATION
+    // =====================================================
+    const API_BASE_URL = 'https://marketmix-backend-production.up.railway.app/api';
+
+    // =====================================================
+    // LOAD USER PROFILE ON PAGE LOAD
+    // =====================================================
+    document.addEventListener('DOMContentLoaded', async function() {
+      console.log('📄 Loading buyer profile...');
+      await loadUserProfile();
+    });
+
+    async function loadUserProfile() {
+      try {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        // Hide loading overlay
+        document.getElementById('loadingOverlay').style.display = 'none';
+
+        // Populate user data from localStorage first (for instant display)
+        if (user.firstName && user.lastName) {
+          document.getElementById('userName').textContent = `${user.firstName} ${user.lastName}`;
+        }
+        if (user.email) {
+          document.getElementById('userEmail').textContent = user.email;
+        }
+
+        // Handle phone number
+        if (user.phone) {
+          document.getElementById('phoneNumber').textContent = user.phone;
+          document.getElementById('addPhoneBtn').style.display = 'none';
+        } else {
+          document.getElementById('phoneNumber').textContent = '';
+          document.getElementById('addPhoneBtn').style.display = 'inline-block';
+        }
+
+        // Format member since date
+        if (user.createdAt) {
+          const date = new Date(user.createdAt);
+          const options = { year: 'numeric', month: 'long', day: 'numeric' };
+          document.getElementById('memberSince').textContent = date.toLocaleDateString('en-US', options);
+        } else {
+          document.getElementById('memberSince').textContent = 'Recently';
+        }
+
+        // Fetch fresh data from backend
+        console.log('🔄 Fetching fresh user data from backend...');
+        const response = await fetch(`${API_BASE_URL}/auth/me`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Fresh user data received:', data);
+
+          if (data.status === 'success' && data.data.user) {
+            const freshUser = data.data.user;
+            
+            // Update localStorage with fresh data
+            localStorage.setItem('user', JSON.stringify(freshUser));
+
+            // Update UI with fresh data
+            document.getElementById('userName').textContent = `${freshUser.firstName} ${freshUser.lastName}`;
+            document.getElementById('userEmail').textContent = freshUser.email;
+
+            // Update phone display
+            if (freshUser.phone) {
+              document.getElementById('phoneNumber').textContent = freshUser.phone;
+              document.getElementById('addPhoneBtn').style.display = 'none';
+            } else {
+              document.getElementById('phoneNumber').textContent = '';
+              document.getElementById('addPhoneBtn').style.display = 'inline-block';
+            }
+
+            if (freshUser.createdAt) {
+              const date = new Date(freshUser.createdAt);
+              const options = { year: 'numeric', month: 'long', day: 'numeric' };
+              document.getElementById('memberSince').textContent = date.toLocaleDateString('en-US', options);
+            }
+          }
+        } else {
+          console.warn('⚠️ Could not fetch fresh data, using cached data');
+        }
+
+      } catch (error) {
+        console.error('❌ Error loading profile:', error);
+        document.getElementById('loadingOverlay').style.display = 'none';
+        showAlert('error', 'Could not load profile data');
+      }
+    }
+
+    // =====================================================
+    // PHONE NUMBER MANAGEMENT
+    // =====================================================
+    function showPhoneInput() {
+      document.getElementById('phoneDisplay').style.display = 'none';
+      document.getElementById('phoneInputContainer').style.display = 'block';
+      document.getElementById('phoneInput').focus();
+    }
+
+    function cancelPhoneInput() {
+      document.getElementById('phoneDisplay').style.display = 'block';
+      document.getElementById('phoneInputContainer').style.display = 'none';
+      document.getElementById('phoneInput').value = '';
+    }
+
+    async function savePhoneNumber() {
+      const phoneInput = document.getElementById('phoneInput');
+      const phone = phoneInput.value.trim();
+
+      // Validate phone number
+      if (!phone) {
+        showAlert('error', 'Please enter a phone number');
+        return;
+      }
+
+      if (phone.length < 10) {
+        showAlert('error', 'Please enter a valid phone number');
+        return;
+      }
+
+      console.log('📞 Saving phone number:', phone);
+
+      try {
+        const token = localStorage.getItem('token');
+        const saveBtn = document.getElementById('savePhoneBtn');
+
+        // Show loading state
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="spinner-small"></span> Saving...';
+
+        const response = await fetch(`${API_BASE_URL}/auth/update-phone`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ phone })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'success') {
+          console.log('✅ Phone number saved successfully');
+
+          // Update localStorage
+          const user = JSON.parse(localStorage.getItem('user') || '{}');
+          user.phone = phone;
+          localStorage.setItem('user', JSON.stringify(user));
+
+          // Update UI
+          document.getElementById('phoneNumber').textContent = phone;
+          document.getElementById('phoneDisplay').style.display = 'block';
+          document.getElementById('phoneInputContainer').style.display = 'none';
+          document.getElementById('phoneInput').value = '';
+          document.getElementById('addPhoneBtn').style.display = 'none';
+
+          showAlert('success', 'Phone number added successfully!');
+        } else {
+          throw new Error(data.message || 'Failed to save phone number');
+        }
+
+      } catch (error) {
+        console.error('❌ Error saving phone:', error);
+        showAlert('error', error.message || 'Could not save phone number. Please try again.');
+      } finally {
+        // Reset button state
+        const saveBtn = document.getElementById('savePhoneBtn');
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fas fa-check"></i> Save';
+      }
+    }
+
+    // =====================================================
+    // ALERT FUNCTIONS
+    // =====================================================
+    function showAlert(type, message) {
+      const alertContainer = document.getElementById('alertContainer');
+      
+      // Remove existing alerts
+      alertContainer.innerHTML = '';
+
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        <span>${message}</span>
+      `;
+
+      alertContainer.appendChild(alert);
+
+      // Auto-remove after 5 seconds
+      setTimeout(() => {
+        alert.remove();
+      }, 5000);
+    }
+
+    // =====================================================
+    // PHONE INPUT - ALLOW ONLY NUMBERS AND SPECIAL CHARS
+    // =====================================================
+    document.addEventListener('DOMContentLoaded', function() {
+      const phoneInput = document.getElementById('phoneInput');
+      if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+          // Allow only numbers, +, spaces, hyphens, and parentheses
+          this.value = this.value.replace(/[^0-9+\s\-()]/g, '');
+        });
+
+        // Submit on Enter key
+        phoneInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            savePhoneNumber();
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>
