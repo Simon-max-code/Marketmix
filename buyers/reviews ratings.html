@@ -4,31 +4,28 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-   <!-- 🔒 BLOCK UNAUTHORIZED USERS -->
-    <script>
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.replace("login for buyers.html");
-        }
-    </script>
-<title>My Reviews — MarketMix (Buyer)</title>
+<!-- 🔒 BLOCK UNAUTHORIZED USERS -->
+<script>
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.replace("login for buyers.html");
+  }
+</script>
+<title>My Reviews — MarketMix</title>
 
 <style>
- :root {
-  --bg:   #FFF7ED;
-  --card:#ffffff;
+:root {
+  --bg: #FFF7ED;
+  --card: #ffffff;
   --border: #e0e0e0;
   --muted: #666;
-  --accent:  #F97316;
+  --accent: #F97316;
   --gold: #d1c323;
   --success: #38a169;
   --danger: #e53e3e;
-  --maxw: 1000px;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -39,15 +36,12 @@ body {
 }
 
 .wrap {
-  max-width: var(--maxw);
+  max-width: 1200px;
   margin: 32px auto;
   padding: 20px;
 }
 
-h1 {
-  text-align: center;
-  margin-bottom: 24px;
-}
+h1 { text-align: center; margin-bottom: 24px; }
 
 .grid {
   display: grid;
@@ -63,43 +57,8 @@ h1 {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 18px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
-
+  box-shadow: 0 6px 12px rgba(0,0,0,0.08);
 }
-
-
-.review {
-  display: flex;
-  gap: 14px;
-  padding: 14px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--card);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-
-/* Alternate backgrounds for visual variety */
-.review:nth-child(odd) {
-  background: #f5ecd1; /* soft cream, matches warm gradient */
-}
-
-.review:nth-child(even) {
-  background: #f5ecd1; /* light blue tint */
-}
-
-/* Sentiment-based backgrounds */
-.review.good {
-  background: #61ba79; /* light green, matches var(--success) */
-}
-
-.review.neutral {
-  background: #a4a08f; /* warm yellow tint */
-}
-
-.review.bad {
-  background: #c36b6b; /* light red, matches var(--danger) */
-}
-
 
 .controls {
   display: flex;
@@ -107,6 +66,7 @@ h1 {
   flex-wrap: wrap;
   margin-bottom: 16px;
 }
+
 .controls select,
 .controls input[type=search] {
   padding: 10px 12px;
@@ -115,6 +75,7 @@ h1 {
   background: #f5f5f5;
   font-size: 15px;
 }
+
 .controls input[type=search] {
   flex: 2;
   min-width: 240px;
@@ -138,18 +99,17 @@ h1 {
 .avatar {
   width: 50px;
   height: 50px;
-  border-radius: 6px;
-  background: #ada598;
+  border-radius: 50%;
+  background: var(--accent);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  color: #555;
+  color: #fff;
+  flex-shrink: 0;
 }
 
-.stars {
-  color: var(--gold);
-}
+.stars { color: var(--gold); font-size: 18px; }
 
 .meta {
   font-size: 13px;
@@ -159,23 +119,24 @@ h1 {
 
 .btn {
   background: var(--accent);
-  color: #ffffff;
+  color: #fff;
   padding: 8px 12px;
   border-radius: 6px;
   border: none;
   cursor: pointer;
   font-size: 14px;
-  margin-right: 8px; /* spacing between buttons */
+  margin-right: 8px;
 }
-.btn:last-child {
-  margin-right: 0; /* no extra gap after last button */
-}
-.btn:hover {
-  background:  #EA580C;
-}
+
+.btn:hover { background: #EA580C; }
 .btn.ghost {
   background: #f2f2f2;
   color: #333;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 textarea {
@@ -188,555 +149,462 @@ textarea {
   font-size: 15px;
 }
 
-.media-row img,
-.media-row video {
-  border-radius: 6px;
-  border: 1px solid var(--border);
-}
-.preview-area img,
-.preview-area video {
-  border-radius: 6px;
-  border: 1px solid var(--border);
-}
-
 .toast {
   position: fixed;
-  right: 5px;
+  right: 20px;
   top: 20px;
-  padding: 10px 14px;
-  border-radius: 6px;
+  padding: 12px 20px;
+  border-radius: 8px;
   color: #fff;
   z-index: 999;
   transform: translateX(120%);
   transition: transform .3s ease;
   font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
+
 .toast.success { background: var(--success); }
 .toast.error { background: var(--danger); }
 .toast.show { transform: translateX(0); }
 
-
-
-  /*footer*/
-  footer {
-  text-align: center;
-  padding: 15px;
-  background-color: #c7c7c7;
-  color: #555;
-  font-size: 14px;
-  margin-top: 30px;
-}
-
-
-
-
-.navbar {
-  background: var(--card);
-  padding: 10px 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.95);
   display: flex;
-  gap: 20px;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  position: relative;
-  max-width: 800px;
-  margin: 20px auto; /* center horizontally */
-  border: 1px solid var(--border);
+  z-index: 9999;
 }
 
-@media (max-width: 768px) {
-  .navbar{
-    background: var(--card);
-  padding: 7px 15px;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.06);
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  position: relative;
-  max-width: 400px;
-  margin: 20px auto; /* center horizontally */
-  margin-bottom: -33px;
-  border: 1px solid var(--border);
-  }
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f0f0f0;
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
-.navbar a {
-  text-decoration: none;
-  color: var(--accent);
-  font-weight: 500;
-  transition: color 0.2s ease;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-.navbar a:hover {
-  color: #1a4d80;
-}
-
-
-
-footer {
-     background: rgba(0, 0, 0, 0.7);
-      color: #f8fafc;
-      text-align: center;
-      padding: 25px 15px;
-      margin-top: 60px;
-      font-size: 15px;
-    }
-
-
-
-    .back-btn {
+.back-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #F97316; /* your site yellow theme */
+  background: #F97316;
   color: #000;
   border: none;
   padding: 10px 16px;
   border-radius: 10px;
   font-size: 16px;
   cursor: pointer;
-  margin: 2px;
+  margin-bottom: 20px;
   transition: 0.3s;
-}
-
-.back-btn i {
-  font-size: 18px;
 }
 
 .back-btn:hover {
   background: #EA580C;
   transform: translateY(-2px);
 }
+
+.star-input {
+  display: flex;
+  gap: 5px;
+  margin: 10px 0;
+}
+
+.star-input button {
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: #ddd;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.star-input button:hover,
+.star-input button.active {
+  color: var(--gold);
+}
+
+.media-preview {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.media-preview img,
+.media-preview video {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.review-media {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.review-media img,
+.review-media video {
+  max-width: 150px;
+  max-height: 150px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.seller-reply {
+  margin-top: 12px;
+  padding: 10px;
+  background: #f9f9f9;
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+footer {
+  background: rgba(0, 0, 0, 0.7);
+  color: #f8fafc;
+  text-align: center;
+  padding: 25px 15px;
+  margin-top: 60px;
+  font-size: 15px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--muted);
+}
+
+.verified-badge {
+  display: inline-block;
+  background: var(--success);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  margin-left: 8px;
+}
 </style>
 </head>
 <body>
 
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay" style="display:none;">
+  <div class="loading-spinner"></div>
+  <p>Loading reviews...</p>
+</div>
 
+<button class="back-btn" onclick="history.back()">
+  <i class="fas fa-chevron-left"></i> Back
+</button>
 
-
- <button class="back-btn" onclick="history.back()">
-      <i class="fas fa-chevron-left"></i> Back
-    </button>
-
-  <div class="wrap">
-    <h1>⭐ My Reviews (buyer)</h1>
-    <div class="grid">
-      <!-- LEFT: reviews + form -->
-      <main>
-        <div class="card" aria-labelledby="section-stats">
-          <div class="controls" role="region" aria-label="filters">
-            <select id="sortBy" title="Sort reviews">
-              <option value="newest">Sort: Newest</option>
-              <option value="oldest">Sort: Oldest</option>
-              <option value="highest">Sort: Highest rating</option>
-              <option value="lowest">Sort: Lowest rating</option>
-            </select>
-            <select id="filterStar" title="Filter by star">
-              <option value="">All ratings</option>
-              <option value="5">5★</option>
-              <option value="4">4★</option>
-              <option value="3">3★</option>
-              <option value="2">2★</option>
-              <option value="1">1★</option>
-            </select>
-            <input type="search" id="q" placeholder="Search reviews..." style="flex:1" />
-            <button id="clearAll" class="btn ghost">Clear</button>
-          </div>
-
-          <div id="reviewList" class="review-list" aria-live="polite"></div>
+<div class="wrap">
+  <h1>⭐ My Reviews</h1>
+  <div class="grid">
+    <!-- LEFT: Reviews list -->
+    <main>
+      <div class="card">
+        <div class="controls">
+          <select id="sortBy">
+            <option value="newest">Sort: Newest</option>
+            <option value="oldest">Sort: Oldest</option>
+            <option value="highest">Sort: Highest rating</option>
+            <option value="lowest">Sort: Lowest rating</option>
+          </select>
+          <select id="filterStar">
+            <option value="">All ratings</option>
+            <option value="5">5★</option>
+            <option value="4">4★</option>
+            <option value="3">3★</option>
+            <option value="2">2★</option>
+            <option value="1">1★</option>
+          </select>
+          <input type="search" id="searchQuery" placeholder="Search reviews..." />
+          <button id="clearFilters" class="btn ghost">Clear</button>
         </div>
 
-        <div class="card" style="margin-top:14px">
-          <h3 id="formTitle">Leave a review (buyer)</h3>
-          <div style="display:flex;gap:12px;align-items:center">
-            <img src="home and kitchen.webp" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:8px">
-            <div>
-              <strong id="productTitle">Classic Leather Bag</strong>
-              <div class="small">Order # <input id="orderId" placeholder="e.g. MMX123456" style="border:none;background:transparent;outline:none;width:110px"/></div>
-            </div>
-          </div>
+        <div id="reviewList" class="review-list"></div>
+      </div>
+    </main>
 
-          <div style="margin-top:8px">
-            <label class="small">Rating <span class="small muted">(required)</span></label>
-            <div id="rateWidget" class="star-input" role="radiogroup" aria-label="Rating">
-              <button  data-value="1" aria-label="1 star">★</button>
-              <button data-value="2" aria-label="2 stars">★</button>
-              <button data-value="3" aria-label="3 stars">★</button>
-              <button data-value="4" aria-label="4 stars">★</button>
-              <button data-value="5" aria-label="5 stars">★</button>
-            </div>
-          </div>
-
-          <textarea id="reviewText" placeholder="Share your experience..." maxlength="1200"></textarea>
-
-          <div class="form-row">
-            <input id="media" type="file" accept="image/*,video/*" multiple />
-            <div class="small muted" id="charCnt">0 / 1200</div>
-            <button id="submit" class="btn">Submit</button>
-          </div>
-
-          <div class="preview-area" id="previewArea" aria-live="polite"></div>
+    <!-- RIGHT: Summary + Write new review -->
+    <aside>
+      <div class="card">
+        <h4>Summary</h4>
+        <div style="margin-top:12px">
+          <div style="font-size:28px;font-weight:700" id="avgRating">0.0</div>
+          <div class="small muted" id="totalReviews">0 reviews</div>
         </div>
-      </main>
+      </div>
 
-      <!-- RIGHT: summary + moderation demo -->
-      <aside>
-        <div class="card">
-          <h4>Summary</h4>
-          <div class="small muted">Average rating & counts (client-only)</div>
-          <div style="margin-top:8px">
-            <div style="font-size:28px;font-weight:700" id="avg">0.0</div>
-            <div class="small muted" id="count">0 reviews</div>
-          </div>
-        </div>
-
-        <div class="card" style="margin-top:12px">
-          <h4>Flags (demo)</h4>
-          <div id="flags" class="small muted">No flagged reviews</div>
-          <div style="margin-top:8px"><button id="clearFlags" class="btn ghost">Clear Flags</button></div>
-        </div>
-      </aside>
-    </div>
+      <div class="card" style="margin-top:12px">
+        <h4>Write New Review</h4>
+        <p class="small muted">After completing a purchase</p>
+        <button class="btn" style="width:100%;margin:10px 0" onclick="showWriteReviewForm()">
+          <i class="fas fa-plus"></i> Write Review
+        </button>
+      </div>
+    </aside>
   </div>
+</div>
 
-  <div id="toast" class="toast success" role="status" aria-live="polite">Saved</div>
+<div id="toast" class="toast success">Saved</div>
+
+<footer>© MarketMix 2025</footer>
 
 <script>
+// ==============================================
+// CONFIGURATION
+// ==============================================
+const API_BASE_URL = 'https://marketmix-backend-production.up.railway.app/api';
+let allReviews = [];
+let currentEditingId = null;
 
-  
-/* Front-end buyer reviews w/ media saved to localStorage */
-const STORAGE = 'mmx:buyer:reviews:v1';
-const FLAGKEY = 'mmx:buyer:flags:v1';
-const me = { id: 'you', name: 'You' };
-const MAX_FILES = 3;
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
-const MAX_VIDEO_BYTES = 10 * 1024 * 1024; // 10MB
-
-const sample = [
-  { id:'r1', product:'Wireless Bluetooth Headset', orderId:'MMX0001', author:me, rating:5, body:'Great sound and battery life. Worth the price!', createdAt:'2025-06-01T10:00:00Z', verified:true, media:[], replies:[{by:'Seller',text:'Thanks! Glad you like it.',when:'2025-06-02T09:00:00Z'}] },
-  { id:'r2', product:'Classic Leather Bag', orderId:'MMX123456', author:me, rating:4, body:'Very stylish and strong. My favorite purchase!', createdAt:'2025-05-20T12:00:00Z', verified:true, media:[], replies:[] }
-];
-
-function load(){
-  try{
-    const raw = localStorage.getItem(STORAGE);
-    if(!raw){ localStorage.setItem(STORAGE, JSON.stringify(sample)); return sample.slice(); }
-    return JSON.parse(raw);
-  }catch(e){ return sample.slice(); }
-}
-function save(data){ localStorage.setItem(STORAGE, JSON.stringify(data)); render(); }
-function flagsLoad(){ try{return JSON.parse(localStorage.getItem(FLAGKEY)||'[]');}catch(e){return []} }
-function flagsSave(f){ localStorage.setItem(FLAGKEY, JSON.stringify(f)); renderFlags(); }
-
-const reviewList = document.getElementById('reviewList');
-const toastEl = document.getElementById('toast');
-const previewArea = document.getElementById('previewArea');
-
-function showToast(msg, type='success'){
-  toastEl.textContent = msg;
-  toastEl.className = 'toast ' + (type==='error' ? 'error' : 'success') + ' show';
-  setTimeout(()=> toastEl.classList.remove('show'), 2600);
+// ==============================================
+// UTILITY FUNCTIONS
+// ==============================================
+function showToast(msg, type = 'success') {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = `toast ${type} show`;
+  setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-function computeStats(reviews){
-  const count = reviews.length;
-  const sum = reviews.reduce((s,r)=>s+r.rating,0);
-  return {count, avg: count ? Math.round((sum/count)*10)/10 : 0};
+function showLoading(show = true) {
+  document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
 }
 
-function formatStars(n){ return '★'.repeat(n) + '☆'.repeat(5-n); }
-function escapeHtml(s){ return String(s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+function formatStars(rating) {
+  return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+}
 
-/* Render reviews including media */
-function render(){
-  const reviews = load();
-  reviewList.innerHTML = '';
-  const filter = document.getElementById('filterStar').value;
-  const q = document.getElementById('q').value.trim().toLowerCase();
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// ==============================================
+// LOAD REVIEWS
+// ==============================================
+async function loadMyReviews() {
+  showLoading(true);
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/reviews/my-reviews`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.status === 'success') {
+      allReviews = data.data.reviews;
+      renderReviews();
+      updateSummary();
+    } else {
+      throw new Error(data.message || 'Failed to load reviews');
+    }
+  } catch (error) {
+    console.error('Error loading reviews:', error);
+    showToast(error.message || 'Failed to load reviews', 'error');
+  } finally {
+    showLoading(false);
+  }
+}
+
+// ==============================================
+// RENDER REVIEWS
+// ==============================================
+function renderReviews() {
+  const container = document.getElementById('reviewList');
   const sortBy = document.getElementById('sortBy').value;
+  const filterStar = document.getElementById('filterStar').value;
+  const query = document.getElementById('searchQuery').value.toLowerCase();
 
-  let view = reviews.slice();
-  if(filter) view = view.filter(r=> String(r.rating) === filter);
-  if(q) view = view.filter(r=> (r.body + ' ' + r.product).toLowerCase().includes(q));
-  if(sortBy === 'newest') view.sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
-  if(sortBy === 'oldest') view.sort((a,b)=> new Date(a.createdAt) - new Date(b.createdAt));
-  if(sortBy === 'highest') view.sort((a,b)=> b.rating - a.rating);
-  if(sortBy === 'lowest') view.sort((a,b)=> a.rating - b.rating);
+  let filtered = allReviews.slice();
 
-  view.forEach(r => {
-    const el = document.createElement('div'); el.className='review';
+  // Filter by rating
+  if (filterStar) {
+    filtered = filtered.filter(r => r.rating == filterStar);
+  }
+
+  // Filter by search query
+  if (query) {
+    filtered = filtered.filter(r => 
+      (r.body || '').toLowerCase().includes(query) ||
+      (r.productName || '').toLowerCase().includes(query)
+    );
+  }
+
+  // Sort
+  if (sortBy === 'newest') {
+    filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  } else if (sortBy === 'oldest') {
+    filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  } else if (sortBy === 'highest') {
+    filtered.sort((a, b) => b.rating - a.rating);
+  } else if (sortBy === 'lowest') {
+    filtered.sort((a, b) => a.rating - b.rating);
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="empty-state"><i class="fas fa-star" style="font-size:48px;color:#ddd;"></i><p>No reviews yet. Write your first review after purchasing!</p></div>';
+    return;
+  }
+
+  container.innerHTML = '';
+
+  filtered.forEach(review => {
+    const div = document.createElement('div');
+    div.className = 'review';
+    
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const initial = (user.firstName || 'U')[0].toUpperCase();
+
+    // Build media HTML
     let mediaHtml = '';
-    if(r.media && r.media.length){
-      mediaHtml = `<div class="media-row">`;
-      r.media.forEach(m=>{
-        if(m.type.startsWith('image')) mediaHtml += `<img src="${m.data}" alt="review image">`;
-        else mediaHtml += `<video controls src="${m.data}"></video>`;
+    if (review.media && review.media.length > 0) {
+      mediaHtml = '<div class="review-media">';
+      review.media.forEach(m => {
+        if (m.type === 'image') {
+          mediaHtml += `<img src="${m.url}" alt="Review photo" onclick="window.open('${m.url}', '_blank')">`;
+        } else {
+          mediaHtml += `<video controls src="${m.url}"></video>`;
+        }
       });
-      mediaHtml += `</div>`;
+      mediaHtml += '</div>';
     }
 
-    el.innerHTML = `
-      <div class="left">
-        <div class="avatar">${(r.author && r.author.name ? r.author.name[0] : 'U')}</div>
-      </div>
-      <div class="right">
-        <div style="display:flex;align-items:center;justify-content:space-between">
+    // Build replies HTML
+    let repliesHtml = '';
+    if (review.replies && review.replies.length > 0) {
+      review.replies.forEach(reply => {
+        repliesHtml += `<div class="seller-reply"><strong>Seller:</strong> ${escapeHtml(reply.text)}</div>`;
+      });
+    }
+
+    div.innerHTML = `
+      <div class="avatar">${initial}</div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:start">
           <div>
-            <strong>${escapeHtml(r.product)}</strong>
-            <div class="stars" aria-hidden="true">${formatStars(r.rating)}</div>
-            <div class="meta">${new Date(r.createdAt).toLocaleString()} ${r.verified? ' • <span class="small muted">Verified</span>':''}</div>
+            <strong>${escapeHtml(review.productName || 'Product')}</strong>
+            ${review.verifiedPurchase ? '<span class="verified-badge"><i class="fas fa-check"></i> Verified</span>' : ''}
+            <div class="stars">${formatStars(review.rating)}</div>
+            <div class="meta">${new Date(review.createdAt).toLocaleDateString()} ${review.status === 'flagged' ? '• <span style="color:red">Flagged</span>' : ''}</div>
           </div>
-          <div style="text-align:right">
-            ${r.author && r.author.id === me.id ? '<div class="tiny muted">You</div>' : ''}
-            <div class="tiny muted">Order: ${escapeHtml(r.orderId||'—')}</div>
+          <div>
+            <span class="small muted"><i class="fas fa-thumbs-up"></i> ${review.helpfulCount || 0}</span>
           </div>
         </div>
-        <div style="margin-top:8px">${escapeHtml(r.body)}</div>
+        <div style="margin-top:8px">${escapeHtml(review.body)}</div>
         ${mediaHtml}
-        ${r.replies && r.replies.length ? `<div class="seller-reply"><strong>Seller:</strong> ${escapeHtml(r.replies[0].text)}</div>` : ''}
-        <div class="actions">
-          <button class="btn ghost" data-act="edit" data-id="${r.id}">Edit</button>
-          <button class="btn ghost" data-act="delete" data-id="${r.id}">Delete</button>
-          <button class="btn" data-act="reply" data-id="${r.id}">Mock seller reply</button>
-          <button class="btn ghost tiny" data-act="flag" data-id="${r.id}">Flag</button>
+        ${repliesHtml}
+        <div style="margin-top:10px">
+          <button class="btn ghost" onclick="editReview('${review.id}')"><i class="fas fa-edit"></i> Edit</button>
+          <button class="btn ghost" onclick="deleteReview('${review.id}')"><i class="fas fa-trash"></i> Delete</button>
         </div>
       </div>
     `;
-    reviewList.appendChild(el);
+
+    container.appendChild(div);
   });
-
-  // stats
-  const stats = computeStats(reviews);
-  document.getElementById('avg').textContent = stats.avg.toFixed(1);
-  document.getElementById('count').textContent = `${stats.count} review${stats.count !== 1 ? 's' : ''}`;
-
-  // wire actions
-  reviewList.querySelectorAll('button').forEach(b=>{
-    const act = b.dataset.act, id = b.dataset.id;
-    b.addEventListener('click', ()=> {
-      if(act === 'edit') startEdit(id);
-      if(act === 'delete') deleteReview(id);
-      if(act === 'reply') mockSellerReply(id);
-      if(act === 'flag') flagReview(id);
-    });
-  });
-  renderFlags();
 }
 
-/* CRUD actions (client-only) */
-function addReview(obj){
-  const reviews = load();
-  reviews.unshift(obj);
-  save(reviews);
-  showToast('Review added');
+// ==============================================
+// UPDATE SUMMARY
+// ==============================================
+function updateSummary() {
+  const total = allReviews.length;
+  const avg = total > 0 ? (allReviews.reduce((sum, r) => sum + r.rating, 0) / total).toFixed(1) : 0;
+
+  document.getElementById('avgRating').textContent = avg;
+  document.getElementById('totalReviews').textContent = `${total} review${total !== 1 ? 's' : ''}`;
 }
 
-function updateReview(id, patch){
-  const reviews = load();
-  const i = reviews.findIndex(r=> r.id === id);
-  if(i === -1){ showToast('Review not found', 'error'); return; }
-  reviews[i] = {...reviews[i], ...patch};
-  save(reviews);
-  showToast('Review updated');
-}
+// ==============================================
+// DELETE REVIEW
+// ==============================================
+async function deleteReview(reviewId) {
+  if (!confirm('Delete this review? This action cannot be undone.')) return;
 
-function deleteReview(id){
-  if(!confirm('Delete this review? This cannot be undone (client-only).')) return;
-  const reviews = load().filter(r=> r.id !== id);
-  save(reviews);
-  showToast('Review deleted');
-}
-
-function mockSellerReply(id){
-  const text = prompt('Write a mock seller reply (demo):','Thanks for the feedback — we appreciate it!');
-  if(!text) return;
-  const when = new Date().toISOString();
-  const reviews = load();
-  const r = reviews.find(x=> x.id === id);
-  if(r){ r.replies = r.replies || []; r.replies.unshift({by:'Seller', text, when}); save(reviews); showToast('Mock reply added'); }
-}
-
-function flagReview(id){
-  const flags = flagsLoad();
-  if(flags.includes(id)){ showToast('Already flagged', 'error'); return; }
-  flags.push(id); flagsSave(flags); showToast('Flagged for moderation (demo)');
-}
-
-function renderFlags(){
-  const flags = flagsLoad();
-  document.getElementById('flags').textContent = flags.length ? flags.join(', ') : 'No flagged reviews';
-}
-document.getElementById('clearFlags').addEventListener('click', ()=> { localStorage.removeItem(FLAGKEY); renderFlags(); showToast('Flags cleared'); });
-
-/* Edit flow: inline edit card (keeps media) */
-let editingId = null;
-function startEdit(id){
-  if(editingId){ showToast('Finish the current edit first','error'); return; }
-  const reviews = load(); const r = reviews.find(x=> x.id === id);
-  if(!r) return;
-  editingId = id;
-  // fill form with review data (we reuse the main form)
-  document.getElementById('formTitle').textContent = 'Edit your review';
-  document.getElementById('productTitle').textContent = r.product || 'Product';
-  document.getElementById('orderId').value = r.orderId || '';
-  document.getElementById('reviewText').value = r.body || '';
-  document.getElementById('charCnt').textContent = `${(r.body||'').length} / 1200`;
-  // set stars
-  selected = r.rating || 0;
-  rateWidget.querySelectorAll('button').forEach(x=> x.classList.toggle('active', Number(x.dataset.value) <= selected));
-  // preview existing media
-  previewArea.innerHTML = '';
-  if(r.media && r.media.length){
-    r.media.forEach(m=>{
-      if(m.type.startsWith('image')) {
-        const img = document.createElement('img'); img.src = m.data; previewArea.appendChild(img);
-      } else {
-        const v = document.createElement('video'); v.src = m.data; v.controls = true; previewArea.appendChild(v);
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
       }
     });
-  }
-  // scroll to form
-  window.scrollTo({top: document.querySelector('.card[style]').offsetTop - 20, behavior: 'smooth'});
-}
 
-/* Submit new review (or save edited one) */
-const rateWidget = document.getElementById('rateWidget');
-let selected = 0;
-rateWidget.querySelectorAll('button').forEach(b=>{
-  b.addEventListener('click', ()=> {
-    selected = Number(b.dataset.value);
-    rateWidget.querySelectorAll('button').forEach(x=> x.classList.toggle('active', Number(x.dataset.value) <= selected));
-  });
-});
+    const data = await response.json();
 
-document.getElementById('reviewText').addEventListener('input', e=>{
-  document.getElementById('charCnt').textContent = `${e.target.value.length} / 1200`;
-});
-
-/* stagedFiles: hold data URLs before submit */
-let stagedFiles = [];
-
-/* handle file input change: validate and convert to dataURL(s) */
-document.getElementById('media').addEventListener('change', async (e) => {
-  const files = Array.from(e.target.files).slice(0, MAX_FILES);
-  stagedFiles = [];
-  previewArea.innerHTML = '';
-  for(const f of files){
-    // validate
-    if(f.type.startsWith('image') && f.size > MAX_IMAGE_BYTES){ showToast('Image too large (max 5MB)', 'error'); continue; }
-    if(f.type.startsWith('video') && f.size > MAX_VIDEO_BYTES){ showToast('Video too large (max 10MB)', 'error'); continue; }
-    // read
-    try{
-      const data = await readFileAsDataURL(f);
-      stagedFiles.push({type: f.type, data});
-      if(f.type.startsWith('image')){
-        const img = document.createElement('img'); img.src = data; previewArea.appendChild(img);
-      } else {
-        const vid = document.createElement('video'); vid.src = data; vid.controls = true; previewArea.appendChild(vid);
-      }
-    }catch(err){
-      console.error(err);
-      showToast('Error reading file', 'error');
+    if (response.ok && data.status === 'success') {
+      showToast('Review deleted successfully');
+      loadMyReviews(); // Reload
+    } else {
+      throw new Error(data.message || 'Failed to delete review');
     }
+  } catch (error) {
+    console.error('Delete error:', error);
+    showToast(error.message || 'Failed to delete review', 'error');
   }
-});
+}
 
-/* helper to read file as data URL */
-function readFileAsDataURL(file){
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+// ==============================================
+// EDIT REVIEW (Placeholder - implement as needed)
+// ==============================================
+function editReview(reviewId) {
+  showToast('Edit feature coming soon! Review ID: ' + reviewId, 'error');
+  // TODO: Implement edit form
+}
+
+// ==============================================
+// WRITE NEW REVIEW (Placeholder)
+// ==============================================
+function showWriteReviewForm() {
+  showToast('Write review form coming soon!', 'error');
+  // TODO: Implement write review form
+  // Should allow selecting a purchased product and writing review
+}
+
+// ==============================================
+// EVENT LISTENERS
+// ==============================================
+document.addEventListener('DOMContentLoaded', () => {
+  loadMyReviews();
+
+  document.getElementById('sortBy').addEventListener('change', renderReviews);
+  document.getElementById('filterStar').addEventListener('change', renderReviews);
+  document.getElementById('searchQuery').addEventListener('input', () => {
+    setTimeout(renderReviews, 300); // Debounce
   });
-}
-
-/* new submit handler */
-document.getElementById('submit').addEventListener('click', ()=>{
-  const body = document.getElementById('reviewText').value.trim();
-  const order = document.getElementById('orderId').value.trim();
-  if(!selected){ showToast('Please select a rating','error'); return; }
-  if(!body || body.length < 4){ showToast('Write a longer review','error'); return; }
-
-  const reviews = load();
-  if(editingId){
-    // update existing
-    const i = reviews.findIndex(r=> r.id === editingId);
-    if(i === -1){ showToast('Editing target not found','error'); editingId = null; return; }
-    // merge new staged files with existing media (keep existing if no new staged files)
-    const existingMedia = reviews[i].media || [];
-    const newMedia = stagedFiles.length ? stagedFiles.slice() : existingMedia.slice();
-    reviews[i] = {...reviews[i], rating: selected, body, orderId: order || '', media: newMedia, editedAt: new Date().toISOString()};
-    save(reviews);
-    showToast('Review updated');
-    editingId = null;
-  } else {
-    // create new
-    const id = 'r'+Date.now();
-    const newR = { id, product:'Classic Leather Bag', orderId: order || '', author: me, rating: selected, body, createdAt: new Date().toISOString(), verified: (order||'').toUpperCase().startsWith('MMX'), replies: [], media: stagedFiles.slice() };
-    addReview(newR);
-  }
-
-  // reset form
-  document.getElementById('reviewText').value = '';
-  document.getElementById('orderId').value = '';
-  selected = 0; rateWidget.querySelectorAll('button').forEach(x=> x.classList.remove('active'));
-  document.getElementById('charCnt').textContent = '0 / 1200';
-  stagedFiles = []; previewArea.innerHTML = '';
-  document.getElementById('media').value = '';
+  document.getElementById('clearFilters').addEventListener('click', () => {
+    document.getElementById('sortBy').value = 'newest';
+    document.getElementById('filterStar').value = '';
+    document.getElementById('searchQuery').value = '';
+    renderReviews();
+  });
 });
-
-/* helpers for edit/delete/etc */
-function addReview(obj){
-  const arr = load();
-  arr.unshift(obj);
-  save(arr);
-}
-function updateReview(id, patch){ updateReview; } // kept for API parity (not used directly)
-function deleteReview(id){
-  if(!confirm('Delete this review? This cannot be undone (client-only).')) return;
-  const reviews = load().filter(r=> r.id !== id);
-  save(reviews);
-  showToast('Review deleted');
-}
-function updateReview(id, patch){
-  const reviews = load();
-  const idx = reviews.findIndex(r=> r.id === id);
-  if(idx === -1){ showToast('Review not found','error'); return; }
-  reviews[idx] = {...reviews[idx], ...patch};
-  save(reviews);
-  showToast('Review updated');
-}
-
-/* mock reply & flag */
-function mockSellerReply(id){
-  const text = prompt('Write a mock seller reply (demo):','Thanks for the feedback — we appreciate it!');
-  if(!text) return;
-  const when = new Date().toISOString();
-  const reviews = load();
-  const r = reviews.find(x=> x.id === id);
-  if(r){ r.replies = r.replies || []; r.replies.unshift({by:'Seller', text, when}); save(reviews); showToast('Mock reply added'); }
-}
-function flagReview(id){
-  const flags = flagsLoad();
-  if(flags.includes(id)){ showToast('Already flagged', 'error'); return; }
-  flags.push(id); flagsSave(flags); showToast('Flagged for moderation (demo)');
-}
-
-/* additional helpers */
-document.getElementById('filterStar').addEventListener('change', render);
-document.getElementById('q').addEventListener('input', ()=> setTimeout(render, 200));
-document.getElementById('sortBy').addEventListener('change', render);
-document.getElementById('clearAll').addEventListener('click', ()=> { document.getElementById('filterStar').value=''; document.getElementById('q').value=''; document.getElementById('sortBy').value='newest'; render(); });
-
-document.getElementById('clearFlags').addEventListener('click', ()=> { localStorage.removeItem(FLAGKEY); renderFlags(); showToast('Flags cleared'); });
-
-/* initial render */
-render();
 </script>
-<footer>
-  © MarketMix 2025
-</footer>
+
 </body>
 </html>
