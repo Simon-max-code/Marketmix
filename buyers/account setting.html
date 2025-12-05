@@ -843,58 +843,51 @@
     // SAVE PROFILE
     // =====================================================
     async function saveProfile() {
-  const firstName = document.getElementById('firstName').value.trim();
-  const lastName = document.getElementById('lastName').value.trim();
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
 
-  if (!firstName || !lastName) {
-    showAlert('error', 'Please enter both first and last name');
-    return;
-  }
+      if (!firstName || !lastName) {
+        showAlert('error', 'Please enter both first and last name');
+        return;
+      }
 
-  const saveBtn = document.getElementById('saveProfileBtn');
-  setButtonLoading(saveBtn, true, 'Saving...');
+      const saveBtn = document.getElementById('saveProfileBtn');
+      setButtonLoading(saveBtn, true, 'Saving...');
 
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE_URL}/auth/update-profile`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ firstName, lastName })
-    });
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE_URL}/auth/update-profile`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ firstName, lastName })
+        });
 
-    const data = await response.json();
-    
-    if (response.ok && data.status === 'success') {
-      // ✅ FIXED: Explicitly set each field instead of spread operator
-      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-      currentUser.firstName = data.data.user.firstName;
-      currentUser.lastName = data.data.user.lastName;
-      currentUser.phone = data.data.user.phone;
-      currentUser.email = data.data.user.email;
-      currentUser.role = data.data.user.role;
-      
-      localStorage.setItem('user', JSON.stringify(currentUser));
+        const data = await response.json();
+        
+if (response.ok && data.status === 'success') {
+  // Update localStorage with the response from backend
+  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const updatedUser = {
+    ...currentUser,
+    ...data.data.user  // Use the user object from backend response
+  };
+  localStorage.setItem('user', JSON.stringify(updatedUser));
 
-      showAlert('success', 'Profile updated successfully!');
-      
-      // Force reload after 1 second to show changes
-      setTimeout(() => {
-        location.reload();
-      }, 1000);
-    } else {
-      throw new Error(data.message || 'Failed to update profile');
+  showAlert('success', 'Profile updated successfully!');
+     }else {
+          throw new Error(data.message || 'Failed to update profile');
+        }
+
+      } catch (error) {
+        console.error('Error updating profile:', error);
+        showAlert('error', error.message || 'Could not update profile. Please try again.');
+      } finally {
+        setButtonLoading(saveBtn, false);
+      }
     }
-
-  } catch (error) {
-    console.error('Error updating profile:', error);
-    showAlert('error', error.message || 'Could not update profile. Please try again.');
-  } finally {
-    setButtonLoading(saveBtn, false);
-  }
-}
 
     // =====================================================
     // CHANGE PASSWORD
