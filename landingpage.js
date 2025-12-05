@@ -497,11 +497,39 @@
           menu.classList.remove('open');
           toggle.setAttribute('aria-expanded', 'false');
           menu.setAttribute('aria-hidden', 'true');
-        }
-      });
     }
 
     if(searchBtn && searchInput){
       searchBtn.addEventListener('click', () => searchInput.focus());
     }
+  })();
+
+  // ===== PRODUCT CARD NAVIGATION =====
+  (function() {
+    // Wire product cards to navigate to product page
+    let productIdCounter = 1;
+    
+    // Wire all product cards
+    document.querySelectorAll('.product-card').forEach((card) => {
+      const productId = card.getAttribute('data-product-id') || String(productIdCounter++);
+      card.style.cursor = 'pointer';
+      
+      card.addEventListener('click', (e) => {
+        // Don't navigate if user clicked "Add to Cart" button
+        if (e.target.closest('.add-to-cart')) return;
+        window.location.href = `./buyers/product.html?id=${productId}`;
+      });
+    });
+    
+    // Wire all "you might like" cards
+    document.querySelectorAll('.you-card').forEach((card) => {
+      const productId = card.getAttribute('data-product-id') || String(productIdCounter++);
+      card.style.cursor = 'pointer';
+      
+      card.addEventListener('click', (e) => {
+        // Don't navigate if user clicked "Add to Cart" button
+        if (e.target.closest('.add-to-cart')) return;
+        window.location.href = `./buyers/product.html?id=${productId}`;
+      });
+    });
   })();
