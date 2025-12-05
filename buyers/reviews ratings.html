@@ -94,6 +94,11 @@ h1 { text-align: center; margin-bottom: 24px; }
   border-radius: 6px;
   border: 1px solid var(--border);
   background: #fff;
+  transition: box-shadow 0.2s;
+}
+
+.review:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .avatar {
@@ -126,17 +131,35 @@ h1 { text-align: center; margin-bottom: 24px; }
   cursor: pointer;
   font-size: 14px;
   margin-right: 8px;
+  transition: all 0.2s;
 }
 
-.btn:hover { background: #EA580C; }
+.btn:hover { 
+  background: #EA580C;
+  transform: translateY(-1px);
+}
+
 .btn.ghost {
   background: #f2f2f2;
   color: #333;
 }
 
+.btn.ghost:hover {
+  background: #e0e0e0;
+}
+
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
+}
+
+.btn-danger {
+  background: var(--danger);
+}
+
+.btn-danger:hover {
+  background: #c53030;
 }
 
 textarea {
@@ -146,6 +169,16 @@ textarea {
   border-radius: 6px;
   border: 1px solid var(--border);
   resize: vertical;
+  font-size: 15px;
+  font-family: inherit;
+}
+
+input[type="text"],
+input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
   font-size: 15px;
 }
 
@@ -199,7 +232,7 @@ textarea {
   align-items: center;
   gap: 6px;
   background: #F97316;
-  color: #000;
+  color: #fff;
   border: none;
   padding: 10px 16px;
   border-radius: 10px;
@@ -227,10 +260,14 @@ textarea {
   color: #ddd;
   cursor: pointer;
   padding: 0;
-  transition: color 0.2s;
+  transition: color 0.2s, transform 0.2s;
 }
 
-.star-input button:hover,
+.star-input button:hover {
+  color: var(--gold);
+  transform: scale(1.1);
+}
+
 .star-input button.active {
   color: var(--gold);
 }
@@ -242,19 +279,43 @@ textarea {
   margin-top: 10px;
 }
 
-.media-preview img,
-.media-preview video {
+.media-preview-item {
+  position: relative;
   width: 80px;
   height: 80px;
+}
+
+.media-preview img,
+.media-preview video {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   border-radius: 6px;
   border: 1px solid var(--border);
+}
+
+.media-preview-item button {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--danger);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
 }
 
 .review-media {
   display: flex;
   gap: 10px;
   margin-top: 10px;
+  flex-wrap: wrap;
 }
 
 .review-media img,
@@ -265,6 +326,12 @@ textarea {
   border-radius: 6px;
   border: 1px solid var(--border);
   cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.review-media img:hover,
+.review-media video:hover {
+  transform: scale(1.05);
 }
 
 .seller-reply {
@@ -300,6 +367,183 @@ footer {
   font-size: 11px;
   margin-left: 8px;
 }
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal.show {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s;
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.close-modal:hover {
+  background: #f0f0f0;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.form-group.required label::after {
+  content: " *";
+  color: var(--danger);
+}
+
+.small {
+  font-size: 13px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* Image Zoom Modal */
+.zoom-modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  align-items: center;
+  justify-content: center;
+}
+
+.zoom-modal.show {
+  display: flex;
+}
+
+.zoom-modal img,
+.zoom-modal video {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 8px;
+}
+
+.zoom-close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  color: white;
+  font-size: 40px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.report-reasons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.report-reasons label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.report-reasons label:hover {
+  background: #f9f9f9;
+}
+
+.report-reasons input[type="radio"] {
+  width: auto;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badge-warning {
+  background: #fef3c7;
+  color: #92400e;
+}
 </style>
 </head>
 <body>
@@ -307,7 +551,7 @@ footer {
 <!-- Loading Overlay -->
 <div id="loadingOverlay" class="loading-overlay" style="display:none;">
   <div class="loading-spinner"></div>
-  <p>Loading reviews...</p>
+  <p>Loading...</p>
 </div>
 
 <button class="back-btn" onclick="history.back()">
@@ -355,12 +599,115 @@ footer {
 
       <div class="card" style="margin-top:12px">
         <h4>Write New Review</h4>
-        <p class="small muted">After completing a purchase</p>
+        <p class="small muted">Review your purchased products</p>
         <button class="btn" style="width:100%;margin:10px 0" onclick="showWriteReviewForm()">
           <i class="fas fa-plus"></i> Write Review
         </button>
       </div>
     </aside>
+  </div>
+</div>
+
+<!-- Write/Edit Review Modal -->
+<div id="reviewModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modalTitle">Write a Review</h2>
+      <button class="close-modal" onclick="closeReviewModal()">&times;</button>
+    </div>
+    
+    <form id="reviewForm" onsubmit="submitReview(event)">
+      <div class="form-group required">
+        <label>Select Product</label>
+        <select id="productSelect" required>
+          <option value="">Loading products...</option>
+        </select>
+      </div>
+
+      <div class="form-group required">
+        <label>Rating</label>
+        <div class="star-input" id="starRating">
+          <button type="button" data-rating="1">★</button>
+          <button type="button" data-rating="2">★</button>
+          <button type="button" data-rating="3">★</button>
+          <button type="button" data-rating="4">★</button>
+          <button type="button" data-rating="5">★</button>
+        </div>
+        <input type="hidden" id="ratingValue" required>
+      </div>
+
+      <div class="form-group required">
+        <label>Review</label>
+        <textarea id="reviewBody" rows="5" placeholder="Share your experience with this product..." required></textarea>
+        <small class="muted">Between 4 and 1200 characters</small>
+      </div>
+
+      <div class="form-group">
+        <label>Add Photos/Videos (Optional)</label>
+        <input type="file" id="mediaInput" multiple accept="image/*,video/*">
+        <small class="muted">Max 5 files, 10MB each</small>
+        <div id="mediaPreview" class="media-preview"></div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button type="submit" class="btn" id="submitBtn">
+          <i class="fas fa-paper-plane"></i> Submit Review
+        </button>
+        <button type="button" class="btn ghost" onclick="closeReviewModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Image Zoom Modal -->
+<div id="zoomModal" class="zoom-modal" onclick="closeZoom()">
+  <button class="zoom-close">&times;</button>
+  <div id="zoomContent"></div>
+</div>
+
+<!-- Report Modal -->
+<div id="reportModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Report Review</h2>
+      <button class="close-modal" onclick="closeReportModal()">&times;</button>
+    </div>
+    
+    <form id="reportForm" onsubmit="submitReport(event)">
+      <div class="form-group required">
+        <label>Reason for reporting</label>
+        <div class="report-reasons">
+          <label>
+            <input type="radio" name="reason" value="spam" required>
+            Spam or fake review
+          </label>
+          <label>
+            <input type="radio" name="reason" value="offensive" required>
+            Offensive or inappropriate content
+          </label>
+          <label>
+            <input type="radio" name="reason" value="misleading" required>
+            Misleading information
+          </label>
+          <label>
+            <input type="radio" name="reason" value="other" required>
+            Other
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Additional details (Optional)</label>
+        <textarea id="reportDetails" rows="3" placeholder="Please provide more information..."></textarea>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button type="submit" class="btn btn-danger">
+          <i class="fas fa-flag"></i> Submit Report
+        </button>
+        <button type="button" class="btn ghost" onclick="closeReportModal()">Cancel</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -375,6 +722,10 @@ footer {
 const API_BASE_URL = 'https://marketmix-backend-production.up.railway.app/api';
 let allReviews = [];
 let currentEditingId = null;
+let currentRating = 0;
+let selectedFiles = [];
+let purchasedProducts = [];
+let currentReportingReviewId = null;
 
 // ==============================================
 // UTILITY FUNCTIONS
@@ -386,8 +737,12 @@ function showToast(msg, type = 'success') {
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-function showLoading(show = true) {
-  document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+function showLoading(show = true, message = 'Loading...') {
+  const overlay = document.getElementById('loadingOverlay');
+  overlay.style.display = show ? 'flex' : 'none';
+  if (show) {
+    overlay.querySelector('p').textContent = message;
+  }
 }
 
 function formatStars(rating) {
@@ -395,16 +750,29 @@ function formatStars(rating) {
 }
 
 function escapeHtml(text) {
+  if (!text) return '';
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
 }
 
 // ==============================================
 // LOAD REVIEWS
 // ==============================================
 async function loadMyReviews() {
-  showLoading(true);
+  showLoading(true, 'Loading reviews...');
   try {
     const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE_URL}/reviews/my-reviews`, {
@@ -428,6 +796,57 @@ async function loadMyReviews() {
   } finally {
     showLoading(false);
   }
+}
+
+// ==============================================
+// LOAD PURCHASED PRODUCTS
+// ==============================================
+async function loadPurchasedProducts() {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/orders/purchased-products`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.status === 'success') {
+      purchasedProducts = data.data.products;
+      populateProductSelect();
+    } else {
+      throw new Error(data.message || 'Failed to load products');
+    }
+  } catch (error) {
+    console.error('Error loading products:', error);
+    document.getElementById('productSelect').innerHTML = '<option value="">No products available</option>';
+  }
+}
+
+function populateProductSelect() {
+  const select = document.getElementById('productSelect');
+  
+  if (purchasedProducts.length === 0) {
+    select.innerHTML = '<option value="">No purchased products available</option>';
+    return;
+  }
+
+  select.innerHTML = '<option value="">Select a product...</option>';
+  purchasedProducts.forEach(product => {
+    const option = document.createElement('option');
+    option.value = product.id;
+    option.textContent = product.name;
+    option.dataset.orderId = product.orderId;
+    
+    // Disable if already reviewed
+    if (product.alreadyReviewed) {
+      option.textContent += ' (Already reviewed)';
+      option.disabled = true;
+    }
+    
+    select.appendChild(option);
+  });
 }
 
 // ==============================================
@@ -466,7 +885,7 @@ function renderReviews() {
   }
 
   if (filtered.length === 0) {
-    container.innerHTML = '<div class="empty-state"><i class="fas fa-star" style="font-size:48px;color:#ddd;"></i><p>No reviews yet. Write your first review after purchasing!</p></div>';
+    container.innerHTML = '<div class="empty-state"><i class="fas fa-star" style="font-size:48px;color:#ddd;"></i><p>No reviews found. Try adjusting your filters or write your first review!</p></div>';
     return;
   }
 
@@ -483,9 +902,9 @@ function renderReviews() {
     let mediaHtml = '';
     if (review.media && review.media.length > 0) {
       mediaHtml = '<div class="review-media">';
-      review.media.forEach(m => {
+      review.media.forEach((m, idx) => {
         if (m.type === 'image') {
-          mediaHtml += `<img src="${m.url}" alt="Review photo" onclick="window.open('${m.url}', '_blank')">`;
+          mediaHtml += `<img src="${m.url}" alt="Review photo" onclick="openZoom('${m.url}', 'image')">`;
         } else {
           mediaHtml += `<video controls src="${m.url}"></video>`;
         }
@@ -501,6 +920,12 @@ function renderReviews() {
       });
     }
 
+    // Status badges
+    let statusBadge = '';
+    if (review.status === 'flagged') {
+      statusBadge = '<span class="badge badge-warning"><i class="fas fa-flag"></i> Flagged</span>';
+    }
+
     div.innerHTML = `
       <div class="avatar">${initial}</div>
       <div style="flex:1">
@@ -508,8 +933,9 @@ function renderReviews() {
           <div>
             <strong>${escapeHtml(review.productName || 'Product')}</strong>
             ${review.verifiedPurchase ? '<span class="verified-badge"><i class="fas fa-check"></i> Verified</span>' : ''}
+            ${statusBadge}
             <div class="stars">${formatStars(review.rating)}</div>
-            <div class="meta">${new Date(review.createdAt).toLocaleDateString()} ${review.status === 'flagged' ? '• <span style="color:red">Flagged</span>' : ''}</div>
+            <div class="meta">${new Date(review.createdAt).toLocaleDateString()}</div>
           </div>
           <div>
             <span class="small muted"><i class="fas fa-thumbs-up"></i> ${review.helpfulCount || 0}</span>
@@ -541,10 +967,306 @@ function updateSummary() {
 }
 
 // ==============================================
+// STAR RATING INTERACTION
+// ==============================================
+function initializeStarRating() {
+  const stars = document.querySelectorAll('#starRating button');
+  const ratingInput = document.getElementById('ratingValue');
+
+  stars.forEach((star, index) => {
+    star.addEventListener('click', () => {
+      currentRating = parseInt(star.dataset.rating);
+      ratingInput.value = currentRating;
+      
+      stars.forEach((s, i) => {
+        s.classList.toggle('active', i < currentRating);
+      });
+    });
+
+    star.addEventListener('mouseenter', () => {
+      const hoverRating = parseInt(star.dataset.rating);
+      stars.forEach((s, i) => {
+        s.classList.toggle('active', i < hoverRating);
+      });
+    });
+  });
+
+  document.getElementById('starRating').addEventListener('mouseleave', () => {
+    stars.forEach((s, i) => {
+      s.classList.toggle('active', i < currentRating);
+    });
+  });
+}
+
+// ==============================================
+// FILE HANDLING
+// ==============================================
+function handleFileSelect(event) {
+  const files = Array.from(event.target.files);
+  
+  // Validate file count
+  if (selectedFiles.length + files.length > 5) {
+    showToast('Maximum 5 files allowed', 'error');
+    return;
+  }
+
+  // Validate each file
+  for (const file of files) {
+    // Check file size (10MB max)
+    if (file.size > 10 * 1024 * 1024) {
+      showToast(`${file.name} exceeds 10MB limit`, 'error');
+      continue;
+    }
+
+    // Check file type
+    if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+      showToast(`${file.name} is not a valid image or video`, 'error');
+      continue;
+    }
+
+    selectedFiles.push(file);
+  }
+
+  updateMediaPreview();
+  event.target.value = ''; // Reset input
+}
+
+function updateMediaPreview() {
+  const preview = document.getElementById('mediaPreview');
+  preview.innerHTML = '';
+
+  selectedFiles.forEach((file, index) => {
+    const div = document.createElement('div');
+    div.className = 'media-preview-item';
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (file.type.startsWith('image/')) {
+        div.innerHTML = `
+          <img src="${e.target.result}" alt="Preview">
+          <button type="button" onclick="removeFile(${index})">&times;</button>
+        `;
+      } else {
+        div.innerHTML = `
+          <video src="${e.target.result}"></video>
+          <button type="button" onclick="removeFile(${index})">&times;</button>
+        `;
+      }
+    };
+    reader.readAsDataURL(file);
+
+    preview.appendChild(div);
+  });
+}
+
+function removeFile(index) {
+  selectedFiles.splice(index, 1);
+  updateMediaPreview();
+}
+
+// ==============================================
+// MODAL FUNCTIONS
+// ==============================================
+function showWriteReviewForm() {
+  currentEditingId = null;
+  currentRating = 0;
+  selectedFiles = [];
+  
+  document.getElementById('modalTitle').textContent = 'Write a Review';
+  document.getElementById('reviewForm').reset();
+  document.getElementById('ratingValue').value = '';
+  document.getElementById('mediaPreview').innerHTML = '';
+  
+  // Reset star rating
+  document.querySelectorAll('#starRating button').forEach(s => s.classList.remove('active'));
+  
+  // Load products if not already loaded
+  if (purchasedProducts.length === 0) {
+    loadPurchasedProducts();
+  }
+  
+  document.getElementById('reviewModal').classList.add('show');
+}
+
+function closeReviewModal() {
+  document.getElementById('reviewModal').classList.remove('show');
+  currentEditingId = null;
+  currentRating = 0;
+  selectedFiles = [];
+}
+
+function openZoom(url, type) {
+  const modal = document.getElementById('zoomModal');
+  const content = document.getElementById('zoomContent');
+  
+  if (type === 'image') {
+    content.innerHTML = `<img src="${url}" alt="Zoomed image">`;
+  } else {
+    content.innerHTML = `<video controls src="${url}"></video>`;
+  }
+  
+  modal.classList.add('show');
+}
+
+function closeZoom() {
+  document.getElementById('zoomModal').classList.remove('show');
+  document.getElementById('zoomContent').innerHTML = '';
+}
+
+function closeReportModal() {
+  document.getElementById('reportModal').classList.remove('show');
+  document.getElementById('reportForm').reset();
+  currentReportingReviewId = null;
+}
+
+// ==============================================
+// EDIT REVIEW
+// ==============================================
+async function editReview(reviewId) {
+  const review = allReviews.find(r => r.id === reviewId);
+  if (!review) {
+    showToast('Review not found', 'error');
+    return;
+  }
+
+  currentEditingId = reviewId;
+  currentRating = review.rating;
+  selectedFiles = []; // Note: Can't pre-populate files from URLs
+
+  document.getElementById('modalTitle').textContent = 'Edit Review';
+  document.getElementById('productSelect').value = review.productId;
+  document.getElementById('reviewBody').value = review.body;
+  document.getElementById('ratingValue').value = review.rating;
+
+  // Set star rating
+  const stars = document.querySelectorAll('#starRating button');
+  stars.forEach((s, i) => {
+    s.classList.toggle('active', i < currentRating);
+  });
+
+  document.getElementById('reviewModal').classList.add('show');
+}
+
+// ==============================================
+// SUBMIT REVIEW
+// ==============================================
+async function submitReview(event) {
+  event.preventDefault();
+
+  const productId = document.getElementById('productSelect').value;
+  const rating = parseInt(document.getElementById('ratingValue').value);
+  const body = document.getElementById('reviewBody').value.trim();
+
+  // Validation
+  if (!productId) {
+    showToast('Please select a product', 'error');
+    return;
+  }
+
+  if (!rating || rating < 1 || rating > 5) {
+    showToast('Please select a rating', 'error');
+    return;
+  }
+
+  if (body.length < 4) {
+    showToast('Review must be at least 4 characters', 'error');
+    return;
+  }
+
+  if (body.length > 1200) {
+    showToast('Review must be less than 1200 characters', 'error');
+    return;
+  }
+
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+  try {
+    const token = localStorage.getItem('token');
+    
+    // Convert files to base64 if present
+    const mediaArray = [];
+    for (const file of selectedFiles.slice(0, 3)) { // Max 3 files
+      const base64 = await fileToBase64(file);
+      mediaArray.push({
+        type: file.type,
+        data: base64
+      });
+    }
+
+    // Find the order ID for this product
+    const selectedOption = document.querySelector(`#productSelect option[value="${productId}"]`);
+    const orderId = selectedOption ? selectedOption.dataset.orderId : null;
+
+    const payload = {
+      review_type: 'product',
+      product_id: productId,
+      rating: rating,
+      body: body,
+      order_id: orderId,
+      media: mediaArray.length > 0 ? mediaArray : undefined
+    };
+
+    let url = `${API_BASE_URL}/reviews`;
+    let method = 'POST';
+
+    if (currentEditingId) {
+      url = `${API_BASE_URL}/reviews/${currentEditingId}`;
+      method = 'PUT';
+      // For update, only send fields that can be updated
+      delete payload.review_type;
+      delete payload.product_id;
+      delete payload.order_id;
+      delete payload.media; // Media can't be updated
+    }
+
+    const response = await fetch(url, {
+      method: method,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.status === 'success') {
+      showToast(currentEditingId ? 'Review updated successfully!' : 'Review submitted successfully!', 'success');
+      closeReviewModal();
+      await loadMyReviews();
+    } else {
+      throw new Error(data.message || 'Failed to submit review');
+    }
+  } catch (error) {
+    console.error('Error submitting review:', error);
+    showToast(error.message || 'Failed to submit review', 'error');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Review';
+  }
+}
+
+// Helper function to convert file to base64
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// ==============================================
 // DELETE REVIEW
 // ==============================================
 async function deleteReview(reviewId) {
-  if (!confirm('Delete this review? This action cannot be undone.')) return;
+  if (!confirm('Are you sure you want to delete this review? This action cannot be undone.')) {
+    return;
+  }
+
+  showLoading(true, 'Deleting review...');
 
   try {
     const token = localStorage.getItem('token');
@@ -558,53 +1280,99 @@ async function deleteReview(reviewId) {
     const data = await response.json();
 
     if (response.ok && data.status === 'success') {
-      showToast('Review deleted successfully');
-      loadMyReviews(); // Reload
+      showToast('Review deleted successfully', 'success');
+      await loadMyReviews();
     } else {
       throw new Error(data.message || 'Failed to delete review');
     }
   } catch (error) {
-    console.error('Delete error:', error);
+    console.error('Error deleting review:', error);
     showToast(error.message || 'Failed to delete review', 'error');
+  } finally {
+    showLoading(false);
   }
 }
 
 // ==============================================
-// EDIT REVIEW (Placeholder - implement as needed)
+// REPORT REVIEW
 // ==============================================
-function editReview(reviewId) {
-  showToast('Edit feature coming soon! Review ID: ' + reviewId, 'error');
-  // TODO: Implement edit form
+async function submitReport(event) {
+  event.preventDefault();
+
+  const reason = document.querySelector('input[name="reason"]:checked')?.value;
+  const details = document.getElementById('reportDetails').value.trim();
+
+  if (!reason) {
+    showToast('Please select a reason', 'error');
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/reviews/${currentReportingReviewId}/report`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ reason, details })
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.status === 'success') {
+      showToast('Report submitted successfully. Our team will review it shortly.', 'success');
+      closeReportModal();
+    } else {
+      throw new Error(data.message || 'Failed to submit report');
+    }
+  } catch (error) {
+    console.error('Error submitting report:', error);
+    showToast(error.message || 'Failed to submit report', 'error');
+  }
 }
 
 // ==============================================
-// WRITE NEW REVIEW (Placeholder)
-// ==============================================
-function showWriteReviewForm() {
-  showToast('Write review form coming soon!', 'error');
-  // TODO: Implement write review form
-  // Should allow selecting a purchased product and writing review
-}
-
-// ==============================================
-// EVENT LISTENERS
+// EVENT LISTENERS & INITIALIZATION
 // ==============================================
 document.addEventListener('DOMContentLoaded', () => {
+  // Initialize
   loadMyReviews();
+  loadPurchasedProducts();
+  initializeStarRating();
 
+  // Sort/Filter controls
   document.getElementById('sortBy').addEventListener('change', renderReviews);
   document.getElementById('filterStar').addEventListener('change', renderReviews);
-  document.getElementById('searchQuery').addEventListener('input', () => {
-    setTimeout(renderReviews, 300); // Debounce
-  });
+  
+  // Search with debounce
+  const debouncedSearch = debounce(renderReviews, 300);
+  document.getElementById('searchQuery').addEventListener('input', debouncedSearch);
+
+  // Clear filters
   document.getElementById('clearFilters').addEventListener('click', () => {
     document.getElementById('sortBy').value = 'newest';
     document.getElementById('filterStar').value = '';
     document.getElementById('searchQuery').value = '';
     renderReviews();
   });
+
+  // File input
+  document.getElementById('mediaInput').addEventListener('change', handleFileSelect);
+
+  // Close modals on outside click
+  document.getElementById('reviewModal').addEventListener('click', (e) => {
+    if (e.target.id === 'reviewModal') {
+      closeReviewModal();
+    }
+  });
+
+  document.getElementById('reportModal').addEventListener('click', (e) => {
+    if (e.target.id === 'reportModal') {
+      closeReportModal();
+    }
+  });
 });
 </script>
-
 </body>
 </html>
