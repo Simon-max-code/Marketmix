@@ -6,86 +6,23 @@
   <title>Checkout - MarketMix</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="checkout.css">
-  
-  <!-- 🔒 BLOCK UNAUTHORIZED USERS -->
-  <script>
-    const token = localStorage.getItem('token');
-    if (!token) {
-      window.location.replace("login for buyers.html");
-    }
-  </script>
-
-  <style>
-    .loading-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(255, 255, 255, 0.95);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-
-    .loading-spinner {
-      width: 50px;
-      height: 50px;
-      border: 4px solid #f0f0f0;
-      border-top-color: #F97316;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .alert {
-      padding: 12px 16px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .alert-success {
-      background: #d1fae5;
-      border: 1px solid #6ee7b7;
-      color: #065f46;
-    }
-
-    .alert-error {
-      background: #fee2e2;
-      border: 1px solid #fecaca;
-      color: #991b1b;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-  </style>
+   <!-- 🔒 BLOCK UNAUTHORIZED USERS -->
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.replace("login for buyers.html");
+        }
+    </script>
 </head>
 <body>
 
-  <!-- Loading Overlay -->
-  <div id="loadingOverlay" class="loading-overlay">
-    <div class="loading-spinner"></div>
-    <p>Loading checkout...</p>
-  </div>
+
 
   <button class="back" onclick="history.back()">
-    <i class="fas fa-chevron-left"></i> Back
-  </button>
-
+      <i class="fas fa-chevron-left"></i> Back
+    </button>
   <div class="checkout-container">
     
-    <!-- Alert Container -->
-    <div id="alertContainer"></div>
-
     <!-- Left: Shipping Details -->
     <div class="checkout-form">
       <h2>Shipping Details</h2>
@@ -111,11 +48,13 @@
           <option value="cod">Cash on Delivery</option>
         </select>
 
+
         <label for="delivery">Delivery Option</label>
-        <select id="delivery" required>
-          <option value="">-- Select Delivery Option --</option>
-          <option value="marketmix">MarketMix Delivery ($5.00)</option>
-        </select>
+<select id="delivery" required>
+  <option value="">-- Select Delivery Option --</option>
+  <option value="marketmix">MarketMix Delivery</option>
+</select>
+
       </form>
     </div>
 
@@ -123,243 +62,54 @@
     <div class="checkout-summary">
       <h2>Order Summary</h2>
       <ul id="orderItems">
-        <li class="item">Loading cart items...</li>
+        <li class="item"><span>Product 1</span> <span>$20</span></li>
+        <li class="item"><span>Product 2</span> <span>$15</span></li>
+        <li class="item"><span>Shipping</span> <span>$5</span></li>
       </ul>
-      <div class="pricing-breakdown">
-        <div class="price-row">
-          <span>Subtotal:</span>
-          <span id="subtotalAmount">$0.00</span>
-        </div>
-        <div class="price-row">
-          <span>Shipping:</span>
-          <span id="shippingAmount">$0.00</span>
-        </div>
-        <div class="total">
-          <strong>Total:</strong>
-          <span id="totalAmount">$0.00</span>
-        </div>
+      <div class="total">
+        <strong>Total</strong>
+        <span id="totalAmount">$40</span>
       </div>
-      <button id="placeOrderBtn" disabled>Place Order</button>
+      <button id="placeOrderBtn">Place Order</button>
       <p id="orderMessage" class="hidden"></p>
     </div>
   </div>
-
-  <footer>
+<footer>
     &copy; 2025 MarketMix. All Rights Reserved.
   </footer>
+  <script >
+document.getElementById("placeOrderBtn").addEventListener("click", () => {
+  const form = document.getElementById("checkoutForm");
+  const message = document.getElementById("orderMessage");
 
-  <script>
-    // =====================================================
-    // CONFIGURATION
-    // =====================================================
-    const API_BASE_URL = 'https://marketmix-backend-production.up.railway.app/api';
-    
-    let cartItems = [];
-    let subtotal = 0;
-    let shippingFee = 0;
-    let total = 0;
+  if (form.checkValidity()) {
+    message.textContent = "✅ Order placed successfully! Redirecting...";
+    message.className = "success";
+    message.classList.remove("hidden");
 
-    // =====================================================
-    // LOAD USER INFO AND CART
-    // =====================================================
-    async function loadCheckoutData() {
-      try {
-        const token = localStorage.getItem('token');
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
+    // Simulate clearing cart
+    document.getElementById("orderItems").innerHTML = "<li>Your cart is empty.</li>";
+    document.getElementById("totalAmount").textContent = "$0";
 
-        // Auto-fill user information
-        if (user.firstName && user.lastName) {
-          document.getElementById('fullname').value = `${user.firstName} ${user.lastName}`;
-        }
-        if (user.email) {
-          document.getElementById('email').value = user.email;
-        }
-        if (user.phone) {
-          document.getElementById('phone').value = user.phone;
-        }
-        
-        // Auto-fill address if available
-        if (user.address) {
-          let addressText = user.address;
-          if (user.city) addressText += `, ${user.city}`;
-          if (user.state) addressText += `, ${user.state}`;
-          if (user.country) addressText += `, ${user.country}`;
-          document.getElementById('address').value = addressText;
-        }
+    // Redirect to buyers homepage after 2 seconds
+    setTimeout(() => {
+      window.location.href = '/buyers/buyers homepage.html';
+    }, 2000);
 
-        // Load cart items
-        await loadCartItems();
+  } else {
+    message.textContent = "⚠️ Please fill all required fields.";
+    message.className = "error";
+    message.classList.remove("hidden");
+  }
+});
 
-        document.getElementById('loadingOverlay').style.display = 'none';
 
-      } catch (error) {
-        console.error('Error loading checkout data:', error);
-        document.getElementById('loadingOverlay').style.display = 'none';
-        showAlert('error', 'Failed to load checkout data');
-      }
-    }
 
-    async function loadCartItems() {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/cart`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
 
-        if (!response.ok) throw new Error('Failed to load cart');
 
-        const data = await response.json();
-        
-        if (data.status === 'success' && data.data.cartItems) {
-          cartItems = data.data.cartItems;
-          
-          if (cartItems.length === 0) {
-            document.getElementById('orderItems').innerHTML = 
-              '<li class="item">Your cart is empty. <a href="buyers homepage.html">Continue shopping</a></li>';
-            document.getElementById('placeOrderBtn').disabled = true;
-            return;
-          }
 
-          displayCartItems();
-          calculateTotals();
-          document.getElementById('placeOrderBtn').disabled = false;
-        }
 
-      } catch (error) {
-        console.error('Error loading cart:', error);
-        showAlert('error', 'Failed to load cart items');
-      }
-    }
 
-    function displayCartItems() {
-      const orderItemsEl = document.getElementById('orderItems');
-      orderItemsEl.innerHTML = '';
-
-      cartItems.forEach(item => {
-        const li = document.createElement('li');
-        li.className = 'item';
-        li.innerHTML = `
-          <span>${item.product_name} (x${item.quantity})</span>
-          <span>$${(item.price * item.quantity).toFixed(2)}</span>
-        `;
-        orderItemsEl.appendChild(li);
-      });
-    }
-
-    function calculateTotals() {
-      subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      
-      // Get shipping fee from selected delivery option
-      const deliverySelect = document.getElementById('delivery');
-      shippingFee = deliverySelect.value === 'marketmix' ? 5.00 : 0;
-      
-      total = subtotal + shippingFee;
-
-      document.getElementById('subtotalAmount').textContent = `$${subtotal.toFixed(2)}`;
-      document.getElementById('shippingAmount').textContent = `$${shippingFee.toFixed(2)}`;
-      document.getElementById('totalAmount').textContent = `$${total.toFixed(2)}`;
-    }
-
-    // Update total when delivery option changes
-    document.getElementById('delivery').addEventListener('change', calculateTotals);
-
-    // =====================================================
-    // PLACE ORDER
-    // =====================================================
-    document.getElementById('placeOrderBtn').addEventListener('click', async () => {
-      const form = document.getElementById('checkoutForm');
-      
-      if (!form.checkValidity()) {
-        showAlert('error', '⚠️ Please fill all required fields');
-        form.reportValidity();
-        return;
-      }
-
-      if (cartItems.length === 0) {
-        showAlert('error', 'Your cart is empty');
-        return;
-      }
-
-      const placeOrderBtn = document.getElementById('placeOrderBtn');
-      placeOrderBtn.disabled = true;
-      placeOrderBtn.textContent = 'Processing...';
-
-      try {
-        const token = localStorage.getItem('token');
-        
-        const orderData = {
-          shippingAddress: {
-            fullname: document.getElementById('fullname').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            address: document.getElementById('address').value
-          },
-          paymentMethod: document.getElementById('payment').value,
-          deliveryOption: document.getElementById('delivery').value,
-          cartItems: cartItems.map(item => ({
-            product_id: item.product_id,
-            quantity: item.quantity
-          }))
-        };
-
-        const response = await fetch(`${API_BASE_URL}/orders/create`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(orderData)
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.status === 'success') {
-          showAlert('success', `✅ Order placed successfully! Order #${data.data.order.orderNumber}`);
-          
-          // Clear cart display
-          document.getElementById('orderItems').innerHTML = '<li class="item">Order placed! Redirecting...</li>';
-          document.getElementById('totalAmount').textContent = '$0.00';
-
-          // Redirect to order confirmation or homepage
-          setTimeout(() => {
-            window.location.href = `buyers order & tracking.html?order=${data.data.order.id}`;
-          }, 2000);
-
-        } else {
-          throw new Error(data.message || 'Failed to place order');
-        }
-
-      } catch (error) {
-        console.error('Error placing order:', error);
-        showAlert('error', error.message || 'Failed to place order. Please try again.');
-        placeOrderBtn.disabled = false;
-        placeOrderBtn.textContent = 'Place Order';
-      }
-    });
-
-    // =====================================================
-    // UTILITY FUNCTIONS
-    // =====================================================
-    function showAlert(type, message) {
-      const alertContainer = document.getElementById('alertContainer');
-      alertContainer.innerHTML = `
-        <div class="alert alert-${type}">
-          <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
-          <span>${message}</span>
-        </div>
-      `;
-
-      setTimeout(() => {
-        alertContainer.innerHTML = '';
-      }, 5000);
-    }
-
-    // =====================================================
-    // INITIALIZE
-    // =====================================================
-    document.addEventListener('DOMContentLoaded', loadCheckoutData);
   </script>
 </body>
 </html>
