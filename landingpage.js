@@ -497,6 +497,8 @@
           menu.classList.remove('open');
           toggle.setAttribute('aria-expanded', 'false');
           menu.setAttribute('aria-hidden', 'true');
+        }
+      });
     }
 
     if(searchBtn && searchInput){
