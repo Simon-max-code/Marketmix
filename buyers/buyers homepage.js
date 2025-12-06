@@ -38,8 +38,87 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Load and render best-selling products from API
+  async function loadBestSellingProducts() {
+    try {
+      const container = document.querySelector('.best-selling-grid');
+      if (!container) return;
+
+      const response = await fetch(`${CONFIG.API_BASE_URL}/products?limit=8`);
+      const data = await response.json();
+
+      if (!response.ok || !data.data || data.data.length === 0) {
+        container.innerHTML = '<p style="text-align:center; padding: 20px; color: #666;">No products available</p>';
+        return;
+      }
+
+      // Render best-selling product cards
+      container.innerHTML = data.data.map(product => `
+        <div class="product-card" data-product-id="${product.id}">
+          <img src="${product.main_image_url || product.image || 'marketplace.png'}" alt="${product.name}">
+          <div class="product-info">
+            <h4>${product.name}</h4>
+            <p class="product-desc">${product.description || ''}</p>
+            <div class="meta">
+              <p class="price">$${product.price}</p>
+              <div class="rating">★★★★★</div>
+            </div>
+          </div>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      `).join('');
+
+      // Re-attach event listeners to new buttons
+      attachCartListeners();
+    } catch (error) {
+      console.error('Error loading best-selling products:', error);
+      const container = document.querySelector('.best-selling-grid');
+      if (container) {
+        container.innerHTML = '<p style="text-align:center; padding: 20px; color: #666;">Error loading products</p>';
+      }
+    }
+  }
+
+  // Load and render recommended products from API
+  async function loadRecommendedProducts() {
+    try {
+      const container = document.querySelector('.recommended-grid');
+      if (!container) return;
+
+      const response = await fetch(`${CONFIG.API_BASE_URL}/products?limit=6`);
+      const data = await response.json();
+
+      if (!response.ok || !data.data || data.data.length === 0) {
+        container.innerHTML = '<p style="text-align:center; padding: 20px; color: #666;">No products available</p>';
+        return;
+      }
+
+      // Render recommended product cards
+      container.innerHTML = data.data.map(product => `
+        <div class="recommended-item" data-product-id="${product.id}">
+          <img src="${product.main_image_url || product.image || 'marketplace.png'}" alt="${product.name}">
+          <h4>${product.name}</h4>
+          <p class="price">$${product.price}</p>
+          <div class="rating">⭐⭐⭐⭐⭐</div>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      `).join('');
+
+      // Re-attach event listeners to new buttons
+      attachCartListeners();
+    } catch (error) {
+      console.error('Error loading recommended products:', error);
+      const container = document.querySelector('.recommended-grid');
+      if (container) {
+        container.innerHTML = '<p style="text-align:center; padding: 20px; color: #666;">Error loading products</p>';
+      }
+    }
+  }
+
   // Load products early
   loadFlashProducts();
+  loadBestSellingProducts();
+  loadRecommendedProducts();
 
   // Countdown Timer
   function startCountdown(duration, display) {
