@@ -20,7 +20,7 @@ window.addEventListener('DOMContentLoaded', () => {
       // Render flash product cards
       container.innerHTML = data.data.map(product => `
         <div class="flash-card" data-product-id="${product.id}">
-          <img src="${product.image || 'marketplace.png'}" alt="${product.name}">
+          <img src="${product.main_image_url || product.image || 'marketplace.png'}" alt="${product.name}">
           <h4>${product.name}</h4>
           <p class="price">$${product.price}</p>
           <button>Add to Cart</button>
