@@ -450,8 +450,12 @@ body {
   background: #EA580C;
 }
 
-
-
+/* Star Rating Styling */
+.rating {
+  color: #F97316;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+}
 
 
 
@@ -474,22 +478,23 @@ body {
   gap: 15px;
 }
 
-/* Product Card */
-.product-card {
+/* Recommended Item Cards */
+.recommended-item {
   background: #fff;
   border: 1px solid #eee;
   border-radius: 8px;
   padding: 12px;
   text-align: center;
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
 }
 
-.product-card:hover {
+.recommended-item:hover {
   transform: translateY(-5px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.product-card img {
+.recommended-item img {
   width: 100%;
   height: 180px;
   object-fit: cover;
@@ -497,20 +502,20 @@ body {
   margin-bottom: 10px;
 }
 
-.product-card h3 {
+.recommended-item h4 {
   font-size: 16px;
   margin: 8px 0;
   color: #333;
 }
 
-.product-card .price {
+.recommended-item .price {
   font-size: 15px;
   font-weight: bold;
   color: #e63946;
   margin: 6px 0;
 }
 
-.product-card button {
+.recommended-item button {
   background: #F97316;
   color: #fff;
   border: none;
@@ -519,9 +524,10 @@ body {
   cursor: pointer;
   font-size: 14px;
   transition: background 0.3s ease;
+  width: 100%;
 }
 
-.product-card button:hover {
+.recommended-item button:hover {
   background: #EA580C;
 }
 
