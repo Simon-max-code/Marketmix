@@ -61,7 +61,6 @@ window.addEventListener('DOMContentLoaded', () => {
             <p class="product-desc">${product.description || ''}</p>
             <div class="meta">
               <p class="price">$${product.price}</p>
-              <div class="rating">★★★★★</div>
             </div>
           </div>
           <button class="add-to-cart">Add to Cart</button>
@@ -99,7 +98,6 @@ window.addEventListener('DOMContentLoaded', () => {
           <img src="${product.main_image_url || product.image || 'marketplace.png'}" alt="${product.name}">
           <h4>${product.name}</h4>
           <p class="price">$${product.price}</p>
-          <div class="rating">⭐⭐⭐⭐⭐</div>
           <button class="add-to-cart">Add to Cart</button>
         </div>
       `).join('');
