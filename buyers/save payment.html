@@ -4,22 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Saved Payments - MarketMix</title>
-   <!-- 🔒 BLOCK UNAUTHORIZED USERS -->
-    <script>
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.replace("login for buyers.html");
-        }
-    </script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Auth Check -->
+<script>
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.replace("login for buyers.html");
+  }
+</script>
 <style>
   :root {
-    --bg-light:  #FFF7ED;
+    --bg-light: #FFF7ED;
     --bg-dark: #1f1f1f;
     --text-light: #333;
     --text-dark: #f4f4f4;
     --card-light: #fef8f3;
     --card-dark: #2c2c2c;
-    --accent:  #F97316;
+    --accent: #F97316;
   }
   body {
     margin: 0;
@@ -47,12 +48,6 @@
     font-size: 18px;
     margin: 0;
   }
-  .toggle-mode {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-  }
   .container {
     max-width: 900px;
     margin: auto;
@@ -61,6 +56,37 @@
   h2 {
     text-align: center;
     margin-bottom: 25px;
+  }
+  .loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+  }
+  .error-message {
+    background: #fee;
+    color: #c00;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+    text-align: center;
+  }
+  .success-message {
+    background: #efe;
+    color: #060;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+    text-align: center;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+  }
+  .empty-state i {
+    font-size: 64px;
+    margin-bottom: 20px;
+    opacity: 0.3;
   }
   .payment-method {
     background: var(--card-light);
@@ -98,6 +124,7 @@
     padding: 2px 6px;
     border-radius: 4px;
     margin-left: 5px;
+    font-weight: bold;
   }
   .actions {
     flex: 1 1 25%;
@@ -110,19 +137,28 @@
     cursor: pointer;
     margin-left: 5px;
     margin-top: 5px;
+    font-size: 13px;
   }
-  .btn-edit { background-color:  #F97316;}
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .btn-edit { background-color: #F97316; color: white; }
   .btn-delete { background-color: red; color: white; }
+  .btn-default { background-color: #10b981; color: white; }
   .addPaymentBtn {
-    background-color:  #F97316;
+    background-color: #F97316;
     color: white;
     padding: 10px 15px;
     margin: 20px 0;
     display: inline-block;
     border-radius: 8px;
     text-decoration: none;
+    cursor: pointer;
+    border: none;
+    font-size: 16px;
   }
-  .addPaymentBtn:hover { background-color:  #EA580C;}
+  .addPaymentBtn:hover { background-color: #EA580C; }
   .expand {
     margin-top: 10px;
     max-height: 0;
@@ -130,7 +166,6 @@
     transition: max-height 0.4s ease;
   }
   .expand.show { max-height: 200px; }
-  /* Overlay */
   .overlay {
     display: none;
     position: fixed;
@@ -143,12 +178,12 @@
     z-index: 999;
   }
   .overlay.show { display: flex; }
-  /* Modal for Add/Edit */
   .modal {
     background: white;
     padding: 20px;
     border-radius: 10px;
     min-width: 320px;
+    max-width: 500px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     animation: scaleIn 0.3s ease forwards;
   }
@@ -156,10 +191,8 @@
     background: var(--card-dark);
     color: white;
   }
-  /* Animations */
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   @keyframes scaleIn { from { transform: scale(0.9); } to { transform: scale(1); } }
-  /* Form */
   .modal form label {
     display: block;
     margin: 10px 0 5px;
@@ -172,6 +205,7 @@
     margin-bottom: 8px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    box-sizing: border-box;
   }
   body.dark .modal form input,
   body.dark .modal form select {
@@ -193,97 +227,67 @@
   }
   .btn-cancel { background: #bbb; }
   .btn-save { background: var(--accent); color: #333; }
- footer {
-     background: rgba(0, 0, 0, 0.7);
-      color: #f8fafc;
-      text-align: center;
-      padding: 25px 15px;
-      margin-top: 60px;
-      font-size: 15px;
-    }
-
-
-
-    .back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #F97316; /* your site yellow theme */
-  color: #000;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 10px;
-  font-size: 16px;
-  cursor: pointer;
-  margin: 2px;
-  transition: 0.3s;
-}
-
-.back-btn i {
-  font-size: 18px;
-}
-
-.back-btn:hover {
-  background: #EA580C;
-  transform: translateY(-2px);
-}
+  footer {
+    background: rgba(0, 0, 0, 0.7);
+    color: #f8fafc;
+    text-align: center;
+    padding: 25px 15px;
+    margin-top: 60px;
+    font-size: 15px;
+  }
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #F97316;
+    color: #000;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 2px;
+    transition: 0.3s;
+  }
+  .back-btn i {
+    font-size: 18px;
+  }
+  .back-btn:hover {
+    background: #EA580C;
+    transform: translateY(-2px);
+  }
 </style>
 </head>
 <body>
 
- <button class="back-btn" onclick="history.back()">
-      <i class="fas fa-chevron-left"></i> Back
-    </button>
+<button class="back-btn" onclick="history.back()">
+  <i class="fas fa-chevron-left"></i> Back
+</button>
 
 <div class="container">
   <h2>💳 Saved Payment Methods</h2>
-
-  <div class="payment-method">
-    <div class="payment-details">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa">
-      <div class="payment-text">
-        <p><strong>Card:</strong> **** **** **** 1234 <span class="tags">Default</span></p>
-        <p><strong>Name:</strong> Sarah Johnson</p>
-        <p><strong>Expiry:</strong> 08/27</p>
-        <div class="expand">
-          <p>Billing Address: 123 Main St, Lagos</p>
-          <p>Added on: Jan 10, 2025</p>
-        </div>
-      </div>
-    </div>
-    <div class="actions">
-      <button class="btn btn-edit" onclick="toggleExpand(this)">Details</button>
-      <button class="btn btn-edit" onclick="editPayment(this)">Edit</button>
-
-      <button class="btn btn-delete" onclick="confirmDelete(this)">Delete</button>
-    </div>
+  
+  <div id="loadingState" class="loading">
+    <i class="fas fa-spinner fa-spin"></i> Loading payment methods...
+  </div>
+  
+  <div id="errorState" class="error-message" style="display: none;"></div>
+  <div id="successState" class="success-message" style="display: none;"></div>
+  
+  <div id="emptyState" class="empty-state" style="display: none;">
+    <i class="fas fa-credit-card"></i>
+    <h3>No Payment Methods Yet</h3>
+    <p>Add a payment method to get started</p>
   </div>
 
-  <div class="payment-method">
-    <div class="payment-details">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/0/0c/Mastercard-logo.png" alt="MasterCard">
-      <div class="payment-text">
-        <p><strong>Bank Transfer:</strong> Zenith Bank (****8901)</p>
-        <p><strong>Name:</strong> Sarah Johnson</p>
-        <p><strong>Account Type:</strong> Savings</p>
-        <div class="expand">
-          <p>Branch: Victoria Island</p>
-          <p>Added on: Feb 5, 2025</p>
-        </div>
-      </div>
-    </div>
-    <div class="actions">
-      <button class="btn btn-edit" onclick="toggleExpand(this)">Details</button>
-  <button class="btn btn-edit" onclick="editPayment(this)">Edit</button>
+  <div id="paymentMethodsList"></div>
 
-      <button class="btn btn-delete" onclick="confirmDelete(this)">Delete</button>
-    </div>
-  </div>
-
-  <a href="#" id="addPaymentBtn" class="addPaymentBtn">+ Add New Payment Method</a>
+  <button id="addPaymentBtn" class="addPaymentBtn" style="display: none;">
+    <i class="fas fa-plus"></i> Add New Payment Method
+  </button>
 </div>
 
-<!-- Add Payment Overlay -->
+<!-- Add/Edit Payment Overlay -->
 <div class="overlay" id="paymentOverlay">
   <div class="modal">
     <h3 id="modalTitle">Add New Payment Method</h3>
@@ -298,15 +302,23 @@
       <label id="numberLabel">Card Number:</label>
       <input type="text" id="paymentNumber" placeholder="Enter card/account number" required>
 
-      <label>Name:</label>
+      <label>Name on Card/Account:</label>
       <input type="text" id="paymentName" placeholder="Name on card/account" required>
 
       <label id="extraLabel">Expiry:</label>
       <input type="text" id="extraField" placeholder="MM/YY or Account Type" required>
 
+      <label id="addressLabel">Billing Address/Branch:</label>
+      <input type="text" id="addressField" placeholder="Optional">
+
+      <label style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+        <input type="checkbox" id="isDefault" style="width: auto;">
+        Set as default payment method
+      </label>
+
       <div class="modal-buttons">
         <button type="button" class="btn-cancel" id="cancelPayment">Cancel</button>
-        <button type="submit" class="btn-save">Save</button>
+        <button type="submit" class="btn-save" id="saveBtn">Save</button>
       </div>
     </form>
   </div>
@@ -317,8 +329,8 @@
   <div class="modal">
     <p>Are you sure you want to delete this payment method?</p>
     <div class="modal-buttons">
-      <button class="btn btn-delete" onclick="deleteConfirmed()">Yes, Delete</button>
-      <button class="btn btn-edit" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-delete" id="confirmDeleteBtn">Yes, Delete</button>
+      <button class="btn btn-edit" id="cancelDeleteBtn">Cancel</button>
     </div>
   </div>
 </div>
@@ -326,171 +338,427 @@
 <footer>
   &copy; 2025 MarketMix - All rights reserved.
 </footer>
+
 <script>
+// ========== CONFIGURATION ==========
+// UPDATE THIS WITH YOUR BACKEND URL
+const API_BASE_URL = 'https://marketmix-backend-production.up.railway.app/'; // Change to your backend URL
+// Example: const API_BASE_URL = 'https://yourbackend.com/api';
 
+// ========== STATE ==========
+let paymentMethods = [];
+let editingPaymentId = null;
+let deletingPaymentId = null;
 
-  function toggleExpand(btn) {
-    const expand = btn.closest('.payment-method').querySelector('.expand');
-    expand.classList.toggle('show');
-  }
+// ========== HELPER FUNCTIONS ==========
+function getAuthToken() {
+  return localStorage.getItem('token');
+}
 
-  let toDelete = null;
-  let editingCard = null;
+function showSuccess(message) {
+  const successDiv = document.getElementById('successState');
+  successDiv.textContent = message;
+  successDiv.style.display = 'block';
+  setTimeout(() => {
+    successDiv.style.display = 'none';
+  }, 3000);
+}
 
-  function confirmDelete(btn) {
-    toDelete = btn.closest('.payment-method');
-    document.getElementById('deleteModal').classList.add('show');
-  }
-  function closeModal() {
-    document.getElementById('deleteModal').classList.remove('show');
-  }
-  function deleteConfirmed() {
-    if (toDelete) {
-      toDelete.remove();
-      toDelete = null;
-    }
-    closeModal();
-  }
+function showError(message) {
+  document.getElementById('loadingState').style.display = 'none';
+  const errorDiv = document.getElementById('errorState');
+  errorDiv.textContent = message;
+  errorDiv.style.display = 'block';
+}
 
-  const addPaymentBtn = document.getElementById('addPaymentBtn');
-  const paymentOverlay = document.getElementById('paymentOverlay');
-  const cancelPayment = document.getElementById('cancelPayment');
-  const paymentType = document.getElementById('paymentType');
-  const numberLabel = document.getElementById('numberLabel');
-  const extraLabel = document.getElementById('extraLabel');
-  const paymentForm = document.getElementById('paymentForm');
-  const modalTitle = document.getElementById('modalTitle');
+function showLoading() {
+  document.getElementById('loadingState').style.display = 'block';
+  document.getElementById('errorState').style.display = 'none';
+  document.getElementById('successState').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('paymentMethodsList').innerHTML = '';
+  document.getElementById('addPaymentBtn').style.display = 'none';
+}
 
-  // Open Add Payment modal
-  addPaymentBtn.addEventListener('click', e => {
-    e.preventDefault();
-    editingCard = null;
-    modalTitle.textContent = "Add New Payment Method";
-    paymentOverlay.classList.add('show');
-    paymentForm.reset();
-  });
+function showEmpty() {
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('errorState').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'block';
+  document.getElementById('addPaymentBtn').style.display = 'inline-block';
+}
 
-  // Cancel button
-  cancelPayment.addEventListener('click', () => {
-    paymentOverlay.classList.remove('show');
-    paymentForm.reset();
-  });
+// ========== API CALLS ==========
+async function fetchPaymentMethods() {
+  const token = getAuthToken();
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/payment-methods`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
 
-  // Close modal when clicking outside
-  paymentOverlay.addEventListener('click', e => {
-    if (e.target === paymentOverlay) {
-      paymentOverlay.classList.remove('show');
-      paymentForm.reset();
-    }
-  });
-
-  // Change labels depending on type
-  paymentType.addEventListener('change', () => {
-    if (paymentType.value === 'Card') {
-      numberLabel.innerText = "Card Number:";
-      extraLabel.innerText = "Expiry:";
-    } else {
-      numberLabel.innerText = "Account Number:";
-      extraLabel.innerText = "Account Type:";
-    }
-  });
-
-  // Handle Add/Edit submit
-  paymentForm.addEventListener('submit', e => {
-    e.preventDefault();
-
-    const type = paymentType.value;
-    const number = document.getElementById('paymentNumber').value.trim();
-    const name = document.getElementById('paymentName').value.trim();
-    const extra = document.getElementById('extraField').value.trim();
-    const today = new Date().toLocaleDateString();
-
-    let maskedNumber = "";
-    let imgSrc = "";
-    let extraLabelText = "";
-    let expandInfo = "";
-
-    if (type === "Card") {
-      maskedNumber = "**** **** **** " + number.slice(-4);
-      imgSrc = "https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg"; 
-      extraLabelText = `<p><strong>Expiry:</strong> ${extra}</p>`;
-      expandInfo = `<p>Billing Address: Not provided</p><p>Added on: ${today}</p>`;
-    } else {
-      maskedNumber = `(${ "****" + number.slice(-4) })`;
-      imgSrc = "https://upload.wikimedia.org/wikipedia/commons/0/0c/Mastercard-logo.png"; 
-      extraLabelText = `<p><strong>Account Type:</strong> ${extra}</p>`;
-      expandInfo = `<p>Branch: Not provided</p><p>Added on: ${today}</p>`;
+    if (response.status === 401) {
+      localStorage.removeItem('token');
+      window.location.replace("login for buyers.html");
+      return;
     }
 
-    if (editingCard) {
-      // Update existing card
-      const img = editingCard.querySelector("img");
-      img.src = imgSrc;
-      img.alt = type;
+    if (!response.ok) {
+      throw new Error('Failed to fetch payment methods');
+    }
 
-      const paymentText = editingCard.querySelector(".payment-text");
-      paymentText.innerHTML = `
-        <p><strong>${type}:</strong> ${maskedNumber}</p>
-        <p><strong>Name:</strong> ${name}</p>
-        ${extraLabelText}
+    const result = await response.json();
+    return result.data || [];
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
+}
+
+async function addPaymentMethod(paymentData) {
+  const token = getAuthToken();
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/payment-methods`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(paymentData)
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to add payment method');
+    }
+
+    const result = await response.json();
+    return result.data;
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
+}
+
+async function updatePaymentMethod(id, paymentData) {
+  const token = getAuthToken();
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/payment-methods/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(paymentData)
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to update payment method');
+    }
+
+    const result = await response.json();
+    return result.data;
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
+}
+
+async function deletePaymentMethod(id) {
+  const token = getAuthToken();
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/payment-methods/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete payment method');
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
+}
+
+async function setDefaultPayment(id) {
+  const token = getAuthToken();
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/payment-methods/${id}/set-default`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to set default payment');
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
+}
+
+// ========== UI RENDERING ==========
+function renderPaymentMethods(methods) {
+  const container = document.getElementById('paymentMethodsList');
+  container.innerHTML = '';
+
+  if (methods.length === 0) {
+    showEmpty();
+    return;
+  }
+
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('errorState').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('addPaymentBtn').style.display = 'inline-block';
+
+  methods.forEach(method => {
+    const card = createPaymentCard(method);
+    container.appendChild(card);
+  });
+}
+
+function createPaymentCard(method) {
+  const div = document.createElement('div');
+  div.className = 'payment-method';
+  div.dataset.id = method.id;
+
+  const imgSrc = method.payment_type === 'Card' 
+    ? 'https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg'
+    : 'https://upload.wikimedia.org/wikipedia/commons/0/0c/Mastercard-logo.png';
+
+  const defaultTag = method.is_default ? '<span class="tags">Default</span>' : '';
+  
+  const extraLabel = method.payment_type === 'Card' ? 'Expiry' : 'Account Type';
+  const addressLabel = method.payment_type === 'Card' ? 'Billing Address' : 'Branch';
+  const addressValue = method.payment_type === 'Card' ? method.billing_address : method.branch;
+  
+  const formattedDate = new Date(method.created_at).toLocaleDateString();
+
+  div.innerHTML = `
+    <div class="payment-details">
+      <img src="${imgSrc}" alt="${method.payment_type}">
+      <div class="payment-text">
+        <p><strong>${method.payment_type}:</strong> ${method.masked_number} ${defaultTag}</p>
+        <p><strong>Name:</strong> ${method.cardholder_name}</p>
+        <p><strong>${extraLabel}:</strong> ${method.extra_info || 'N/A'}</p>
         <div class="expand">
-          ${expandInfo}
+          <p>${addressLabel}: ${addressValue || 'Not provided'}</p>
+          <p>Added on: ${formattedDate}</p>
         </div>
-      `;
-      editingCard = null;
-    } else {
-      // Create new card
-      const newCard = document.createElement('div');
-      newCard.className = "payment-method";
-      newCard.innerHTML = `
-        <div class="payment-details">
-          <img src="${imgSrc}" alt="${type}">
-          <div class="payment-text">
-            <p><strong>${type}:</strong> ${maskedNumber}</p>
-            <p><strong>Name:</strong> ${name}</p>
-            ${extraLabelText}
-            <div class="expand">
-              ${expandInfo}
-            </div>
-          </div>
-        </div>
-        <div class="actions">
-          <button class="btn btn-edit" onclick="toggleExpand(this)">Details</button>
-          <button class="btn btn-edit" onclick="editPayment(this)">Edit</button>
-          <button class="btn btn-delete" onclick="confirmDelete(this)">Delete</button>
-        </div>
-      `;
-      document.querySelector('.container').insertBefore(newCard, addPaymentBtn);
-    }
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-edit" onclick="toggleExpand(this)">
+        <i class="fas fa-info-circle"></i> Details
+      </button>
+      ${!method.is_default ? `<button class="btn btn-default" onclick="makeDefault('${method.id}')">
+        <i class="fas fa-star"></i> Set Default
+      </button>` : ''}
+      <button class="btn btn-edit" onclick="editPayment('${method.id}')">
+        <i class="fas fa-edit"></i> Edit
+      </button>
+      <button class="btn btn-delete" onclick="confirmDelete('${method.id}')">
+        <i class="fas fa-trash"></i> Delete
+      </button>
+    </div>
+  `;
 
-    paymentOverlay.classList.remove('show');
-    paymentForm.reset();
-  });
+  return div;
+}
 
-  // Edit payment method
-  window.editPayment = function(btn) {
-    editingCard = btn.closest('.payment-method');
-    modalTitle.textContent = "Edit Payment Method";
+// ========== EVENT HANDLERS ==========
+function toggleExpand(btn) {
+  const expand = btn.closest('.payment-method').querySelector('.expand');
+  expand.classList.toggle('show');
+}
 
-    const typeText = editingCard.querySelector('.payment-text p strong').textContent;
-    if (typeText.includes("Card")) {
-      paymentType.value = "Card";
-      numberLabel.innerText = "Card Number:";
-      extraLabel.innerText = "Expiry:";
-    } else {
-      paymentType.value = "Bank";
-      numberLabel.innerText = "Account Number:";
-      extraLabel.innerText = "Account Type:";
-    }
-
-    const masked = editingCard.querySelector('.payment-text p').textContent;
-    const last4 = masked.match(/(\d{4})$/) ? masked.match(/(\d{4})$/)[0] : "";
-    document.getElementById('paymentNumber').value = last4;
-    document.getElementById('paymentName').value = editingCard.querySelectorAll('.payment-text p')[1].textContent.replace("Name:", "").trim();
-    document.getElementById('extraField').value = editingCard.querySelectorAll('.payment-text p')[2].textContent.split(":")[1].trim();
-
-    paymentOverlay.classList.add('show');
+async function makeDefault(id) {
+  try {
+    await setDefaultPayment(id);
+    showSuccess('Default payment method updated!');
+    await loadPaymentMethods();
+  } catch (error) {
+    showError('Failed to set default payment method');
   }
+}
+
+function confirmDelete(id) {
+  deletingPaymentId = id;
+  document.getElementById('deleteModal').classList.add('show');
+}
+
+function editPayment(id) {
+  const method = paymentMethods.find(m => m.id === id);
+  if (!method) return;
+
+  editingPaymentId = id;
+  document.getElementById('modalTitle').textContent = 'Edit Payment Method';
+  
+  document.getElementById('paymentType').value = method.payment_type;
+  document.getElementById('paymentNumber').value = method.masked_number.slice(-4);
+  document.getElementById('paymentName').value = method.cardholder_name;
+  document.getElementById('extraField').value = method.extra_info || '';
+  document.getElementById('addressField').value = method.payment_type === 'Card' ? 
+    (method.billing_address || '') : (method.branch || '');
+  document.getElementById('isDefault').checked = method.is_default;
+
+  updateFormLabels(method.payment_type);
+  document.getElementById('paymentOverlay').classList.add('show');
+}
+
+function updateFormLabels(type) {
+  if (type === 'Card') {
+    document.getElementById('numberLabel').textContent = 'Card Number:';
+    document.getElementById('extraLabel').textContent = 'Expiry (MM/YY):';
+    document.getElementById('addressLabel').textContent = 'Billing Address:';
+  } else {
+    document.getElementById('numberLabel').textContent = 'Account Number:';
+    document.getElementById('extraLabel').textContent = 'Account Type:';
+    document.getElementById('addressLabel').textContent = 'Branch:';
+  }
+}
+
+// ========== FORM HANDLING ==========
+document.getElementById('paymentType').addEventListener('change', (e) => {
+  updateFormLabels(e.target.value);
+});
+
+document.getElementById('addPaymentBtn').addEventListener('click', () => {
+  editingPaymentId = null;
+  document.getElementById('modalTitle').textContent = 'Add New Payment Method';
+  document.getElementById('paymentForm').reset();
+  updateFormLabels('Card');
+  document.getElementById('paymentOverlay').classList.add('show');
+});
+
+document.getElementById('cancelPayment').addEventListener('click', () => {
+  document.getElementById('paymentOverlay').classList.remove('show');
+  document.getElementById('paymentForm').reset();
+  editingPaymentId = null;
+});
+
+document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const saveBtn = document.getElementById('saveBtn');
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving...';
+
+  const type = document.getElementById('paymentType').value;
+  const number = document.getElementById('paymentNumber').value.trim();
+  const name = document.getElementById('paymentName').value.trim();
+  const extra = document.getElementById('extraField').value.trim();
+  const address = document.getElementById('addressField').value.trim();
+  const isDefault = document.getElementById('isDefault').checked;
+
+  // Mask the number
+  const maskedNumber = type === 'Card' 
+    ? `**** **** **** ${number.slice(-4)}`
+    : `****${number.slice(-4)}`;
+
+  const paymentData = {
+    payment_type: type,
+    masked_number: maskedNumber,
+    cardholder_name: name,
+    extra_info: extra,
+    is_default: isDefault
+  };
+
+  if (type === 'Card') {
+    paymentData.billing_address = address || null;
+  } else {
+    paymentData.branch = address || null;
+  }
+
+  try {
+    if (editingPaymentId) {
+      await updatePaymentMethod(editingPaymentId, paymentData);
+      showSuccess('Payment method updated successfully!');
+    } else {
+      await addPaymentMethod(paymentData);
+      showSuccess('Payment method added successfully!');
+    }
+
+    document.getElementById('paymentOverlay').classList.remove('show');
+    document.getElementById('paymentForm').reset();
+    editingPaymentId = null;
+    await loadPaymentMethods();
+  } catch (error) {
+    showError(error.message || 'Failed to save payment method');
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save';
+  }
+});
+
+// Delete confirmation
+document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+  if (!deletingPaymentId) return;
+
+  try {
+    await deletePaymentMethod(deletingPaymentId);
+    showSuccess('Payment method deleted successfully!');
+    document.getElementById('deleteModal').classList.remove('show');
+    deletingPaymentId = null;
+    await loadPaymentMethods();
+  } catch (error) {
+    showError('Failed to delete payment method');
+  }
+});
+
+document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
+  document.getElementById('deleteModal').classList.remove('show');
+  deletingPaymentId = null;
+});
+
+// Close modals when clicking outside
+document.getElementById('paymentOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'paymentOverlay') {
+    document.getElementById('paymentOverlay').classList.remove('show');
+    document.getElementById('paymentForm').reset();
+    editingPaymentId = null;
+  }
+});
+
+document.getElementById('deleteModal').addEventListener('click', (e) => {
+  if (e.target.id === 'deleteModal') {
+    document.getElementById('deleteModal').classList.remove('show');
+    deletingPaymentId = null;
+  }
+});
+
+// ========== INITIALIZATION ==========
+async function loadPaymentMethods() {
+  showLoading();
+  try {
+    paymentMethods = await fetchPaymentMethods();
+    renderPaymentMethods(paymentMethods);
+  } catch (error) {
+    showError('Failed to load payment methods. Please try again.');
+  }
+}
+
+// Load on page load
+window.addEventListener('DOMContentLoaded', loadPaymentMethods);
 </script>
 
 </body>
