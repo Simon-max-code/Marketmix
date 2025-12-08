@@ -711,7 +711,7 @@ document.getElementById('paymentForm').addEventListener('submit', async (e) => {
 });
 
 // Delete confirmation
-document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+document.getElementById('confirmDeleteBtn').addEventL istener('click', async () => {
   if (!deletingPaymentId) return;
 
   try {
