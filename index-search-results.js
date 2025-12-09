@@ -114,7 +114,6 @@
 
   render();
 
-  // Populate top search input
-  const topInput = document.getElementById('mm-search-top-input');
+  // Populate top search input with current query
   if(topInput) topInput.value = q;
 })();
