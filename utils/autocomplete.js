@@ -30,8 +30,8 @@ class MarketMixAutocomplete {
     try {
       // Fetch both products and categories in parallel
       const [productsRes, categoriesRes] = await Promise.all([
-        fetch(`${CONFIG.API_BASE_URL}/products?limit=1000`).catch(() => null),
-        fetch(`${CONFIG.API_BASE_URL}/categories?limit=1000`).catch(() => null)
+        fetch(`${CONFIG.API_BASE_URL}/products`).catch(() => null),
+        fetch(`${CONFIG.API_BASE_URL}/categories`).catch(() => null)
       ]);
 
       let products = [];
@@ -60,6 +60,46 @@ class MarketMixAutocomplete {
   }
 
   /**
+   * Search products by query (uses backend search endpoint)
+   */
+  async searchProducts(query) {
+    if (!query || query.trim().length === 0) {
+      return [];
+    }
+
+    try {
+      const response = await fetch(`${CONFIG.API_BASE_URL}/products/search/query?q=${encodeURIComponent(query)}`);
+      if (!response.ok) return [];
+      
+      const data = await response.json();
+      return Array.isArray(data.data) ? data.data : [];
+    } catch (error) {
+      console.error('Error searching products:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Search categories by query (uses backend search endpoint)
+   */
+  async searchCategories(query) {
+    if (!query || query.trim().length === 0) {
+      return [];
+    }
+
+    try {
+      const response = await fetch(`${CONFIG.API_BASE_URL}/categories/search/query?q=${encodeURIComponent(query)}`);
+      if (!response.ok) return [];
+      
+      const data = await response.json();
+      return Array.isArray(data.data) ? data.data : [];
+    } catch (error) {
+      console.error('Error searching categories:', error);
+      return [];
+    }
+  }
+
+  /**
    * Get suggestions based on search query
    * @param {string} query - Search query
    * @param {number} limit - Max suggestions to return
@@ -70,42 +110,41 @@ class MarketMixAutocomplete {
       return [];
     }
 
-    const { products, categories } = await this.fetchAllData();
-    const lowerQuery = query.toLowerCase().trim();
+    try {
+      // Use backend search endpoints for real-time search
+      const [products, categories] = await Promise.all([
+        this.searchProducts(query),
+        this.searchCategories(query)
+      ]);
 
-    // Filter products - match by name or description, starting with query
-    const productSuggestions = products
-      .filter(p => {
-        const name = (p.name || '').toLowerCase();
-        const desc = (p.description || '').toLowerCase();
-        return name.startsWith(lowerQuery) || name.includes(lowerQuery) || desc.includes(lowerQuery);
-      })
-      .slice(0, Math.ceil(limit * 0.7))
-      .map(p => ({
-        type: 'product',
-        id: p.id,
-        name: p.name,
-        icon: '📦',
-        image: p.main_image_url
-      }));
+      // Convert products to suggestion format
+      const productSuggestions = (products || [])
+        .slice(0, Math.ceil(limit * 0.7))
+        .map(p => ({
+          type: 'product',
+          id: p.id,
+          name: p.name,
+          icon: '📦',
+          image: p.main_image_url
+        }));
 
-    // Filter categories - match by name, prioritize starting with query
-    const categorySuggestions = categories
-      .filter(c => {
-        const name = (c.name || '').toLowerCase();
-        return name.startsWith(lowerQuery) || name.includes(lowerQuery);
-      })
-      .slice(0, Math.ceil(limit * 0.3))
-      .map(c => ({
-        type: 'category',
-        id: c.id,
-        name: c.name,
-        icon: '🏷️',
-        count: c.product_count || 0
-      }));
+      // Convert categories to suggestion format
+      const categorySuggestions = (categories || [])
+        .slice(0, Math.ceil(limit * 0.3))
+        .map(c => ({
+          type: 'category',
+          id: c.id,
+          name: c.name,
+          icon: '🏷️',
+          count: c.product_count || 0
+        }));
 
-    // Combine and limit total results
-    return [...productSuggestions, ...categorySuggestions].slice(0, limit);
+      // Combine and limit total results
+      return [...productSuggestions, ...categorySuggestions].slice(0, limit);
+    } catch (error) {
+      console.error('Error getting suggestions:', error);
+      return [];
+    }
   }
 
   /**
