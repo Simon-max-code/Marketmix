@@ -269,6 +269,12 @@
   // Load products from backend and render into the grids
   async function loadLandingProducts(limit = 8) {
     try {
+      // Clear demo cards immediately so only real products show
+      const bestGrid = document.querySelector('.best-selling-grid');
+      const newGrid = document.querySelector('.new-arrivals-grid');
+      if (bestGrid) bestGrid.innerHTML = '';
+      if (newGrid) newGrid.innerHTML = '';
+
       const base = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend-production.up.railway.app/api';
       const res = await fetch(`${base}/products?limit=${limit}`);
       if (!res.ok) throw new Error('Failed to fetch products');
@@ -282,13 +288,14 @@
 
       console.log(`Landing: fetched ${items.length} products`);
 
-      const bestGrid = document.querySelector('.best-selling-grid');
-      const newGrid = document.querySelector('.new-arrivals-grid');
+      // Re-query grids (in case they were reused elsewhere)
+      const bestGrid2 = document.querySelector('.best-selling-grid');
+      const newGrid2 = document.querySelector('.new-arrivals-grid');
 
       // Render into best selling (first half) and new arrivals (second half)
       const half = Math.ceil(items.length / 2);
-      if (bestGrid) bestGrid.innerHTML = items.slice(0, half).map(renderProductCard).join('');
-      if (newGrid) newGrid.innerHTML = items.slice(half).map(renderProductCard).join('');
+      if (bestGrid2) bestGrid2.innerHTML = items.slice(0, half).map(renderProductCard).join('');
+      if (newGrid2) newGrid2.innerHTML = items.slice(half).map(renderProductCard).join('');
 
       // Only populate "You Might Like" carousel (hero is for banners only, not products)
       let youLikeItems = items.slice(0, 9);
