@@ -44,8 +44,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get cart from localStorage
     function updateCartCount() {
       try {
-        const cart = JSON.parse(localStorage.getItem('marketmix-cart') || '[]');
-        const totalCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+        // Prefer the app-standard 'cart' key; fallback to legacy 'marketmix-cart'
+        const raw = localStorage.getItem('cart') || localStorage.getItem('marketmix-cart') || '[]';
+        const cart = JSON.parse(raw);
+        const totalCount = Array.isArray(cart) ? cart.reduce((sum, item) => sum + (item.quantity || 1), 0) : 0;
         cartCountEl.textContent = totalCount;
       } catch (error) {
         console.error('Error updating cart count:', error);
@@ -58,9 +60,24 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Listen for storage changes (from other tabs/windows)
     window.addEventListener('storage', function(e) {
-      if (e.key === 'marketmix-cart') {
+      if (e.key === 'marketmix-cart' || e.key === 'cart' || e.key === null) {
+        // e.key === null can happen on localStorage.clear()
         updateCartCount();
       }
+    });
+
+    // Also update when add-to-cart buttons are clicked on this page
+    document.addEventListener('click', function(e) {
+      const btn = e.target.closest && e.target.closest('.add-to-cart');
+      if (btn) {
+        // Give other handlers a moment to update localStorage
+        setTimeout(updateCartCount, 60);
+      }
+    });
+
+    // And refresh when page visibility changes (user may have updated cart in another tab)
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) updateCartCount();
     });
   })();
 
