@@ -43,25 +43,27 @@
   
   async function searchProducts() {
     try {
-      if (!q) {
-        // If no search query, fetch all products
-        const response = await fetch(`${CONFIG.API_BASE_URL}/products?limit=50`);
-        if (!response.ok) throw new Error('Failed to fetch products');
-        
-        const data = await response.json();
-        filtered = Array.isArray(data.data) ? data.data : [];
-      } else {
-        // Search for products by query
-        const response = await fetch(`${CONFIG.API_BASE_URL}/products/search/query?q=${encodeURIComponent(q)}`);
-        if (!response.ok) throw new Error('Failed to search products');
-        
-        const data = await response.json();
-        filtered = Array.isArray(data.data) ? data.data : [];
+      const apiUrl = q 
+        ? `${CONFIG.API_BASE_URL}/products/search/query?q=${encodeURIComponent(q)}`
+        : `${CONFIG.API_BASE_URL}/products?limit=50`;
+      
+      console.log('Fetching from:', apiUrl);
+      const response = await fetch(apiUrl);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
+      
+      const data = await response.json();
+      console.log('API Response:', data);
+      
+      filtered = Array.isArray(data.data) ? data.data : [];
+      console.log('Filtered results:', filtered.length, 'products');
       
       render();
     } catch (error) {
-      console.error('Error searching products:', error);
+      console.error('Error searching products:', error.message);
+      console.error('Full error:', error);
       filtered = [];
       render();
     }

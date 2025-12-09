@@ -68,11 +68,19 @@ class MarketMixAutocomplete {
     }
 
     try {
-      const response = await fetch(`${CONFIG.API_BASE_URL}/products/search/query?q=${encodeURIComponent(query)}`);
-      if (!response.ok) return [];
+      const url = `${CONFIG.API_BASE_URL}/products/search/query?q=${encodeURIComponent(query)}`;
+      console.log('Searching products:', url);
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        console.warn(`Product search failed: HTTP ${response.status}`);
+        return [];
+      }
       
       const data = await response.json();
-      return Array.isArray(data.data) ? data.data : [];
+      const results = Array.isArray(data.data) ? data.data : [];
+      console.log(`Product search found ${results.length} results`);
+      return results;
     } catch (error) {
       console.error('Error searching products:', error);
       return [];
@@ -88,11 +96,19 @@ class MarketMixAutocomplete {
     }
 
     try {
-      const response = await fetch(`${CONFIG.API_BASE_URL}/categories/search/query?q=${encodeURIComponent(query)}`);
-      if (!response.ok) return [];
+      const url = `${CONFIG.API_BASE_URL}/categories/search/query?q=${encodeURIComponent(query)}`;
+      console.log('Searching categories:', url);
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        console.warn(`Category search failed: HTTP ${response.status}`);
+        return [];
+      }
       
       const data = await response.json();
-      return Array.isArray(data.data) ? data.data : [];
+      const results = Array.isArray(data.data) ? data.data : [];
+      console.log(`Category search found ${results.length} results`);
+      return results;
     } catch (error) {
       console.error('Error searching categories:', error);
       return [];
@@ -117,6 +133,8 @@ class MarketMixAutocomplete {
         this.searchCategories(query)
       ]);
 
+      console.log(`Autocomplete search for "${query}": ${products.length} products, ${categories.length} categories`);
+
       // Convert products to suggestion format
       const productSuggestions = (products || [])
         .slice(0, Math.ceil(limit * 0.7))
@@ -140,7 +158,9 @@ class MarketMixAutocomplete {
         }));
 
       // Combine and limit total results
-      return [...productSuggestions, ...categorySuggestions].slice(0, limit);
+      const suggestions = [...productSuggestions, ...categorySuggestions].slice(0, limit);
+      console.log(`Returning ${suggestions.length} total suggestions`);
+      return suggestions;
     } catch (error) {
       console.error('Error getting suggestions:', error);
       return [];
