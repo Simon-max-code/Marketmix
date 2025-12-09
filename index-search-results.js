@@ -1,4 +1,4 @@
-(function(){
+document.addEventListener('DOMContentLoaded', function(){
   // Setup autocomplete
   const topInput = document.getElementById('mm-search-top-input');
   const topAutocomplete = document.getElementById('mm-search-top-autocomplete');
@@ -113,8 +113,6 @@
     });
   }
 
-  render();
-
   // Populate top search input with current query
   if(topInput) topInput.value = q;
-})();
+});
