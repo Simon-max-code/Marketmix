@@ -75,12 +75,13 @@
   function createCard(p){
     const div = document.createElement('div');
     div.className = 'product-card';
+    const price = parseFloat(p.price) || 0;
     div.innerHTML = `
       <img src="${p.main_image_url || p.image || 'https://via.placeholder.com/300'}" alt="${p.name}" style="height: 200px; object-fit: cover;">
       <div class="product-info">
         <div class="product-name">${p.name}</div>
         ${p.description ? `<div class="product-desc">${p.description}</div>` : ''}
-        <div class="meta"><div class="price">$${(p.price || 0).toFixed(2)}</div></div>
+        <div class="meta"><div class="price">$${price.toFixed(2)}</div></div>
       </div>
       <button class="add-to-cart" data-product-id="${p.id}">Add to Cart</button>
     `;
