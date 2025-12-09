@@ -254,8 +254,13 @@ function setupAutocomplete(inputElement, containerElement, onSelect) {
 
   // Hide dropdown when clicking outside
   document.addEventListener('click', (e) => {
-    if (!e.target.closest(inputElement) && !e.target.closest(containerElement)) {
-      containerElement.style.display = 'none';
+    // Check if click is not on input or container
+    if (inputElement && containerElement) {
+      const isClickInsideInput = inputElement.contains(e.target);
+      const isClickInsideContainer = containerElement.contains(e.target);
+      if (!isClickInsideInput && !isClickInsideContainer) {
+        containerElement.style.display = 'none';
+      }
     }
   });
 

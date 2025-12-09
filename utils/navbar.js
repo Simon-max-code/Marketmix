@@ -8,21 +8,32 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (!toggle || !menu) return;
     
-    toggle.addEventListener('click', function() {
-      const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
-      toggle.setAttribute('aria-expanded', !isExpanded);
-      menu.setAttribute('aria-hidden', isExpanded);
-      menu.classList.toggle('active');
+        toggle.addEventListener('click', function(e) {
+          e.stopPropagation();
+          menu.classList.toggle('open');
+          const isOpen = menu.classList.contains('open');
+          toggle.setAttribute('aria-expanded', isOpen);
+          menu.setAttribute('aria-hidden', !isOpen);
     });
     
     // Close menu when clicking outside
     document.addEventListener('click', function(e) {
       if (!toggle.contains(e.target) && !menu.contains(e.target)) {
-        toggle.setAttribute('aria-expanded', 'false');
-        menu.setAttribute('aria-hidden', 'true');
-        menu.classList.remove('active');
+            menu.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
+            menu.setAttribute('aria-hidden', 'true');
       }
     });
+        
+        // Close menu when clicking a link
+        const menuLinks = menu.querySelectorAll('a');
+        menuLinks.forEach(link => {
+          link.addEventListener('click', function() {
+            menu.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
+            menu.setAttribute('aria-hidden', 'true');
+          });
+        });
   })();
 
   // ===== CART COUNT UPDATE =====
