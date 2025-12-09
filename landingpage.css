@@ -223,6 +223,14 @@
     .brand-card p{color:var(--muted);font-size:clamp(0.8rem, 1.8vw, 0.9rem)}
     .featured-product{width:100%;height:160px;object-fit:cover;border-radius:8px;margin-top:auto}
 
+    /* ====== Popular Categories Grid ====== */
+    .categories-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));gap:16px;padding:16px;background:linear-gradient(180deg,#f8fafc,#fff);border-radius:12px;box-shadow:0 4px 12px rgba(2,6,23,0.04)}
+    .category-card{background:white;border-radius:12px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:12px;text-decoration:none;transition:all var(--trans);box-shadow:0 2px 8px rgba(2,6,23,0.04);cursor:pointer;border:1px solid rgba(2,6,23,0.05);min-height:160px;justify-content:center;text-align:center}
+    .category-card:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(2,6,23,0.12);border-color:var(--primary)}
+    .category-icon{width:56px;height:56px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:28px;background:linear-gradient(135deg,rgba(43,108,176,0.1),rgba(234,88,12,0.1))}
+    .category-name{font-weight:600;color:#0f172a;font-size:0.95rem;line-height:1.3}
+    .category-count{font-size:0.75rem;color:var(--muted);margin-top:auto}
+
     /* ====== Scroll Indicator ====== */
     .scroll-indicator{position:absolute;right:16px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.3);color:white;padding:8px 12px;border-radius:6px;font-size:12px;pointer-events:none;opacity:0;transition:opacity 0.3s}
     .scroll-indicator.show{opacity:1}
@@ -357,6 +365,11 @@
       .brand-card p{font-size:0.8rem}
       .featured-product{height:120px}
       
+      .categories-grid{grid-template-columns:repeat(auto-fill, minmax(120px, 1fr));gap:12px;padding:12px}
+      .category-card{padding:16px;min-height:140px}
+      .category-icon{width:48px;height:48px;font-size:24px}
+      .category-name{font-size:0.9rem}
+      
       .filter-row{margin-bottom:12px;gap:8px}
       .filter-btn{padding:8px 14px;font-size:15px;min-height:42px}
       
@@ -466,6 +479,11 @@
       .brand-card h3{font-size:0.85rem}
       .brand-card p{font-size:0.75rem}
       .featured-product{height:100px}
+      
+      .categories-grid{grid-template-columns:repeat(auto-fill, minmax(100px, 1fr));gap:10px;padding:10px;margin:0 -12px}
+      .category-card{padding:14px;min-height:130px}
+      .category-icon{width:40px;height:40px;font-size:20px}
+      .category-name{font-size:0.8rem}
       
       .filter-row{margin-bottom:10px;gap:6px;padding-bottom:6px}
       .filter-btn{padding:6px 12px;font-size:14px;min-height:40px}

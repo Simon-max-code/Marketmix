@@ -535,3 +535,55 @@
       });
     });
   })();
+
+  // ===== POPULAR CATEGORIES =====
+  (function() {
+    const categoriesContainer = document.getElementById('categoriesContainer');
+    if (!categoriesContainer) return;
+
+    async function fetchAndPopulateCategories() {
+      try {
+        const response = await fetch(`${CONFIG.API_BASE_URL}/categories`);
+        if (!response.ok) throw new Error('Failed to fetch categories');
+        
+        const result = await response.json();
+        const categories = result.data || [];
+
+        if (categories.length === 0) {
+          categoriesContainer.innerHTML = '<div class="category-skeleton">No categories available</div>';
+          return;
+        }
+
+        // Generate category cards with icons/emojis
+        const categoryIcons = {
+          'Electronics': '📱',
+          'Fashion': '👕',
+          'Home & Garden': '🏠',
+          'Sports & Outdoors': '⚽',
+          'Books & Media': '📚',
+          'Toys & Games': '🎮',
+          'Health & Beauty': '💄',
+          'Automotive': '🚗',
+          'Jewelry': '💍',
+          'Pet Supplies': '🐾',
+        };
+
+        const categoryCards = categories.map(category => {
+          const icon = categoryIcons[category.name] || '📦';
+          return `
+            <a href="./buyers/category.html?id=${category.id}" class="category-card" title="${category.name}">
+              <div class="category-icon">${icon}</div>
+              <div class="category-name">${category.name}</div>
+            </a>
+          `;
+        }).join('');
+
+        categoriesContainer.innerHTML = categoryCards;
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        categoriesContainer.innerHTML = '<div class="category-skeleton" style="grid-column: 1/-1;">Unable to load categories</div>';
+      }
+    }
+
+    fetchAndPopulateCategories();
+  })();
