@@ -269,12 +269,6 @@
   // Load products from backend and render into the grids
   async function loadLandingProducts(limit = 8) {
     try {
-      // Clear demo cards immediately so only real products show
-      const bestGrid = document.querySelector('.best-selling-grid');
-      const newGrid = document.querySelector('.new-arrivals-grid');
-      if (bestGrid) bestGrid.innerHTML = '';
-      if (newGrid) newGrid.innerHTML = '';
-
       const base = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend-production.up.railway.app/api';
       const res = await fetch(`${base}/products?limit=${limit}`);
       if (!res.ok) throw new Error('Failed to fetch products');
@@ -288,14 +282,21 @@
 
       console.log(`Landing: fetched ${items.length} products`);
 
-      // Re-query grids (in case they were reused elsewhere)
-      const bestGrid2 = document.querySelector('.best-selling-grid');
-      const newGrid2 = document.querySelector('.new-arrivals-grid');
+      const bestGrid = document.querySelector('.best-selling-grid');
+      const newGrid = document.querySelector('.new-arrivals-grid');
 
       // Render into best selling (first half) and new arrivals (second half)
       const half = Math.ceil(items.length / 2);
-      if (bestGrid2) bestGrid2.innerHTML = items.slice(0, half).map(renderProductCard).join('');
-      if (newGrid2) newGrid2.innerHTML = items.slice(half).map(renderProductCard).join('');
+      if (bestGrid) {
+        bestGrid.innerHTML = items.slice(0, half).map(renderProductCard).join('');
+        // Reattach click handlers for newly rendered product cards
+        attachProductCardListeners(bestGrid);
+      }
+      if (newGrid) {
+        newGrid.innerHTML = items.slice(half).map(renderProductCard).join('');
+        // Reattach click handlers for newly rendered product cards
+        attachProductCardListeners(newGrid);
+      }
 
       // Only populate "You Might Like" carousel (hero is for banners only, not products)
       let youLikeItems = items.slice(0, 9);
@@ -306,6 +307,20 @@
     } catch (err) {
       console.error('Error loading landing products:', err);
     }
+  }
+
+  // Helper function to attach click listeners to product cards
+  function attachProductCardListeners(container) {
+    if (!container) return;
+    container.querySelectorAll('.product-card').forEach((card) => {
+      const productId = card.getAttribute('data-product-id');
+      card.style.cursor = 'pointer';
+      
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.add-to-cart')) return;
+        window.location.href = `./buyers/product.html?id=${productId}`;
+      });
+    });
   }
 
   // Render hero slides into #heroSlides
@@ -334,6 +349,23 @@
         <button class="add-to-cart">Add to Cart</button>
       </div>
     `).join('');
+    
+    // Reattach click handlers for "You Might Like" cards
+    attachYouLikeCardListeners(track);
+  }
+
+  // Helper function to attach click listeners to "You Might Like" cards
+  function attachYouLikeCardListeners(container) {
+    if (!container) return;
+    container.querySelectorAll('.you-card').forEach((card) => {
+      const productId = card.getAttribute('data-product-id');
+      card.style.cursor = 'pointer';
+      
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.add-to-cart')) return;
+        window.location.href = `./buyers/product.html?id=${productId}`;
+      });
+    });
   }
 
   function renderProductCard(product) {
@@ -361,27 +393,7 @@
     });
   }
 
-  // Diagnostic: observe grid changes to detect unexpected overwrites
-  (function attachGridObservers(){
-    try {
-      const bestGrid = document.querySelector('.best-selling-grid');
-      const newGrid = document.querySelector('.new-arrivals-grid');
-      const youLike = document.getElementById('youLikeTrack');
-      const observe = (node, name) => {
-        if (!node) return;
-        const mo = new MutationObserver((mutations) => {
-          console.warn(`[Diag] ${name} mutation detected — new child count:`, node.children.length);
-          console.warn(new Error('Grid mutation stack').stack);
-        });
-        mo.observe(node, { childList: true, subtree: false, characterData: false });
-      };
-      observe(bestGrid, 'best-selling-grid');
-      observe(newGrid, 'new-arrivals-grid');
-      observe(youLike, 'youLikeTrack');
-    } catch(err) {
-      console.error('Diagnostic observer failed', err);
-    }
-  })();
+
 
   // Kick off loading products for landing
   loadLandingProducts(12);
@@ -535,33 +547,23 @@
     }
   })();
 
-  // ===== PRODUCT CARD NAVIGATION =====
+  // ===== PRODUCT CARD NAVIGATION (NOW HANDLED BY attachProductCardListeners AND attachYouLikeCardListeners) =====
+  // This is now handled by the helper functions that attach listeners after products are loaded
+  // The old code below is kept only for demo cards that exist in HTML before API load
   (function() {
-    // Wire product cards to navigate to product page
-    let productIdCounter = 1;
-    
-    // Wire all product cards
-    document.querySelectorAll('.product-card').forEach((card) => {
-      const productId = card.getAttribute('data-product-id') || String(productIdCounter++);
-      card.style.cursor = 'pointer';
+    // Only wire demo product cards that exist in the initial HTML (before API load)
+    // These will be replaced once API products load, so we use event delegation
+    document.addEventListener('click', (e) => {
+      const card = e.target.closest('.product-card, .you-card');
+      if (!card) return;
       
-      card.addEventListener('click', (e) => {
-        // Don't navigate if user clicked "Add to Cart" button
-        if (e.target.closest('.add-to-cart')) return;
-        window.location.href = `./buyers/product.html?id=${productId}`;
-      });
-    });
-    
-    // Wire all "you might like" cards
-    document.querySelectorAll('.you-card').forEach((card) => {
-      const productId = card.getAttribute('data-product-id') || String(productIdCounter++);
-      card.style.cursor = 'pointer';
+      // Don't navigate if user clicked "Add to Cart" button
+      if (e.target.closest('.add-to-cart')) return;
       
-      card.addEventListener('click', (e) => {
-        // Don't navigate if user clicked "Add to Cart" button
-        if (e.target.closest('.add-to-cart')) return;
+      const productId = card.getAttribute('data-product-id');
+      if (productId) {
         window.location.href = `./buyers/product.html?id=${productId}`;
-      });
+      }
     });
   })();
 
