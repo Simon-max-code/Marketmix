@@ -38,48 +38,49 @@
   resultsTitle.textContent = q ? `Results for "${q}"` : 'Search results';
   if(q) resultsInfo.textContent = `Showing products matching "${q}"`;
 
-  // Collect product data from the Best Sellers section on index (fallback static list)
-  // Attempt to read existing .product-card elements on index if available
-  let products = [];
-  try {
-    // If index page and script share DOM (unlikely), else use fallback
-    const cards = document.querySelectorAll('.product-card');
-    if(cards && cards.length){
-      products = Array.from(cards).map(card => ({
-        name: card.dataset.name || (card.querySelector('.product-name') && card.querySelector('.product-name').textContent) || 'Product',
-        price: parseFloat(card.dataset.price) || 0,
-        image: card.querySelector('img') ? card.querySelector('img').src : '',
-        desc: card.dataset.desc || (card.querySelector('.product-desc') && card.querySelector('.product-desc').textContent) || ''
-      }));
+  // Search products from API
+  let filtered = [];
+  
+  async function searchProducts() {
+    try {
+      if (!q) {
+        // If no search query, fetch all products
+        const response = await fetch(`${CONFIG.API_BASE_URL}/products?limit=50`);
+        if (!response.ok) throw new Error('Failed to fetch products');
+        
+        const data = await response.json();
+        filtered = Array.isArray(data.data) ? data.data : [];
+      } else {
+        // Search for products by query
+        const response = await fetch(`${CONFIG.API_BASE_URL}/products/search/query?q=${encodeURIComponent(q)}`);
+        if (!response.ok) throw new Error('Failed to search products');
+        
+        const data = await response.json();
+        filtered = Array.isArray(data.data) ? data.data : [];
+      }
+      
+      render();
+    } catch (error) {
+      console.error('Error searching products:', error);
+      filtered = [];
+      render();
     }
-  } catch(e){/* ignore */}
-
-  if(!products.length){
-    // fallback sample list (use same visuals as landing page)
-    products = [
-      { name: 'Leather Jacket', price: 149, image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400' },
-      { name: 'Wireless Earbuds', price: 89, image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400' },
-      { name: 'Smart Watch', price: 299, image: 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=400' },
-      { name: 'Table Lamp', price: 45, image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400' },
-      { name: 'Sunglasses', price: 129, image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400' },
-      { name: '4K Camera', price: 199, image: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400' },
-      { name: 'Vase Set', price: 59, image: 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=400' }
-    ];
   }
-
-  const filtered = q ? products.filter(p => p.name.toLowerCase().includes(q.toLowerCase()) || (p.desc && p.desc.toLowerCase().includes(q.toLowerCase()))) : products.slice();
+  
+  // Start search immediately
+  searchProducts();
 
   function createCard(p){
     const div = document.createElement('div');
     div.className = 'product-card';
     div.innerHTML = `
-      <img src="${p.image}" alt="${p.name}">
+      <img src="${p.main_image_url || p.image || 'https://via.placeholder.com/300'}" alt="${p.name}" style="height: 200px; object-fit: cover;">
       <div class="product-info">
         <div class="product-name">${p.name}</div>
-        ${p.desc ? `<div class="product-desc">${p.desc}</div>` : ''}
-        <div class="meta"><div class="price">$${p.price.toFixed(2)}</div></div>
+        ${p.description ? `<div class="product-desc">${p.description}</div>` : ''}
+        <div class="meta"><div class="price">$${(p.price || 0).toFixed(2)}</div></div>
       </div>
-      <button class="add-to-cart">Add to Cart</button>
+      <button class="add-to-cart" data-product-id="${p.id}">Add to Cart</button>
     `;
     return div;
   }
