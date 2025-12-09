@@ -3,6 +3,32 @@
 // Wrap initialization in DOMContentLoaded to avoid null element errors
 window.addEventListener('DOMContentLoaded', () => {
 
+  // Setup autocomplete for search input
+  const searchInput = document.getElementById('searchInput');
+  const searchAutocomplete = document.getElementById('searchAutocomplete');
+  if (searchInput && searchAutocomplete) {
+    setupAutocomplete(searchInput, searchAutocomplete, (suggestion) => {
+      if (suggestion.type === 'product') {
+        window.location.href = `product.html?id=${suggestion.id}`;
+      } else if (suggestion.type === 'category') {
+        window.location.href = `category.html?id=${suggestion.id}`;
+      }
+    });
+  }
+
+  // Setup autocomplete for mobile search input
+  const searchInputMobile = document.getElementById('searchInputMobile');
+  const searchAutocompleteMobile = document.getElementById('searchAutocompleteMobile');
+  if (searchInputMobile && searchAutocompleteMobile) {
+    setupAutocomplete(searchInputMobile, searchAutocompleteMobile, (suggestion) => {
+      if (suggestion.type === 'product') {
+        window.location.href = `product.html?id=${suggestion.id}`;
+      } else if (suggestion.type === 'category') {
+        window.location.href = `category.html?id=${suggestion.id}`;
+      }
+    });
+  }
+
   // Load and render products from API
   async function loadFlashProducts() {
     try {

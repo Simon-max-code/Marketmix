@@ -1,0 +1,231 @@
+/**
+ * Autocomplete Utility for MarketMix
+ * Provides search suggestions for products and categories with caching
+ */
+
+class MarketMixAutocomplete {
+  constructor() {
+    this.productCache = null;
+    this.categoryCache = null;
+    this.cacheTimestamp = null;
+    this.CACHE_DURATION = 5 * 60 * 1000; // Cache for 5 minutes
+    this.debounceTimer = null;
+    this.debounceDelay = 300; // ms
+  }
+
+  /**
+   * Fetch all products and categories (cached)
+   */
+  async fetchAllData() {
+    const now = Date.now();
+    
+    // Return cached data if still fresh
+    if (this.productCache && this.categoryCache && (now - this.cacheTimestamp < this.CACHE_DURATION)) {
+      return {
+        products: this.productCache,
+        categories: this.categoryCache
+      };
+    }
+
+    try {
+      // Fetch both products and categories in parallel
+      const [productsRes, categoriesRes] = await Promise.all([
+        fetch(`${CONFIG.API_BASE_URL}/products?limit=1000`).catch(() => null),
+        fetch(`${CONFIG.API_BASE_URL}/categories?limit=1000`).catch(() => null)
+      ]);
+
+      let products = [];
+      let categories = [];
+
+      if (productsRes?.ok) {
+        const productsData = await productsRes.json();
+        products = Array.isArray(productsData.data) ? productsData.data : [];
+      }
+
+      if (categoriesRes?.ok) {
+        const categoriesData = await categoriesRes.json();
+        categories = Array.isArray(categoriesData.data) ? categoriesData.data : [];
+      }
+
+      // Cache the results
+      this.productCache = products;
+      this.categoryCache = categories;
+      this.cacheTimestamp = now;
+
+      return { products, categories };
+    } catch (error) {
+      console.error('Error fetching autocomplete data:', error);
+      return { products: [], categories: [] };
+    }
+  }
+
+  /**
+   * Get suggestions based on search query
+   * @param {string} query - Search query
+   * @param {number} limit - Max suggestions to return
+   * @returns {Promise<Array>} Array of suggestions (products and categories)
+   */
+  async getSuggestions(query, limit = 8) {
+    if (!query || query.trim().length === 0) {
+      return [];
+    }
+
+    const { products, categories } = await this.fetchAllData();
+    const lowerQuery = query.toLowerCase().trim();
+
+    // Filter products - match by name or description, starting with query
+    const productSuggestions = products
+      .filter(p => {
+        const name = (p.name || '').toLowerCase();
+        const desc = (p.description || '').toLowerCase();
+        return name.startsWith(lowerQuery) || name.includes(lowerQuery) || desc.includes(lowerQuery);
+      })
+      .slice(0, Math.ceil(limit * 0.7))
+      .map(p => ({
+        type: 'product',
+        id: p.id,
+        name: p.name,
+        icon: '📦',
+        image: p.main_image_url
+      }));
+
+    // Filter categories - match by name, prioritize starting with query
+    const categorySuggestions = categories
+      .filter(c => {
+        const name = (c.name || '').toLowerCase();
+        return name.startsWith(lowerQuery) || name.includes(lowerQuery);
+      })
+      .slice(0, Math.ceil(limit * 0.3))
+      .map(c => ({
+        type: 'category',
+        id: c.id,
+        name: c.name,
+        icon: '🏷️',
+        count: c.product_count || 0
+      }));
+
+    // Combine and limit total results
+    return [...productSuggestions, ...categorySuggestions].slice(0, limit);
+  }
+
+  /**
+   * Debounced version of getSuggestions for input event handling
+   */
+  debouncedGetSuggestions(query, limit = 8) {
+    return new Promise((resolve) => {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = setTimeout(async () => {
+        const suggestions = await this.getSuggestions(query, limit);
+        resolve(suggestions);
+      }, this.debounceDelay);
+    });
+  }
+
+  /**
+   * Clear cache manually
+   */
+  clearCache() {
+    this.productCache = null;
+    this.categoryCache = null;
+    this.cacheTimestamp = null;
+  }
+}
+
+// Create global instance
+const autocompleteEngine = new MarketMixAutocomplete();
+
+/**
+ * Setup autocomplete for a search input field
+ * @param {HTMLInputElement} inputElement - The search input element
+ * @param {HTMLElement} containerElement - The container for suggestions dropdown
+ * @param {Function} onSelect - Callback when user selects a suggestion
+ */
+function setupAutocomplete(inputElement, containerElement, onSelect) {
+  if (!inputElement || !containerElement) {
+    console.warn('Autocomplete: Missing input or container element');
+    return;
+  }
+
+  // Handle input event with debouncing
+  inputElement.addEventListener('input', async (e) => {
+    const query = e.target.value;
+
+    if (!query || query.trim().length === 0) {
+      containerElement.style.display = 'none';
+      return;
+    }
+
+    try {
+      const suggestions = await autocompleteEngine.debouncedGetSuggestions(query, 10);
+
+      if (suggestions.length === 0) {
+        containerElement.innerHTML = '<div class="autocomplete-no-results">No results found</div>';
+        containerElement.style.display = 'block';
+        return;
+      }
+
+      // Render suggestions
+      containerElement.innerHTML = suggestions.map((suggestion, index) => `
+        <div class="autocomplete-item" data-index="${index}" data-type="${suggestion.type}" data-id="${suggestion.id}">
+          <span class="autocomplete-icon">${suggestion.icon}</span>
+          <div class="autocomplete-content">
+            <div class="autocomplete-title">${escapeHtml(suggestion.name)}</div>
+            ${suggestion.type === 'category' ? `<div class="autocomplete-meta">${suggestion.count || 0} product(s)</div>` : ''}
+          </div>
+        </div>
+      `).join('');
+
+      containerElement.style.display = 'block';
+
+      // Attach click handlers to suggestion items
+      containerElement.querySelectorAll('.autocomplete-item').forEach((item) => {
+        item.addEventListener('click', () => {
+          const suggestion = suggestions[parseInt(item.dataset.index)];
+          if (onSelect) {
+            onSelect(suggestion);
+          }
+          containerElement.style.display = 'none';
+        });
+      });
+    } catch (error) {
+      console.error('Autocomplete error:', error);
+      containerElement.style.display = 'none';
+    }
+  });
+
+  // Hide dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest(inputElement) && !e.target.closest(containerElement)) {
+      containerElement.style.display = 'none';
+    }
+  });
+
+  // Show dropdown on focus if input has value
+  inputElement.addEventListener('focus', async () => {
+    const query = inputElement.value.trim();
+    if (query) {
+      const suggestions = await autocompleteEngine.getSuggestions(query, 10);
+      if (suggestions.length > 0) {
+        containerElement.innerHTML = suggestions.map((suggestion, index) => `
+          <div class="autocomplete-item" data-index="${index}" data-type="${suggestion.type}" data-id="${suggestion.id}">
+            <span class="autocomplete-icon">${suggestion.icon}</span>
+            <div class="autocomplete-content">
+              <div class="autocomplete-title">${escapeHtml(suggestion.name)}</div>
+              ${suggestion.type === 'category' ? `<div class="autocomplete-meta">${suggestion.count || 0} product(s)</div>` : ''}
+            </div>
+          </div>
+        `).join('');
+        containerElement.style.display = 'block';
+      }
+    }
+  });
+}
+
+/**
+ * Escape HTML special characters to prevent XSS
+ */
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}

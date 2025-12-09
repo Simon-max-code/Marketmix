@@ -1,4 +1,29 @@
 (function(){
+  // Setup autocomplete
+  const topInput = document.getElementById('mm-search-top-input');
+  const topAutocomplete = document.getElementById('mm-search-top-autocomplete');
+  if (topInput && topAutocomplete) {
+    setupAutocomplete(topInput, topAutocomplete, (suggestion) => {
+      if (suggestion.type === 'product') {
+        window.location.href = `product.html?id=${suggestion.id}`;
+      } else if (suggestion.type === 'category') {
+        window.location.href = `buyers/category.html?id=${suggestion.id}`;
+      }
+    });
+  }
+
+  const mobileInput = document.getElementById('mm-search-mobile-input');
+  const mobileAutocomplete = document.getElementById('mm-search-mobile-autocomplete');
+  if (mobileInput && mobileAutocomplete) {
+    setupAutocomplete(mobileInput, mobileAutocomplete, (suggestion) => {
+      if (suggestion.type === 'product') {
+        window.location.href = `product.html?id=${suggestion.id}`;
+      } else if (suggestion.type === 'category') {
+        window.location.href = `buyers/category.html?id=${suggestion.id}`;
+      }
+    });
+  }
+
   function getQueryParam(name){
     const params = new URLSearchParams(window.location.search);
     return params.get(name) || '';

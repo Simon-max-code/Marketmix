@@ -23,6 +23,7 @@
         <form id="mm-search-top" class="mm-search-wrap" role="search" aria-label="Site search" action="../index-search-results.html" method="get">
           <input id="mm-search-top-input" name="q" type="search" placeholder="Search products, categories..." aria-label="Search" />
           <button id="mm-search-top-btn" type="submit" aria-label="Search"><i class="fas fa-search"></i></button>
+          <div id="mm-search-top-autocomplete" class="autocomplete-dropdown"></div>
         </form>
 
         <div id="mm-menu" class="mm-menu" aria-hidden="true">
@@ -66,6 +67,7 @@
       <form id="mm-search-mobile-form" class="mm-search-mobile-wrap" action="../index-search-results.html" method="get">
         <input id="mm-search-mobile-input" name="q" type="search" placeholder="Search products, categories..." aria-label="Search" />
         <button id="mm-search-mobile-btn" type="submit" aria-label="Search"><i class="fas fa-search"></i></button>
+        <div id="mm-search-mobile-autocomplete" class="autocomplete-dropdown"></div>
       </form>
     </div>
 
@@ -200,10 +202,37 @@
   </div>
 
   <script src="../config.js"></script>
+  <script src="../utils/autocomplete.js"></script>
   <script src="../landingpage.js" defer></script>
   <script>
     // Category Page Functionality
     document.addEventListener('DOMContentLoaded', function() {
+      // Setup autocomplete for desktop search
+      const topInput = document.getElementById('mm-search-top-input');
+      const topAutocomplete = document.getElementById('mm-search-top-autocomplete');
+      if (topInput && topAutocomplete) {
+        setupAutocomplete(topInput, topAutocomplete, (suggestion) => {
+          if (suggestion.type === 'product') {
+            window.location.href = `product.html?id=${suggestion.id}`;
+          } else if (suggestion.type === 'category') {
+            window.location.href = `category.html?id=${suggestion.id}`;
+          }
+        });
+      }
+
+      // Setup autocomplete for mobile search
+      const mobileInput = document.getElementById('mm-search-mobile-input');
+      const mobileAutocomplete = document.getElementById('mm-search-mobile-autocomplete');
+      if (mobileInput && mobileAutocomplete) {
+        setupAutocomplete(mobileInput, mobileAutocomplete, (suggestion) => {
+          if (suggestion.type === 'product') {
+            window.location.href = `product.html?id=${suggestion.id}`;
+          } else if (suggestion.type === 'category') {
+            window.location.href = `category.html?id=${suggestion.id}`;
+          }
+        });
+      }
+
       // Get category ID from URL query parameter
       const urlParams = new URLSearchParams(window.location.search);
       const categoryId = urlParams.get('id');
