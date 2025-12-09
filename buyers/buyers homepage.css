@@ -53,6 +53,12 @@ body {
       width: 75%;
      font-size: 14px;
     }
+  .navbar .search-container {
+    display: none;
+  }
+  .navbar-mobile-search {
+    display: block !important;
+  }
 }
     /* Search Icon */
     .navbar .search-container button {

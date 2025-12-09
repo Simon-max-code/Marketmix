@@ -27,6 +27,16 @@
     </div>
   </div>
 
+  <!-- MOBILE SEARCH BAR (shows only on small screens) -->
+  <div class="navbar-mobile-search" style="display:none;background:white;padding:12px 15px;position:sticky;top:60px;z-index:999;border-bottom:1px solid #e0e0e0">
+    <form id="searchFormMobile" class="search-container-mobile" action="search-results.html" method="get" style="display:flex;align-items:center;gap:8px;margin:0">
+      <input type="search" name="q" id="searchInputMobile" placeholder="Search on MarketMix" aria-label="Search" style="flex:1;padding:10px 12px;border-radius:8px;border:1px solid #ddd;outline:none;font-size:14px">
+      <button type="submit" style="background:#F97316;border:none;color:white;padding:10px 16px;border-radius:8px;cursor:pointer">
+        <i class="fas fa-search"></i>
+      </button>
+    </form>
+  </div>
+
   <main class="main-content">
     <section class="search-results">
       <h2 id="resultsTitle">Search results</h2>
