@@ -354,6 +354,28 @@
     });
   }
 
+  // Diagnostic: observe grid changes to detect unexpected overwrites
+  (function attachGridObservers(){
+    try {
+      const bestGrid = document.querySelector('.best-selling-grid');
+      const newGrid = document.querySelector('.new-arrivals-grid');
+      const youLike = document.getElementById('youLikeTrack');
+      const observe = (node, name) => {
+        if (!node) return;
+        const mo = new MutationObserver((mutations) => {
+          console.warn(`[Diag] ${name} mutation detected — new child count:`, node.children.length);
+          console.warn(new Error('Grid mutation stack').stack);
+        });
+        mo.observe(node, { childList: true, subtree: false, characterData: false });
+      };
+      observe(bestGrid, 'best-selling-grid');
+      observe(newGrid, 'new-arrivals-grid');
+      observe(youLike, 'youLikeTrack');
+    } catch(err) {
+      console.error('Diagnostic observer failed', err);
+    }
+  })();
+
   // Kick off loading products for landing
   loadLandingProducts(12);
 
