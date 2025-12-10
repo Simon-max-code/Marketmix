@@ -110,21 +110,64 @@
 
       // ===== FILTER BUTTONS =====
       (function() {
+        // Normalize category strings for consistent comparisons
+        function normalizeCategoryRaw(input) {
+          if (!input) return '';
+          return String(input)
+            .toLowerCase()
+            .replace(/&nbsp;/g, ' ')
+            .replace(/\s*&\s*/g, ' & ')
+            .replace(/\s+/g, ' ')
+            .trim();
+        }
+
         const filterButtons = document.querySelectorAll('.filter-btn');
-        
+
         filterButtons.forEach(btn => {
-          btn.addEventListener('click', function() {
-            const category = this.dataset.category.toLowerCase();
+          btn.addEventListener('click', async function() {
+            const rawCategory = this.dataset.category || '';
+            const category = normalizeCategoryRaw(rawCategory);
             const section = this.dataset.section;
-            
-            document.querySelectorAll(`.${section}-filter .filter-btn`).forEach(b => 
-              b.classList.remove('active')
-            );
+
+            document.querySelectorAll(`.${section}-filter .filter-btn`).forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-            
+
             const products = document.querySelectorAll(`.${section}-grid .product-card`);
+
+            // Try to match existing products in the section first
+            const matched = Array.from(products).filter(product => {
+              const pcat = normalizeCategoryRaw(product.dataset.category || '');
+              return category === 'all' || pcat === category;
+            });
+
+            // If no existing products match and a specific category was selected,
+            // fetch more products from the API (larger limit) and render matches into the section.
+            if (matched.length === 0 && category !== 'all') {
+              try {
+                const base = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend-production.up.railway.app/api';
+                const resp = await fetch(`${base}/products?limit=200`);
+                if (resp.ok) {
+                  const json = await resp.json();
+                  const items = json.data || [];
+                  const filtered = items.filter(it => normalizeCategoryRaw(it.category || it.category_name || '') === category);
+                  const grid = document.querySelector(`.${section}-grid`);
+                  if (grid) {
+                    grid.innerHTML = filtered.length > 0 ? filtered.map(renderProductCard).join('') : '<div class="no-results" style="grid-column:1/-1; padding:20px; color:#334155;">No products in this category</div>';
+                    attachProductCardListeners(grid);
+                  }
+                } else {
+                  console.warn('Landing: failed to fetch products for category filter', resp.status);
+                }
+              } catch (err) {
+                console.error('Landing: error fetching category products', err);
+              }
+
+              return; // we've replaced the section content, done
+            }
+
+            // Otherwise show/hide existing DOM products
             products.forEach(product => {
-              const productCategory = (product.dataset.category || '').toLowerCase();
+              const productCategory = normalizeCategoryRaw(product.dataset.category || '');
               const shouldShow = category === 'all' || productCategory === category;
               product.style.display = shouldShow ? 'flex' : 'none';
             });
