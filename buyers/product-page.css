@@ -161,8 +161,8 @@ button:disabled {
 }
 
 #product-checkout:hover:not(:disabled) {
-  background: #047857;
-  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+  background: var(--hover);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
 }
 
 /* Image Gallery Zoom Effects */
