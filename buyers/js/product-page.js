@@ -233,10 +233,16 @@ function setupEventListeners(product) {
   const addToCartBtn = document.getElementById('product-add-to-cart');
   addToCartBtn.addEventListener('click', () => addToCart(product));
 
-  // Wishlist
-  const wishlistBtn = document.getElementById('product-wishlist-btn');
+  // Add to wishlist
+  const wishlistBtn = document.getElementById('product-add-to-wishlist');
   if (wishlistBtn) {
     wishlistBtn.addEventListener('click', () => toggleWishlist(product));
+  }
+
+  // Checkout
+  const checkoutBtn = document.getElementById('product-checkout');
+  if (checkoutBtn) {
+    checkoutBtn.addEventListener('click', () => proceedToCheckout(product));
   }
 
   // Quantity
@@ -333,10 +339,72 @@ function toggleWishlist(product) {
 
   localStorage.setItem('wishlist', JSON.stringify(wishlist));
   
-  const btn = document.getElementById('product-wishlist-btn');
+  const btn = document.getElementById('product-add-to-wishlist');
   if (btn) {
-    btn.style.color = exists ? '#cbd5e1' : '#f97316';
+    if (exists) {
+      btn.textContent = '❤️ Add to Wishlist';
+      btn.style.color = '#f97316';
+      btn.style.background = '#fafafa';
+    } else {
+      btn.textContent = '❤️ Added to Wishlist';
+      btn.style.color = '#fff';
+      btn.style.background = '#f97316';
+      setTimeout(() => {
+        btn.textContent = '❤️ Add to Wishlist';
+        btn.style.color = '#f97316';
+        btn.style.background = '#fafafa';
+      }, 2000);
+    }
   }
+}
+
+// Proceed to checkout
+function proceedToCheckout(product) {
+  const quantity = parseInt(document.getElementById('product-quantity').value) || 1;
+  const color = window.productOptions?.color?.() || null;
+  const size = window.productOptions?.size?.() || null;
+
+  const cartItem = {
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    image: product.main_image_url,
+    quantity,
+    color,
+    size,
+    sellerId: product.seller_id
+  };
+
+  // Save to localStorage
+  let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  const existingItem = cart.find(item => 
+    item.id === cartItem.id && 
+    item.color === cartItem.color && 
+    item.size === cartItem.size
+  );
+
+  if (existingItem) {
+    existingItem.quantity += quantity;
+  } else {
+    cart.push(cartItem);
+  }
+
+  localStorage.setItem('cart', JSON.stringify(cart));
+
+  // Sync to Supabase if available
+  if (window.SupabaseCart) {
+    try {
+      SupabaseCart.addItem(cartItem);
+    } catch (e) {
+      console.warn('Supabase sync failed:', e);
+    }
+  }
+
+  // Update cart count
+  updateCartCount();
+
+  // Redirect to checkout
+  window.location.href = './checkout.html';
 }
 
 // Update cart count in navbar

@@ -155,10 +155,69 @@ button:disabled {
   background: var(--hover);
 }
 
-#product-wishlist-btn:hover {
-  background: #f0f4f8;
-  border-color: var(--accent);
-  color: var(--accent);
+#product-add-to-wishlist:hover:not(:disabled) {
+  background: #f97316;
+  color: #fff;
+}
+
+#product-checkout:hover:not(:disabled) {
+  background: #047857;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+}
+
+/* Image Gallery Zoom Effects */
+.gallery-main-image-container {
+  overflow: hidden;
+  position: relative;
+}
+
+.gallery-main-image-container img {
+  transition: transform 0.3s ease;
+}
+
+.gallery-main-image-container:hover img {
+  transform: scale(1.15);
+}
+
+.gallery-nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(249, 115, 22, 0.8);
+  color: #fff;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.gallery-nav-button:hover {
+  background: var(--hover);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.gallery-nav-button.prev {
+  left: 12px;
+}
+
+.gallery-nav-button.next {
+  right: 12px;
+}
+
+.gallery-nav-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.gallery-nav-button:disabled:hover {
+  transform: translateY(-50%);
 }
 
 /* Grid for related/seller products */
