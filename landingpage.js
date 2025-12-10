@@ -371,8 +371,10 @@
   function renderProductCard(product) {
     const img = product.image || product.main_image_url || 'marketplace.png';
     const price = typeof product.price === 'number' ? product.price.toFixed(2) : product.price;
+    // Use product's category if available, otherwise default to "all"
+    const category = product.category || product.cat_id || 'all';
     return `
-      <div class="product-card" data-product-id="${product.id}" data-name="${escapeHtml(product.name)}" data-price="${price}">
+      <div class="product-card" data-product-id="${product.id}" data-name="${escapeHtml(product.name)}" data-price="${price}" data-category="${category}">
         <img src="${img}" alt="${escapeHtml(product.name)}">
         <div class="product-info">
           <div class="product-name">${escapeHtml(product.name)}</div>
