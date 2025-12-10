@@ -114,7 +114,7 @@
         
         filterButtons.forEach(btn => {
           btn.addEventListener('click', function() {
-            const category = this.dataset.category;
+            const category = this.dataset.category.toLowerCase();
             const section = this.dataset.section;
             
             document.querySelectorAll(`.${section}-filter .filter-btn`).forEach(b => 
@@ -124,7 +124,8 @@
             
             const products = document.querySelectorAll(`.${section}-grid .product-card`);
             products.forEach(product => {
-              const shouldShow = category === 'all' || product.dataset.category === category;
+              const productCategory = (product.dataset.category || '').toLowerCase();
+              const shouldShow = category === 'all' || productCategory === category;
               product.style.display = shouldShow ? 'flex' : 'none';
             });
           });
@@ -358,7 +359,15 @@
     const img = product.image || product.main_image_url || 'marketplace.png';
     const price = typeof product.price === 'number' ? product.price.toFixed(2) : product.price;
     // Use product's category if available, otherwise default to "all"
-    const category = product.category || product.category_name || 'all';
+    // The category should be lowercase from the API for proper filter matching
+    const category = (product.category || product.category_name || 'all').toLowerCase().trim();
+    
+    // Debug log to help troubleshoot
+    if (!product._logged) {
+      console.log(`Product: ${product.name}, Category from API: "${product.category}", Final category: "${category}"`);
+      product._logged = true;
+    }
+    
     return `
       <div class="product-card" data-product-id="${product.id}" data-name="${escapeHtml(product.name)}" data-price="${price}" data-category="${category}">
         <img src="${img}" alt="${escapeHtml(product.name)}">
