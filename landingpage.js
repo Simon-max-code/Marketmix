@@ -354,6 +354,39 @@
     attachYouLikeCardListeners(track);
   }
 
+  function renderProductCard(product) {
+    const img = product.image || product.main_image_url || 'marketplace.png';
+    const price = typeof product.price === 'number' ? product.price.toFixed(2) : product.price;
+    // Use product's category if available, otherwise default to "all"
+    const category = product.category || product.category_name || 'all';
+    return `
+      <div class="product-card" data-product-id="${product.id}" data-name="${escapeHtml(product.name)}" data-price="${price}" data-category="${category}">
+        <img src="${img}" alt="${escapeHtml(product.name)}">
+        <div class="product-info">
+          <div class="product-name">${escapeHtml(product.name)}</div>
+          <div class="product-desc">${escapeHtml(product.description || '')}</div>
+          <div class="meta">
+            <div class="price">$${price}</div>
+          </div>
+        </div>
+        <button class="add-to-cart">Add to Cart</button>
+      </div>`;
+  }
+
+  // Helper function to attach click listeners to product cards
+  function attachProductCardListeners(container) {
+    if (!container) return;
+    container.querySelectorAll('.product-card').forEach((card) => {
+      const productId = card.getAttribute('data-product-id');
+      card.style.cursor = 'pointer';
+      
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.add-to-cart')) return;
+        window.location.href = `./buyers/product.html?id=${productId}`;
+      });
+    });
+  }
+
   // Helper function to attach click listeners to "You Might Like" cards
   function attachYouLikeCardListeners(container) {
     if (!container) return;
@@ -366,26 +399,6 @@
         window.location.href = `./buyers/product.html?id=${productId}`;
       });
     });
-  }
-
-  function renderProductCard(product) {
-    const img = product.image || product.main_image_url || 'marketplace.png';
-    const price = typeof product.price === 'number' ? product.price.toFixed(2) : product.price;
-    // Use product's category if available, otherwise default to "all"
-    const category = product.category || product.cat_id || 'all';
-    return `
-      <div class="product-card" data-product-id="${product.id}" data-name="${escapeHtml(product.name)}" data-price="${price}" data-category="${category}">
-        <img src="${img}" alt="${escapeHtml(product.name)}">
-        <div class="product-info">
-          <div class="product-name">${escapeHtml(product.name)}</div>
-          <div class="product-desc">${escapeHtml(product.description || '')}</div>
-          <div class="meta">
-            <div class="price">$${price}</div>
-            <div class="rating">★★★★★</div>
-          </div>
-        </div>
-        <button class="add-to-cart">Add to Cart</button>
-      </div>`;
   }
 
   function escapeHtml(text) {
