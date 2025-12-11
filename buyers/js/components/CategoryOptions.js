@@ -142,8 +142,6 @@ function createCategoryOptions(product) {
         selectedColor = e.target.getAttribute('data-color');
         checkCanAddToCart();
       });
-    });
-  }
 
   // Size button handlers
   if (showSizes) {
@@ -174,17 +172,27 @@ function createCategoryOptions(product) {
       addToCartBtn.disabled = true;
       addToCartBtn.style.opacity = '0.5';
       addToCartBtn.style.cursor = 'not-allowed';
+          // Get category rules, but override based on actual product data
+          const rules = getCategoryRules(product.category);
+  
+          // If product has color data, show colors (override category rules)
+          const showColors = colors.length > 0 || rules.showColors;
+  
+          // If product has size data, show sizes (override category rules)
+          const showSizes = sizes.length > 0 || rules.showSizes;
       statusDiv.style.display = 'block';
     } else {
       addToCartBtn.disabled = false;
       addToCartBtn.style.opacity = '1';
       addToCartBtn.style.cursor = 'pointer';
+            category: product.category,
       statusDiv.style.display = 'none';
     }
   }
 
-  // Enable add to cart if no options required
-  if (!showColors && !showSizes) {
+            categoryRules: { showColors: rules.showColors, showSizes: rules.showSizes },
+            finalShowColors: showColors,
+            finalShowSizes: showSizes
     setTimeout(() => checkCanAddToCart(), 100);
   }
 
