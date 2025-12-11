@@ -53,7 +53,8 @@ function createFlashSale(product) {
   const timeRemainingMs = flashEnd ? Math.max(0, flashEnd - now) : 0;
   const hours = Math.floor(timeRemainingMs / (1000 * 60 * 60));
   const minutes = Math.floor((timeRemainingMs % (1000 * 60 * 60)) / (1000 * 60));
-  const timeStr = `${hours}h ${minutes}m`;
+  const seconds = Math.floor((timeRemainingMs % (1000 * 60)) / 1000);
+  const timeStr = `${hours}h ${minutes}m ${seconds}s`;
 
   const html = `
     <div style="
@@ -66,7 +67,7 @@ function createFlashSale(product) {
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <div>
           <h3 style="margin:0 0 4px;font-size:18px;font-weight:700">⚡ Flash Sale</h3>
-          <p style="margin:0;font-size:14px;opacity:0.9">${percent || 0}% OFF • Ends in ${timeStr}</p>
+          <p style="margin:0;font-size:14px;opacity:0.9">${percent || 0}% OFF • Ends in <span id="flash-countdown">${timeStr}</span></p>
         </div>
         <div style="text-align:right">
           <div style="font-size:32px;font-weight:700">${percent || 0}%</div>
@@ -93,4 +94,34 @@ function createFlashSale(product) {
 
   container.innerHTML = html;
   container.style.display = 'block';
+
+  // Start countdown timer that updates every second
+  if (flashEnd) {
+    const countdownElement = document.getElementById('flash-countdown');
+    const updateCountdown = () => {
+      const now = new Date();
+      const timeRemainingMs = Math.max(0, flashEnd.getTime() - now.getTime());
+      
+      if (timeRemainingMs <= 0) {
+        countdownElement.textContent = 'Ended';
+        container.style.display = 'none';
+        if (window.flashSaleCountdownInterval) {
+          clearInterval(window.flashSaleCountdownInterval);
+        }
+        return;
+      }
+
+      const hours = Math.floor(timeRemainingMs / (1000 * 60 * 60));
+      const minutes = Math.floor((timeRemainingMs % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeRemainingMs % (1000 * 60)) / 1000);
+      countdownElement.textContent = `${hours}h ${minutes}m ${seconds}s`;
+    };
+    
+    // Update immediately, then every second
+    updateCountdown();
+    const countdownInterval = setInterval(updateCountdown, 1000);
+    
+    // Store interval ID so it can be cleared if needed
+    window.flashSaleCountdownInterval = countdownInterval;
+  }
 }
