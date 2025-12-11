@@ -66,10 +66,10 @@ function createFlashSale(product) {
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <div>
           <h3 style="margin:0 0 4px;font-size:18px;font-weight:700">⚡ Flash Sale</h3>
-          <p style="margin:0;font-size:14px;opacity:0.9">${discount}% OFF • Ends in ${timeStr}</p>
+          <p style="margin:0;font-size:14px;opacity:0.9">${percent || 0}% OFF • Ends in ${timeStr}</p>
         </div>
         <div style="text-align:right">
-          <div style="font-size:32px;font-weight:700">${discount}%</div>
+          <div style="font-size:32px;font-weight:700">${percent || 0}%</div>
           <div style="font-size:12px;opacity:0.9">OFF</div>
         </div>
       </div>
