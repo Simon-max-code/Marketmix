@@ -5,15 +5,25 @@ function createFlashSale(product) {
   const container = document.getElementById('flash-sale-section');
   if (!container) return;
 
-  // Check if flash sale is active
-  if (!product.flash_sale_active || !product.flash_sale_discount) {
+  // Determine flash sale using flash_start/flash_end OR helper flags
+  const now = new Date();
+  const flashStart = product.flash_start ? new Date(product.flash_start) : null;
+  const flashEnd = product.flash_end ? new Date(product.flash_end) : null;
+  const isActive = product.flash_sale_active || (flashStart && flashEnd && now >= flashStart && now <= flashEnd);
+  const discount = product.flash_sale_discount || 0;
+
+  if (!isActive || !discount) {
     container.style.display = 'none';
     return;
   }
 
-  const discount = product.flash_sale_discount || 0;
   const salePrice = (product.price * (100 - discount) / 100).toFixed(2);
   const savings = (product.price - salePrice).toFixed(2);
+
+  const timeRemainingMs = flashEnd ? Math.max(0, flashEnd - now) : 0;
+  const hours = Math.floor(timeRemainingMs / (1000 * 60 * 60));
+  const minutes = Math.floor((timeRemainingMs % (1000 * 60 * 60)) / (1000 * 60));
+  const timeStr = `${hours}h ${minutes}m`;
 
   const html = `
     <div style="
@@ -26,7 +36,7 @@ function createFlashSale(product) {
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <div>
           <h3 style="margin:0 0 4px;font-size:18px;font-weight:700">⚡ Flash Sale</h3>
-          <p style="margin:0;font-size:14px;opacity:0.9">${discount}% OFF</p>
+          <p style="margin:0;font-size:14px;opacity:0.9">${discount}% OFF • Ends in ${timeStr}</p>
         </div>
         <div style="text-align:right">
           <div style="font-size:32px;font-weight:700">${discount}%</div>

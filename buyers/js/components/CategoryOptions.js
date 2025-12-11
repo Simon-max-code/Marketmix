@@ -9,9 +9,9 @@ function createCategoryOptions(product) {
   const rules = getCategoryRules(product.category);
   const { showColors, showSizes } = rules;
 
-  // Sample options (in real app, these would come from product data)
-  const colors = ['Black', 'White', 'Red', 'Blue', 'Green'];
-  const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  // Options come from product data when available
+  const colors = Array.isArray(product.color) && product.color.length > 0 ? product.color : ['Black', 'White', 'Red', 'Blue', 'Green'];
+  const sizes = Array.isArray(product.size) && product.size.length > 0 ? product.size : ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
   let selectedColor = null;
   let selectedSize = null;
