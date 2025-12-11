@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
+    // Track product view (increment views in Supabase)
+    trackProductView(productId);
+
     // Render all components
     renderProduct(product);
     setupEventListeners(product);
@@ -262,6 +265,30 @@ function setupEventListeners(product) {
       let qty = parseInt(qtyInput.value) || 1;
       if (qty < product.stock_quantity) qtyInput.value = qty + 1;
     });
+  }
+}
+
+// Track product view - increment views count in database
+async function trackProductView(productId) {
+  try {
+    const token = localStorage.getItem('token');
+    const url = `${CONFIG.API_BASE_URL}/products/${productId}/view`;
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` })
+      },
+      body: JSON.stringify({ timestamp: new Date().toISOString() })
+    });
+
+    if (response.ok) {
+      console.log('Product view tracked successfully');
+    }
+  } catch (error) {
+    // Silently fail - view tracking is not critical
+    console.warn('Could not track product view:', error);
   }
 }
 
