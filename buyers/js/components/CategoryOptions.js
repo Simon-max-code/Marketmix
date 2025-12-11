@@ -9,9 +9,54 @@ function createCategoryOptions(product) {
   const rules = getCategoryRules(product.category);
   const { showColors, showSizes } = rules;
 
+  // Helper function to parse color/size data from various formats
+  function parseOptions(data) {
+    if (!data) return [];
+    
+    // If already an array, return it
+    if (Array.isArray(data)) {
+      return data.filter(item => item); // Remove null/undefined
+    }
+    
+    // If string, try to parse as JSON array
+    if (typeof data === 'string') {
+      try {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) {
+          return parsed.filter(item => item);
+        }
+      } catch (e) {
+        // If JSON parse fails, split by comma
+        return data.split(',').map(item => item.trim()).filter(item => item);
+      }
+    }
+    
+    return [];
+  }
+
   // Options come from product data when available
-  const colors = Array.isArray(product.color) && product.color.length > 0 ? product.color : ['Black', 'White', 'Red', 'Blue', 'Green'];
-  const sizes = Array.isArray(product.size) && product.size.length > 0 ? product.size : ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  let colors = parseOptions(product.color);
+  let sizes = parseOptions(product.size);
+
+  // Console logging for debugging
+  console.log('Product data:', { 
+    id: product.id, 
+    name: product.name,
+    color_raw: product.color,
+    color_parsed: colors,
+    size_raw: product.size,
+    size_parsed: sizes,
+    showColors,
+    showSizes
+  });
+
+  // Fallback to default options if none found but category requires them
+  if (colors.length === 0 && showColors) {
+    colors = ['Black', 'White', 'Red', 'Blue', 'Green'];
+  }
+  if (sizes.length === 0 && showSizes) {
+    sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  }
 
   let selectedColor = null;
   let selectedSize = null;
