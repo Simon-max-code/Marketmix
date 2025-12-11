@@ -10,16 +10,46 @@ function createFlashSale(product) {
   const flashStart = product.flash_start ? new Date(product.flash_start) : null;
   const flashEnd = product.flash_end ? new Date(product.flash_end) : null;
   const isActive = product.flash_sale_active || (flashStart && flashEnd && now >= flashStart && now <= flashEnd);
-  const discount = product.flash_sale_discount || 0;
 
-  if (!isActive || !discount) {
+  // Determine discount and sale price. The backend may return either:
+  // - flash_sale_discount: absolute savings (number)
+  // - flash_sale_discount_percent: percent discount
+  // - effective_price: final sale price
+  let salePrice = null;
+  let savings = null;
+  let percent = null;
+
+  if (product.effective_price) {
+    salePrice = Number(product.effective_price);
+    savings = Number(product.price) - salePrice;
+    percent = ((savings / Number(product.price)) * 100).toFixed(1);
+  } else if (product.flash_sale_discount_percent) {
+    percent = Number(product.flash_sale_discount_percent);
+    salePrice = (Number(product.price) * (100 - percent) / 100);
+    savings = Number(product.price) - salePrice;
+  } else if (product.flash_sale_discount) {
+    // treat as absolute savings if it's less than price, otherwise assume percent
+    const val = Number(product.flash_sale_discount);
+    if (val > 0 && val < Number(product.price)) {
+      // If val seems like savings (e.g., 10 means $10 off)
+      savings = val;
+      salePrice = Number(product.price) - savings;
+      percent = ((savings / Number(product.price)) * 100).toFixed(1);
+    } else if (val > 0) {
+      // fallback: treat as percent
+      percent = val;
+      salePrice = (Number(product.price) * (100 - percent) / 100);
+      savings = Number(product.price) - salePrice;
+    }
+  }
+
+  if (!isActive || salePrice === null || isNaN(salePrice)) {
     container.style.display = 'none';
     return;
   }
 
-  const salePrice = (product.price * (100 - discount) / 100).toFixed(2);
-  const savings = (product.price - salePrice).toFixed(2);
-
+  salePrice = salePrice.toFixed(2);
+  savings = (Number(savings) || 0).toFixed(2);
   const timeRemainingMs = flashEnd ? Math.max(0, flashEnd - now) : 0;
   const hours = Math.floor(timeRemainingMs / (1000 * 60 * 60));
   const minutes = Math.floor((timeRemainingMs % (1000 * 60 * 60)) / (1000 * 60));
