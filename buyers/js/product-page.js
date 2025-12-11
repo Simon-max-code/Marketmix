@@ -215,6 +215,12 @@ function renderProduct(product) {
     document.getElementById('product-add-to-cart').style.opacity = '0.5';
   }
 
+  // Display view count
+  const viewCountEl = document.getElementById('view-count');
+  if (viewCountEl && product.views) {
+    viewCountEl.textContent = product.views;
+  }
+
   // Description
   const descriptionEl = document.getElementById('product-description');
   if (descriptionEl) {
