@@ -114,25 +114,51 @@ function createCategoryOptions(product) {
 
   function checkCanAddToCart() {
     const addToCartBtn = document.getElementById('product-add-to-cart');
+    const wishlistBtn = document.getElementById('product-add-to-wishlist');
+    const checkoutBtn = document.getElementById('product-checkout');
     const statusDiv = document.getElementById('options-status');
     const colorRequired = showColors && !selectedColor;
     const sizeRequired = showSizes && !selectedSize;
 
     if (colorRequired || sizeRequired) {
-      addToCartBtn.disabled = true;
-      addToCartBtn.style.opacity = '0.5';
-      addToCartBtn.style.cursor = 'not-allowed';
+      if (addToCartBtn) {
+        addToCartBtn.disabled = true;
+        addToCartBtn.style.opacity = '0.5';
+        addToCartBtn.style.cursor = 'not-allowed';
+      }
+      if (wishlistBtn) {
+        wishlistBtn.disabled = true;
+        wishlistBtn.style.opacity = '0.5';
+        wishlistBtn.style.cursor = 'not-allowed';
+      }
+      if (checkoutBtn) {
+        checkoutBtn.disabled = true;
+        checkoutBtn.style.opacity = '0.5';
+        checkoutBtn.style.cursor = 'not-allowed';
+      }
       statusDiv.style.display = 'block';
     } else {
-      addToCartBtn.disabled = false;
-      addToCartBtn.style.opacity = '1';
-      addToCartBtn.style.cursor = 'pointer';
+      if (addToCartBtn) {
+        addToCartBtn.disabled = false;
+        addToCartBtn.style.opacity = '1';
+        addToCartBtn.style.cursor = 'pointer';
+      }
+      if (wishlistBtn) {
+        wishlistBtn.disabled = false;
+        wishlistBtn.style.opacity = '1';
+        wishlistBtn.style.cursor = 'pointer';
+      }
+      if (checkoutBtn) {
+        checkoutBtn.disabled = false;
+        checkoutBtn.style.opacity = '1';
+        checkoutBtn.style.cursor = 'pointer';
+      }
       statusDiv.style.display = 'none';
     }
   }
 
-  // If no options required, ensure add-to-cart is enabled
-  if (!showColors && !showSizes) setTimeout(checkCanAddToCart, 100);
+  // Ensure initial enable/disable state is applied
+  setTimeout(checkCanAddToCart, 50);
 
   // Expose selections
   window.productOptions = { color: () => selectedColor, size: () => selectedSize };
