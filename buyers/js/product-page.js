@@ -507,8 +507,18 @@ function proceedToCheckout(product) {
   // Update cart count
   updateCartCount();
 
-  // Redirect to checkout
-  window.location.href = './checkout.html';
+  // If user is authenticated, go to checkout. Otherwise save intent and redirect to login.
+  const token = localStorage.getItem('token');
+  if (token) {
+    window.location.href = './checkout.html';
+  } else {
+    try {
+      localStorage.setItem('post_login_redirect', './checkout.html');
+    } catch (e) {
+      console.warn('Could not set post_login_redirect', e);
+    }
+    window.location.href = 'login for buyers.html';
+  }
 }
 
 // Update cart count in navbar

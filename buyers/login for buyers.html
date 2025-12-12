@@ -128,9 +128,11 @@
                         console.warn('Wishlist merge failed:', e);
                     }
 
-                    // Redirect after 1 second
+                    // Redirect after 1 second to post-login target if set
                     setTimeout(() => {
-                        window.location.href = 'buyers homepage.html';
+                        const target = localStorage.getItem('post_login_redirect') || 'buyers homepage.html';
+                        try { localStorage.removeItem('post_login_redirect'); } catch (e) {}
+                        window.location.href = target;
                     }, 1000);
                 } else {
                     const errorMsg = getUserFriendlyError(data.message || 'Login failed');
@@ -222,7 +224,9 @@
                         console.warn('Wishlist merge failed:', e);
                     }
                     setTimeout(() => {
-                        window.location.href = 'buyers homepage.html';
+                        const target = localStorage.getItem('post_login_redirect') || 'buyers homepage.html';
+                        try { localStorage.removeItem('post_login_redirect'); } catch (e) {}
+                        window.location.href = target;
                     }, 1000);
                 } else {
                     // If user doesn't exist, suggest signup
