@@ -340,6 +340,31 @@ async function addToCart(product) {
     }
   }
 
+  // Also sync to backend cart API if user is authenticated (keeps cart_items in DB in sync)
+  try {
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Backend expects product_id and quantity
+      const res = await fetch(`${CONFIG.API_BASE_URL}/cart/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ product_id: product.id, quantity })
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        console.warn('Backend cart sync failed', res.status, err.message || err);
+      } else {
+        console.log('Backend cart synced successfully');
+      }
+    }
+  } catch (e) {
+    console.warn('Error syncing cart to backend:', e);
+  }
+
   // Show success message
   const btn = document.getElementById('product-add-to-cart');
   const originalText = btn.textContent;
