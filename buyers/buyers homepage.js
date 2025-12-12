@@ -515,6 +515,47 @@ window.addEventListener('DOMContentLoaded', () => {
   // Initial cart count update on page load
   updateCartCount();
 
+  // If user is authenticated, fetch server wishlist and replace local wishlist (non-destructive)
+  (async function syncWishlistFromServer() {
+    try {
+      const token = Auth.getToken();
+      if (!token) return; // not logged in
+
+      const res = await fetch(`${CONFIG.API_BASE_URL}/wishlist`, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (!res.ok) {
+        console.warn('Could not fetch server wishlist', res.status);
+        return;
+      }
+
+      const payload = await res.json().catch(() => ({}));
+      const items = payload && payload.data && Array.isArray(payload.data.items) ? payload.data.items : [];
+      if (items.length === 0) return; // nothing to replace
+
+      // Map server items to local storage shape
+      const mapped = items.map(i => ({
+        id: i.product_id || i.id,
+        name: i.name || i.product_name || '',
+        price: i.price || 0,
+        image: i.main_image_url || i.image || ''
+      }));
+
+      // Replace local wishlist with server canonical state
+      try {
+        localStorage.setItem('wishlist', JSON.stringify(mapped));
+        localStorage.removeItem('guest_wishlist_id');
+        console.log('✅ Wishlist synced from server (canonical)');
+      } catch (e) {
+        console.warn('Failed to write wishlist to localStorage', e);
+      }
+    } catch (error) {
+      console.error('syncWishlistFromServer error:', error);
+    }
+  })();
+
   // === Toast Notification ===
   function showToast(message) {
     let toast = document.createElement('div');

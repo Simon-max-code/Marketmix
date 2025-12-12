@@ -121,6 +121,13 @@
                     console.log('✅ User logged in successfully');
                     showAlert('success', 'Login successful! Redirecting...');
 
+                    // Merge guest wishlist into authenticated wishlist (non-destructive)
+                    try {
+                        await mergeGuestWishlist();
+                    } catch (e) {
+                        console.warn('Wishlist merge failed:', e);
+                    }
+
                     // Redirect after 1 second
                     setTimeout(() => {
                         window.location.href = 'buyers homepage.html';
@@ -209,6 +216,11 @@
                 if (apiResponse.ok && data.status === 'success') {
                     storeAuthData(data.data.user, data.data.token);
                     showAlert('success', 'Logged in with Google! Redirecting...');
+                    try {
+                        await mergeGuestWishlist();
+                    } catch (e) {
+                        console.warn('Wishlist merge failed:', e);
+                    }
                     setTimeout(() => {
                         window.location.href = 'buyers homepage.html';
                     }, 1000);
@@ -317,6 +329,38 @@
                 console.log('💾 Auth data stored successfully');
             } catch (error) {
                 console.error('❌ Failed to store auth data:', error);
+            }
+        }
+
+        // Merge guest wishlist into authenticated user's wishlist
+        async function mergeGuestWishlist() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+                if (!Array.isArray(wishlist) || wishlist.length === 0) return;
+
+                for (const item of wishlist) {
+                    try {
+                        await fetch(`${API_BASE_URL}/wishlist/add`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({ product_id: item.id })
+                        }).catch(() => null);
+                    } catch (e) {
+                        console.warn('Failed to merge wishlist item', item, e);
+                    }
+                }
+
+                // Remove guest wishlist id (server-side guest list preserved)
+                localStorage.removeItem('guest_wishlist_id');
+                console.log('✅ Guest wishlist merge attempted');
+            } catch (error) {
+                console.error('mergeGuestWishlist error:', error);
             }
         }
 
