@@ -380,7 +380,7 @@ async function addToCart(product) {
 }
 
 // Toggle wishlist
-function toggleWishlist(product) {
+async function toggleWishlist(product) {
   let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
   const exists = wishlist.find(item => item.id === product.id);
 
@@ -395,7 +395,53 @@ function toggleWishlist(product) {
     });
   }
 
+  // Always keep local copy (non-destructive)
   localStorage.setItem('wishlist', JSON.stringify(wishlist));
+
+  // Try to persist to backend: authenticated users -> /wishlist/add
+  // guests -> create or reuse guest_wishlist_id and POST to /wishlist/guest/add
+  try {
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Authenticated add/remove: only support add endpoint for now
+      if (!exists) {
+        await fetch(`${CONFIG.API_BASE_URL}/wishlist/add`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ product_id: product.id })
+        }).catch(() => null);
+      }
+    } else {
+      // Guest flow: persist to guest wishlist in DB
+      let guestId = localStorage.getItem('guest_wishlist_id');
+      if (!guestId) {
+        // Create guest wishlist
+        const res = await fetch(`${CONFIG.API_BASE_URL}/wishlist/guest/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        }).catch(() => null);
+        if (res && res.ok) {
+          const data = await res.json().catch(() => ({}));
+          guestId = data.data && data.data.wishlist_id ? data.data.wishlist_id : null;
+          if (guestId) localStorage.setItem('guest_wishlist_id', guestId);
+        }
+      }
+
+      // Add to guest wishlist in DB
+      if (!exists) {
+        await fetch(`${CONFIG.API_BASE_URL}/wishlist/guest/add`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ wishlist_id: guestId, product_id: product.id })
+        }).catch(() => null);
+      }
+    }
+  } catch (e) {
+    console.warn('Wishlist backend sync failed:', e);
+  }
   
   const btn = document.getElementById('product-add-to-wishlist');
   if (btn) {
