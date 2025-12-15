@@ -113,14 +113,9 @@ function createReviews(product) {
 }
 
 // Open review modal for product
-function openProductReviewModal(product) {
+function openProductReviewModal(product, isAnonymous = false) {
   const token = localStorage.getItem('token');
-  
-  if (!token) {
-    alert('Please log in to write a review');
-    window.location.href = 'login for buyers.html';
-    return;
-  }
+  const isLoggedIn = !!token;
 
   // Create and show modal
   let modal = document.getElementById('product-review-modal');
@@ -167,8 +162,23 @@ function openProductReviewModal(product) {
       </div>
 
       <p style="margin:0 0 16px;color:#666;font-size:14px">Product: <strong>${product.name}</strong></p>
+      ${!isLoggedIn ? '<p style="margin:0 0 12px;font-size:12px;color:#f97316;background:#fff7ed;padding:10px;border-radius:6px;">💡 Leave a guest review - no login needed!</p>' : ''}
 
       <form id="product-review-form" style="display:flex;flex-direction:column;gap:16px">
+        <!-- Guest Name (optional, for anonymous users) -->
+        ${!isLoggedIn ? `
+          <div>
+            <label style="display:block;margin-bottom:8px;font-weight:600;font-size:14px">Your Name (optional)</label>
+            <input type="text" id="guest-name" style="
+              width:100%;
+              padding:10px;
+              border:1px solid #ddd;
+              border-radius:8px;
+              font-size:14px;
+            " placeholder="Enter your name or leave blank for 'Anonymous'" maxlength="100">
+          </div>
+        ` : ''}
+
         <!-- Star Rating -->
         <div>
           <label style="display:block;margin-bottom:8px;font-weight:600;font-size:14px">Rating *</label>
@@ -297,9 +307,6 @@ function openProductReviewModal(product) {
 
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found. Please log in.');
-      }
 
       // Determine API base URL
       let API_BASE_URL = 'https://marketmix-backend-production.up.railway.app/api';
@@ -307,14 +314,12 @@ function openProductReviewModal(product) {
         API_BASE_URL = CONFIG.API_BASE_URL;
       }
 
-      console.log('Submitting review to:', `${API_BASE_URL}/reviews`);
-      console.log('Review data:', { review_type: 'product', product_id: product.id, rating, body });
-
       // Validate product ID exists
       if (!product.id) {
         throw new Error('Product ID is missing. Cannot submit review.');
       }
 
+      // Build payload
       const payload = {
         review_type: 'product',
         product_id: String(product.id),
@@ -322,14 +327,27 @@ function openProductReviewModal(product) {
         body: body
       };
 
+      // Add guest name if user is NOT logged in
+      if (!isLoggedIn) {
+        const guestName = modal.querySelector('#guest-name')?.value?.trim() || 'Guest';
+        payload.guest_name = guestName;
+      }
+
+      console.log('Submitting review to:', `${API_BASE_URL}/reviews`);
       console.log('Final payload:', payload);
+
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+
+      // Add token only if user is logged in
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
 
       const response = await fetch(`${API_BASE_URL}/reviews`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
+        headers: headers,
         body: JSON.stringify(payload)
       });
 
