@@ -297,7 +297,32 @@ function openProductReviewModal(product) {
 
     try {
       const token = localStorage.getItem('token');
-      const API_BASE_URL = CONFIG && CONFIG.API_BASE_URL ? CONFIG.API_BASE_URL : 'https://marketmix-backend-production.up.railway.app/api';
+      if (!token) {
+        throw new Error('No authentication token found. Please log in.');
+      }
+
+      // Determine API base URL
+      let API_BASE_URL = 'https://marketmix-backend-production.up.railway.app/api';
+      if (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) {
+        API_BASE_URL = CONFIG.API_BASE_URL;
+      }
+
+      console.log('Submitting review to:', `${API_BASE_URL}/reviews`);
+      console.log('Review data:', { review_type: 'product', product_id: product.id, rating, body });
+
+      // Validate product ID exists
+      if (!product.id) {
+        throw new Error('Product ID is missing. Cannot submit review.');
+      }
+
+      const payload = {
+        review_type: 'product',
+        product_id: String(product.id),
+        rating: rating,
+        body: body
+      };
+
+      console.log('Final payload:', payload);
 
       const response = await fetch(`${API_BASE_URL}/reviews`, {
         method: 'POST',
@@ -305,15 +330,12 @@ function openProductReviewModal(product) {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          review_type: 'product',
-          product_id: product.id,
-          rating: rating,
-          body: body
-        })
+        body: JSON.stringify(payload)
       });
 
+      console.log('Response status:', response.status);
       const data = await response.json();
+      console.log('Response data:', data);
 
       if (response.ok && data.status === 'success') {
         alert('Review submitted successfully!');
@@ -321,11 +343,19 @@ function openProductReviewModal(product) {
         // Reload product to show new review
         location.reload();
       } else {
-        throw new Error(data.message || 'Failed to submit review');
+        const errorMsg = data.message || data.error || 'Failed to submit review';
+        throw new Error(errorMsg);
       }
     } catch (error) {
       console.error('Error submitting review:', error);
-      alert(error.message || 'Failed to submit review');
+      console.error('Error details:', error.stack);
+      
+      // Show detailed error to user
+      let userMessage = error.message;
+      if (error.message.includes('Failed to fetch')) {
+        userMessage = 'Network error - could not reach server. Check your internet connection.';
+      }
+      alert(userMessage || 'Failed to submit review');
     } finally {
       submitBtn.disabled = false;
       submitBtn.innerHTML = 'Submit Review';
