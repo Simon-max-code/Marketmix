@@ -50,7 +50,33 @@ async function fetchProduct(productId) {
 
     if (response.ok) {
       const result = await response.json();
-      return result.data;
+      const product = result.data;
+
+      // Fetch reviews for this product
+      try {
+        const reviewsUrl = `${CONFIG.API_BASE_URL}/reviews/product/${productId}`;
+        const reviewsResponse = await fetch(reviewsUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` })
+          }
+        });
+
+        if (reviewsResponse.ok) {
+          const reviewsResult = await reviewsResponse.json();
+          if (reviewsResult.status === 'success' && reviewsResult.data) {
+            product.reviews = reviewsResult.data.reviews || [];
+            product.review_count = reviewsResult.data.count || product.reviews.length;
+            product.rating = reviewsResult.data.averageRating || 0;
+          }
+        }
+      } catch (reviewError) {
+        console.warn('Could not fetch reviews:', reviewError);
+        product.reviews = product.reviews || [];
+      }
+
+      return product;
     }
   } catch (apiError) {
     console.warn('API fetch failed, using mock data:', apiError);
