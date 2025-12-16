@@ -295,7 +295,13 @@ document.addEventListener('DOMContentLoaded', function() {
         products.forEach(product => {
           const productCategory = normalizeCategoryRaw(product.dataset.category || '');
           const shouldShow = category === 'all' || productCategory === category;
-          product.style.display = shouldShow ? 'flex' : 'none';
+          if (shouldShow) {
+            product.style.display = '';
+            product.style.visibility = 'visible';
+          } else {
+            product.style.display = 'none';
+            product.style.visibility = 'hidden';
+          }
         });
       });
     });

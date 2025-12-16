@@ -410,11 +410,10 @@ body {
 }
 
 .best-selling-grid {
- 
- display: grid;
+  display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 15px;
-  
+  justify-items: start;
 }
 
 .product-card {
@@ -424,6 +423,10 @@ body {
   padding: 15px;
   text-align: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+  max-width: 140px;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card:hover {
@@ -493,6 +496,7 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 15px;
+  justify-items: start;
 }
 
 /* Recommended Product Cards - same styling as best-selling cards */
@@ -503,6 +507,10 @@ body {
   padding: 15px;
   text-align: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+  max-width: 140px;
+  display: flex;
+  flex-direction: column;
 }
 
 .recommended-grid .product-card:hover {
