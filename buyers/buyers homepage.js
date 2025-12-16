@@ -132,7 +132,7 @@ window.addEventListener('DOMContentLoaded', () => {
         <img src="${img}" alt="${escapeHtml(product.name)}">
         <div class="product-info">
           <div class="product-name">${escapeHtml(product.name)}</div>
-          <div class="product-desc">${escapeHtml(product.description || '')}</div>
+          <!-- description removed to keep cards short -->
           <div class="meta">
             <div class="price">$${price}</div>
           </div>
@@ -242,7 +242,7 @@ window.addEventListener('DOMContentLoaded', () => {
           <img src="${product.main_image_url || product.image || 'marketplace.png'}" alt="${product.name}">
           <div class="product-info">
             <h4>${product.name}</h4>
-            <p class="product-desc">${product.description || ''}</p>
+            <!-- description removed to keep cards compact -->
             <div class="meta">
               <p class="price">$${product.price}</p>
             </div>
