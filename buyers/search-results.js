@@ -53,8 +53,8 @@ document.addEventListener('DOMContentLoaded', function(){
     try {
       let apiUrl;
       if (categoryId) {
-        // Fetch products for a specific category
-        apiUrl = `${CONFIG.API_BASE_URL}/products/category/${encodeURIComponent(categoryId)}?limit=50`;
+        // Fetch products for a specific category using the same endpoint as category.html
+        apiUrl = `${CONFIG.API_BASE_URL}/categories/${encodeURIComponent(categoryId)}/products?limit=100`;
       } else if (q) {
         apiUrl = `${CONFIG.API_BASE_URL}/products/search/query?q=${encodeURIComponent(q)}`;
       } else {
@@ -255,8 +255,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }, 2000);
   }
 
-  // Populate search input in navbar
-  const topInput = document.getElementById('searchInput');
+  // Populate search input in navbar with query
   if(topInput && q) topInput.value = q;
 
 });
