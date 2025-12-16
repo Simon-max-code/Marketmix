@@ -12,13 +12,14 @@
 <body>
   <!-- Navbar (kept from buyers homepage) -->
   <div class="navbar">
-    <a href="#" class="logo">MarketMix</a>
+    <a href="buyers homepage.html" class="logo">MarketMix</a>
 
-    <form id="searchFormTop" class="search-container" action="search-results.html" method="get">
-      <input type="search" name="q" id="searchInputTop" placeholder="Search on MarketMix" aria-label="Search">
+    <form id="searchForm" class="search-container" action="search-results.html" method="get">
+      <input type="search" name="q" id="searchInput" placeholder="Search on MarketMix" aria-label="Search">
       <button type="submit">
         <i class="fas fa-search"></i>
       </button>
+      <div id="searchAutocomplete" class="autocomplete-dropdown"></div>
     </form>
 
     <div class="notification" id="bell" >
@@ -34,6 +35,7 @@
       <button type="submit" style="background:#F97316;border:none;color:white;padding:10px 16px;border-radius:8px;cursor:pointer">
         <i class="fas fa-search"></i>
       </button>
+      <div id="searchAutocompleteMobile" class="autocomplete-dropdown"></div>
     </form>
   </div>
 
@@ -92,7 +94,8 @@
   </footer>
   
   <!-- reuse buyer homepage script so navbar behaviour (badge, cart count, toasts) matches home -->
-  <script src="buyers homepage.js" defer></script>
+  <script src="config.js"></script>
+  <script src="../utils/autocomplete.js"></script>
   <script src="search-results.js" defer></script>
 </body>
 </html>

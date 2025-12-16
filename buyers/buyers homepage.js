@@ -3,6 +3,164 @@
 // Wrap initialization in DOMContentLoaded to avoid null element errors
 window.addEventListener('DOMContentLoaded', () => {
 
+  // ===== POPULAR CATEGORIES LOADER =====
+  (function() {
+    const categoriesContainer = document.getElementById('categoriesContainer');
+    if (!categoriesContainer) return;
+
+    async function fetchAndPopulateCategories() {
+      try {
+        const response = await fetch(`${CONFIG.API_BASE_URL}/categories`);
+        if (!response.ok) throw new Error('Failed to fetch categories');
+        
+        const result = await response.json();
+        const categories = result.data || [];
+
+        if (categories.length === 0) {
+          categoriesContainer.innerHTML = '<div class="category-skeleton">No categories available</div>';
+          return;
+        }
+
+        // Generate category cards with icons/emojis
+        const categoryIcons = {
+          'Electronics': '📱',
+          'Fashion': '👕',
+          'Home & Garden': '🏠',
+          'Sports & Outdoors': '⚽',
+          'Books & Media': '📚',
+          'Toys & Games': '🎮',
+          'Health & Beauty': '💄',
+          'Automotive': '🚗',
+          'Jewelry': '💍',
+          'Pet Supplies': '🐾',
+        };
+
+        const categoryCards = categories.map(category => {
+          const icon = categoryIcons[category.name] || '📦';
+          return `
+            <a href="search-results.html?category=${encodeURIComponent(category.id)}" class="category-card" title="${category.name}">
+              <div class="category-icon">${icon}</div>
+              <div class="category-name">${category.name}</div>
+            </a>
+          `;
+        }).join('');
+
+        categoriesContainer.innerHTML = categoryCards;
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        categoriesContainer.innerHTML = '<div class="category-skeleton" style="grid-column: 1/-1;">Unable to load categories</div>';
+      }
+    }
+
+    fetchAndPopulateCategories();
+  })();
+
+  // ===== FILTER BUTTONS FOR BEST-SELLING =====
+  (function() {
+    function normalizeCategoryRaw(input) {
+      if (!input) return '';
+      return String(input)
+        .toLowerCase()
+        .replace(/&nbsp;/g, ' ')
+        .replace(/\s*&\s*/g, ' & ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    const filterButtons = document.querySelectorAll('.filter-btn');
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', async function() {
+        const rawCategory = this.dataset.category || '';
+        const category = normalizeCategoryRaw(rawCategory);
+        const section = this.dataset.section;
+
+        document.querySelectorAll(`.${section}-filter .filter-btn`).forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+
+        const products = document.querySelectorAll(`.${section}-grid .product-card`);
+
+        // Try to match existing products in the section first
+        const matched = Array.from(products).filter(product => {
+          const pcat = normalizeCategoryRaw(product.dataset.category || '');
+          return category === 'all' || pcat === category;
+        });
+
+        // If no existing products match and a specific category was selected,
+        // fetch more products from the API (larger limit) and render matches into the section.
+        if (matched.length === 0 && category !== 'all') {
+          try {
+            const base = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend-production.up.railway.app/api';
+            const resp = await fetch(`${base}/products?limit=200`);
+            if (resp.ok) {
+              const json = await resp.json();
+              const items = json.data || [];
+              const filtered = items.filter(it => normalizeCategoryRaw(it.category || it.category_name || '') === category);
+              const grid = document.querySelector(`.${section}-grid`);
+              if (grid) {
+                grid.innerHTML = filtered.length > 0 ? filtered.map(renderProductCard).join('') : '<div class="no-results" style="grid-column:1/-1; padding:20px; color:#334155;">No products in this category</div>';
+                attachProductCardListeners(grid);
+                attachCartListeners(); // Re-attach cart listeners
+              }
+            } else {
+              console.warn('Buyers homepage: failed to fetch products for category filter', resp.status);
+            }
+          } catch (err) {
+            console.error('Buyers homepage: error fetching category products', err);
+          }
+
+          return;
+        }
+
+        // Otherwise show/hide existing DOM products
+        products.forEach(product => {
+          const productCategory = normalizeCategoryRaw(product.dataset.category || '');
+          const shouldShow = category === 'all' || productCategory === category;
+          product.style.display = shouldShow ? 'flex' : 'none';
+        });
+      });
+    });
+  })();
+
+  function renderProductCard(product) {
+    const img = product.image || product.main_image_url || 'marketplace.png';
+    const price = typeof product.price === 'number' ? product.price.toFixed(2) : product.price;
+    const category = (product.category || product.category_name || 'all').toLowerCase().trim();
+    
+    return `
+      <div class="product-card" data-product-id="${product.id}" data-name="${escapeHtml(product.name)}" data-price="${price}" data-category="${category}">
+        <img src="${img}" alt="${escapeHtml(product.name)}">
+        <div class="product-info">
+          <div class="product-name">${escapeHtml(product.name)}</div>
+          <div class="product-desc">${escapeHtml(product.description || '')}</div>
+          <div class="meta">
+            <div class="price">$${price}</div>
+          </div>
+        </div>
+        <button class="add-to-cart">Add to Cart</button>
+      </div>`;
+  }
+
+  function attachProductCardListeners(container) {
+    if (!container) return;
+    container.querySelectorAll('.product-card').forEach((card) => {
+      const productId = card.getAttribute('data-product-id');
+      card.style.cursor = 'pointer';
+      
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.add-to-cart')) return;
+        window.location.href = `product.html?id=${productId}`;
+      });
+    });
+  }
+
+  function escapeHtml(text) {
+    if (!text) return '';
+    return String(text).replace(/[&<>"']/g, function (c) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c];
+    });
+  }
+
   // Setup autocomplete for search input
   const searchInput = document.getElementById('searchInput');
   const searchAutocomplete = document.getElementById('searchAutocomplete');
@@ -11,7 +169,7 @@ window.addEventListener('DOMContentLoaded', () => {
       if (suggestion.type === 'product') {
         window.location.href = `product.html?id=${suggestion.id}`;
       } else if (suggestion.type === 'category') {
-        window.location.href = `category.html?id=${suggestion.id}`;
+        window.location.href = `search-results.html?category=${suggestion.id}`;
       }
     });
   }
@@ -24,7 +182,7 @@ window.addEventListener('DOMContentLoaded', () => {
       if (suggestion.type === 'product') {
         window.location.href = `product.html?id=${suggestion.id}`;
       } else if (suggestion.type === 'category') {
-        window.location.href = `category.html?id=${suggestion.id}`;
+        window.location.href = `search-results.html?category=${suggestion.id}`;
       }
     });
   }

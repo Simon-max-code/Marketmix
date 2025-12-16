@@ -149,55 +149,10 @@
     <!-- 🏷️ Popular Categories -->
 <section class="popular-categories" id="category">
   <h2>Popular Categories</h2>
-  <div class="categories-container">
-    <div class="category-card" onclick="goToCategory('Fashion')">
-      <img src="props and stuff.jpg" alt="Fashion">
-      <p>Fashion</p>
-    </div>
-
-    <div class="category-card" onclick="goToCategory('Electronics')">
-      <img src="cloths and shoes.jpg" alt="Electronics">
-      <p>Electronics</p>
-    </div>
-
-    <div class="category-card" onclick="goToCategory('Phones')">
-      <img src="home and kitchen.webp" alt="Phones">
-      <p>Phones</p>
-    </div>
-
-    <div class="category-card" onclick="goToCategory('Beauty')">
-      <img src="props and stuff.jpg" alt="Beauty">
-      <p>Beauty</p>
-    </div>
-
-    <div class="category-card" onclick="goToCategory('Home')">
-      <img src="IMG-20250302-WA0088.jpg" alt="Home">
-      <p>Home</p>
-    </div>
-
-    <div class="category-card" onclick="goToCategory('Sports')">
-      <img src="oli.png" alt="Sports">
-      <p>Sports</p>
-    </div>
-
-    <div class="category-card" onclick="goToCategory('Gaming')">
-      <img src="electronics and accessories.jpg" alt="Gaming">
-      <p>Gaming</p>
-    </div>
-
-    <div class="category-card" onclick="goToCategory('Baby Products')">
-      <img src="cloths and shoes.jpg" alt="Baby Products">
-      <p>Baby Products</p>
-    </div>
-
-    <div class="category-card" onclick="goToCategory('Groceries')">
-      <img src="electronics and accessories.jpg" alt="Groceries">
-      <p>Groceries</p>
-    </div>
-
-    <div class="category-card" onclick="goToCategory('Appliances')">
-      <img src="elon.jfif" alt="Appliances">
-      <p>Appliances</p>
+  <div class="categories-container" id="categoriesContainer">
+    <!-- Categories will be populated by JavaScript from Supabase -->
+    <div class="category-skeleton" style="display: flex; align-items: center; justify-content: center; height: 120px; background: #f0f0f0; border-radius: 10px; color: #999; grid-column: 1/-1;">
+      Loading categories...
     </div>
   </div>
 </section>
@@ -206,6 +161,16 @@
    <!-- 🛒 Best-Selling Products Section -->
 <section class="best-selling">
   <h2>Best-Selling Products</h2>
+  <div class="filter-row best-selling-filter" role="tablist">
+    <button class="filter-btn active" data-category="all" data-section="best-selling">All</button>
+    <button class="filter-btn" data-category="electronics" data-section="best-selling">Electronics</button>
+    <button class="filter-btn" data-category="fashion" data-section="best-selling">Fashion</button>
+    <button class="filter-btn" data-category="home & garden" data-section="best-selling">Home & Garden</button>
+    <button class="filter-btn" data-category="sports & outdoors" data-section="best-selling">Sports & Outdoors</button>
+    <button class="filter-btn" data-category="books & media" data-section="best-selling">Books & Media</button>
+    <button class="filter-btn" data-category="toys & games" data-section="best-selling">Toys & Games</button>
+    <button class="filter-btn" data-category="health & beauty" data-section="best-selling">Health & Beauty</button>
+  </div>
   <div class="best-selling-grid">
     <!-- Product Card -->
     <div class="product-card">
