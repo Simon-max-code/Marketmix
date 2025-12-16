@@ -38,7 +38,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const categoryCards = categories.map(category => {
           const icon = categoryIcons[category.name] || '📦';
           return `
-            <a href="category.html?id=${category.id}" class="category-card" title="${category.name}">
+            <a href="buyers-category.html?id=${category.id}" class="category-card" title="${category.name}">
               <div class="category-icon">${icon}</div>
               <div class="category-name">${category.name}</div>
             </a>
@@ -169,7 +169,7 @@ window.addEventListener('DOMContentLoaded', () => {
       if (suggestion.type === 'product') {
         window.location.href = `product.html?id=${suggestion.id}`;
       } else if (suggestion.type === 'category') {
-        window.location.href = `category.html?id=${suggestion.id}`;
+        window.location.href = `buyers-category.html?id=${suggestion.id}`;
       }
     });
   }
@@ -182,7 +182,7 @@ window.addEventListener('DOMContentLoaded', () => {
       if (suggestion.type === 'product') {
         window.location.href = `product.html?id=${suggestion.id}`;
       } else if (suggestion.type === 'category') {
-        window.location.href = `category.html?id=${suggestion.id}`;
+        window.location.href = `buyers-category.html?id=${suggestion.id}`;
       }
     });
   }

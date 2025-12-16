@@ -904,6 +904,14 @@ body {
 .filter-btn:hover{border-color:#F97316;transform:translateY(-2px)}
 .filter-btn.active{background:#F97316;color:white;border-color:#F97316}
 
+/* Autocomplete dropdown positioning */
+.search-container{position:relative}
+.autocomplete-dropdown{position:absolute;top:100%;left:0;right:0;background:white;border:1px solid #ddd;border-radius:8px;max-height:300px;overflow-y:auto;z-index:1000;margin-top:4px;box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+.autocomplete-dropdown .autocomplete-item{padding:10px 12px;cursor:pointer;border-bottom:1px solid #f0f0f0}
+.autocomplete-dropdown .autocomplete-item:last-child{border-bottom:none}
+.autocomplete-dropdown .autocomplete-item:hover{background:#f5f5f5}
+
+
 .newsletter-form button:hover{background:#EA580C}
 .newsletter-message{margin-top:10px;color:#2c2d30;font-weight:600}
 
