@@ -27,26 +27,12 @@ function createReviews(product) {
   const html = `
     <div style="padding:16px;border:1px solid #e2e8f0;border-radius:12px;background:#fafafa">
       <!-- Rating Summary -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid #e2e8f0">
+      <div style="display:flex;align-items:center;justify-content:flex-start;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid #e2e8f0">
         <div style="text-align:center">
           <div style="font-size:36px;font-weight:700;color:#1e293b">${rating.toFixed(1)}</div>
           <div style="display:flex;gap:2px">${renderStars(rating, '14')}</div>
           <div style="font-size:12px;color:#64748b;margin-top:4px">${reviewCount} reviews</div>
         </div>
-        <button id="write-review-btn" style="
-          padding:10px 16px;
-          background:#f97316;
-          color:#fff;
-          border:none;
-          border-radius:8px;
-          font-size:14px;
-          font-weight:600;
-          cursor:pointer;
-          transition:all 0.2s ease;
-          white-space:nowrap;
-        ">
-          <i class="fas fa-star"></i> Write Review
-        </button>
       </div>
 
       <!-- Reviews List -->
