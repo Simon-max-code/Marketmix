@@ -57,6 +57,24 @@
 
       <div id="noResults" style="display:none; color:#777; text-align:center; margin-top:20px;">No products found.</div>
     </section>
+
+    <!-- 🛒 Best-Selling Products Section -->
+    <section class="best-selling">
+      <h2>Best-Selling Products</h2>
+      <div class="filter-row best-selling-filter" role="tablist">
+        <button class="filter-btn active" data-category="all" data-section="best-selling">All</button>
+        <button class="filter-btn" data-category="electronics" data-section="best-selling">Electronics</button>
+        <button class="filter-btn" data-category="fashion" data-section="best-selling">Fashion</button>
+        <button class="filter-btn" data-category="home & garden" data-section="best-selling">Home & Garden</button>
+        <button class="filter-btn" data-category="sports & outdoors" data-section="best-selling">Sports & Outdoors</button>
+        <button class="filter-btn" data-category="books & media" data-section="best-selling">Books & Media</button>
+        <button class="filter-btn" data-category="toys & games" data-section="best-selling">Toys & Games</button>
+        <button class="filter-btn" data-category="health & beauty" data-section="best-selling">Health & Beauty</button>
+      </div>
+      <div class="best-selling-grid" id="bestSellingGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px;">
+        <!-- Best selling products will be loaded here -->
+      </div>
+    </section>
   </main>
 
   <!-- NEWSLETTER -->

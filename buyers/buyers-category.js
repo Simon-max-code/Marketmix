@@ -73,7 +73,6 @@ document.addEventListener('DOMContentLoaded', function() {
             <img src="${product.main_image_url || product.image || 'https://via.placeholder.com/300'}" alt="${product.name}">
             <div class="product-info">
               <div class="product-name">${product.name}</div>
-              <div class="product-desc">${product.description || ''}</div>
               <div class="meta">
                 <div class="price">$${parseFloat(product.price).toFixed(2)}</div>
               </div>
@@ -171,4 +170,134 @@ document.addEventListener('DOMContentLoaded', function() {
       setTimeout(() => toast.remove(), 300);
     }, 2000);
   }
+
+  // ===== LOAD BEST-SELLING PRODUCTS =====
+  async function loadBestSellingProducts() {
+    try {
+      const response = await fetch(`${CONFIG.API_BASE_URL}/products?limit=20`);
+      if (!response.ok) throw new Error('Failed to fetch products');
+      const data = await response.json();
+      const products = data.data || [];
+
+      if (products.length === 0) {
+        const grid = document.getElementById('bestSellingGrid');
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #999;">No products available</div>';
+        return;
+      }
+
+      renderBestSellingProducts(products);
+    } catch (error) {
+      console.error('Error loading best-selling products:', error);
+    }
+  }
+
+  function renderBestSellingProducts(products) {
+    const grid = document.getElementById('bestSellingGrid');
+    grid.innerHTML = products.map(p => `
+      <div class="product-card" data-product-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-category="${(p.category || p.category_name || 'all').toLowerCase().trim()}">
+        <img src="${p.image || p.main_image_url || 'https://via.placeholder.com/300'}" alt="${p.name}">
+        <div class="product-info">
+          <div class="product-name">${p.name}</div>
+          <div class="meta">
+            <div class="price">$${parseFloat(p.price).toFixed(2)}</div>
+          </div>
+        </div>
+        <button class="add-to-cart">Add to Cart</button>
+      </div>
+    `).join('');
+
+    attachBestSellingHandlers(products);
+  }
+
+  function attachBestSellingHandlers(products) {
+    const cards = document.querySelectorAll('#bestSellingGrid .product-card');
+    cards.forEach((card, idx) => {
+      const productId = card.getAttribute('data-product-id');
+      card.style.cursor = 'pointer';
+
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.add-to-cart')) return;
+        window.location.href = `product.html?id=${productId}`;
+      });
+    });
+
+    attachCartListeners();
+  }
+
+  // Load best-selling on page load
+  loadBestSellingProducts();
+
+  // ===== FILTER BUTTONS FOR BEST-SELLING =====
+  (function() {
+    function normalizeCategoryRaw(input) {
+      if (!input) return '';
+      return String(input)
+        .toLowerCase()
+        .replace(/&nbsp;/g, ' ')
+        .replace(/\s*&\s*/g, ' & ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    const filterButtons = document.querySelectorAll('.filter-btn');
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', async function() {
+        const rawCategory = this.dataset.category || '';
+        const category = normalizeCategoryRaw(rawCategory);
+        const section = this.dataset.section;
+
+        document.querySelectorAll(`.${section}-filter .filter-btn`).forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+
+        const products = document.querySelectorAll(`.${section}-grid .product-card`);
+
+        // Try to match existing products in the section first
+        const matched = Array.from(products).filter(product => {
+          const pcat = normalizeCategoryRaw(product.dataset.category || '');
+          return category === 'all' || pcat === category;
+        });
+
+        // If no existing products match and a specific category was selected,
+        // fetch more products from the API
+        if (matched.length === 0 && category !== 'all') {
+          try {
+            const base = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend-production.up.railway.app/api';
+            const resp = await fetch(`${base}/products?limit=200`);
+            if (resp.ok) {
+              const json = await resp.json();
+              const items = json.data || [];
+              const filtered = items.filter(it => normalizeCategoryRaw(it.category || it.category_name || '') === category);
+              const grid = document.querySelector(`.${section}-grid`);
+              if (grid) {
+                grid.innerHTML = filtered.length > 0 ? filtered.map(p => `
+                  <div class="product-card" data-product-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-category="${category}">
+                    <img src="${p.image || p.main_image_url || 'https://via.placeholder.com/300'}" alt="${p.name}">
+                    <div class="product-info">
+                      <div class="product-name">${p.name}</div>
+                      <div class="meta">
+                        <div class="price">$${parseFloat(p.price).toFixed(2)}</div>
+                      </div>
+                    </div>
+                    <button class="add-to-cart">Add to Cart</button>
+                  </div>
+                `).join('') : '<div style="grid-column: 1/-1; padding: 20px; color: #334155; text-align: center;">No products in this category</div>';
+                attachBestSellingHandlers(filtered);
+              }
+            }
+          } catch (err) {
+            console.error('Error fetching category products', err);
+          }
+          return;
+        }
+
+        // Otherwise show/hide existing DOM products
+        products.forEach(product => {
+          const productCategory = normalizeCategoryRaw(product.dataset.category || '');
+          const shouldShow = category === 'all' || productCategory === category;
+          product.style.display = shouldShow ? 'flex' : 'none';
+        });
+      });
+    });
+  })();
 });
