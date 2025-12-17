@@ -8,14 +8,34 @@
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
+
+  <!-- Navbar Section (same as buyers homepage) -->
   <div class="navbar">
     <a href="buyers homepage.html" class="logo">MarketMix</a>
+
     <form id="searchForm" class="search-container" action="search-results.html" method="get">
       <input type="search" name="q" id="searchInput" placeholder="Search on MarketMix" aria-label="Search">
-      <button type="submit"><i class="fas fa-search"></i></button>
+      <button type="submit">
+        <i class="fas fa-search"></i>
+      </button>
       <div id="searchAutocomplete" class="autocomplete-dropdown"></div>
     </form>
-    <div class="notification" id="bell"><a href="buyer notification page.html"><i class="fas fa-bell"></i><span class="badge">5</span></a></div>
+
+    <div class="notification" id="bell">
+      <a href="buyer notification page.html"><i class="fas fa-bell"></i>
+      <span class="badge">5</span></a>
+    </div>
+  </div>
+
+  <!-- MOBILE SEARCH BAR (shows only on small screens) -->
+  <div class="navbar-mobile-search" style="display:none;background:white;padding:12px 15px;position:sticky;top:60px;z-index:999;border-bottom:1px solid #e0e0e0">
+    <form id="searchFormMobile" class="search-container-mobile" action="search-results.html" method="get" style="display:flex;align-items:center;gap:8px;margin:0">
+      <input type="search" name="q" id="searchInputMobile" placeholder="Search on MarketMix" aria-label="Search" style="flex:1;padding:10px 12px;border-radius:8px;border:1px solid #ddd;outline:none;font-size:14px">
+      <button type="submit" style="background:#F97316;border:none;color:white;padding:10px 16px;border-radius:8px;cursor:pointer">
+        <i class="fas fa-search"></i>
+      </button>
+      <div id="searchAutocompleteMobile" class="autocomplete-dropdown"></div>
+    </form>
   </div>
 
   <main class="main-content">
@@ -27,12 +47,88 @@
     </section>
   </main>
 
+  <!-- Footer (same as buyers homepage) -->
   <footer class="footer">
-    <div class="footer-bottom"><p>&copy; 2025 MarketMix. All rights reserved.</p></div>
+    <div class="footer-container">
+      <div class="footer-column">
+        <h3>About MarketMix</h3>
+        <p>MarketMix is the best place to buy and sell products online. Connect with millions of buyers and grow your business today.</p>
+      </div>
+
+      <div class="footer-column">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="about us.html">About Us</a></li>
+          <li><a href="faq page.html">Faq</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="privacy policy.html">Privacy Policy</a></li>
+          <li><a href="Terms & Conditions.html">Terms & Conditions</a></li>
+          <li><a href="purchase history.html">Purchase History</a></li>
+          <li><a href="reviews ratings.html">Reviews & Ratings</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h3>Customer Support</h3>
+        <ul>
+          <li><a href="help center.html">Help Center</a></li>
+          <li><a href="buyers order &tracking.html">Order Tracking</a></li>
+          <li><a href="return refund.html">Returns & Refunds</a></li>
+          <li><a href="shipping infor.html">Shipping Info</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h3>Follow Us</h3>
+        <div class="footer-social">
+          <a href="#"><i class="fab fa-facebook"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2025 MarketMix. All rights reserved.</p>
+    </div>
   </footer>
+
+  <!-- Bottom Nav (same as buyers homepage) -->
+  <div class="bottom-nav">
+    <a href="buyers homepage.html" class="nav-link">
+      <span class="icon-wrapper">
+        <i class="fas fa-home"></i>
+      </span>
+      <span class="link-text">Home</span>
+    </a>
+
+    <a href="categories.html" class="nav-link">
+      <span class="icon-wrapper">
+        <i class="fas fa-th-large"></i>
+      </span>
+      <span class="link-text">Categories</span>
+    </a>
+
+    <a href="cart.html" class="nav-link cart-link">
+      <span class="icon-wrapper">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count">0</span>
+      </span>
+      <span class="link-text">Cart</span>
+    </a>
+
+    <a href="buyers profile.html" class="nav-link">
+      <span class="icon-wrapper">
+        <i class="fas fa-user"></i>
+      </span>
+      <span class="link-text">Account</span>
+    </a>
+  </div>
 
   <script src="config.js"></script>
   <script src="../utils/autocomplete.js"></script>
+  <script src="buyers homepage.js" defer></script>
   <script src="categories.js" defer></script>
 </body>
 </html>
