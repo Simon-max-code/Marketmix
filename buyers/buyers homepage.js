@@ -78,6 +78,12 @@ window.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll(`.${section}-filter .filter-btn`).forEach(b => b.classList.remove('active'));
         this.classList.add('active');
 
+        // If "All" is clicked, reload all best-selling products
+        if (category === 'all' && section === 'best-selling') {
+          loadBestSellingProducts();
+          return;
+        }
+
         const products = document.querySelectorAll(`.${section}-grid .product-card`);
 
         // Try to match existing products in the section first
@@ -242,22 +248,26 @@ window.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Render best-selling product cards
-      container.innerHTML = data.data.map(product => `
-        <div class="product-card" data-product-id="${product.id}">
-          <img src="${product.main_image_url || product.image || 'marketplace.png'}" alt="${product.name}">
-          <div class="product-info">
-            <h4>${product.name}</h4>
-            <!-- description removed to keep cards compact -->
-            <div class="meta">
-              <p class="price">$${product.price}</p>
+      // Render best-selling product cards with category data-attribute
+      container.innerHTML = data.data.map(product => {
+        const category = (product.category || product.category_name || 'all').toLowerCase().trim();
+        return `
+          <div class="product-card" data-product-id="${product.id}" data-name="${escapeHtml(product.name)}" data-price="${product.price}" data-category="${category}">
+            <img src="${product.main_image_url || product.image || 'marketplace.png'}" alt="${product.name}">
+            <div class="product-info">
+              <div class="product-name">${escapeHtml(product.name)}</div>
+              <!-- description removed to keep cards compact -->
+              <div class="meta">
+                <div class="price">$${product.price}</div>
+              </div>
             </div>
+            <button class="add-to-cart">Add to Cart</button>
           </div>
-          <button class="add-to-cart">Add to Cart</button>
-        </div>
-      `).join('');
+        `;
+      }).join('');
 
       // Re-attach event listeners to new buttons
+      attachProductCardListeners(container);
       attachCartListeners();
     } catch (error) {
       console.error('Error loading best-selling products:', error);
