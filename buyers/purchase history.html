@@ -142,6 +142,27 @@
   .btn:hover {
     background-color: #555;
   }
+  /* Inline drop review button */
+  .drop-review-inline-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    background: #f97316;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8em;
+  }
+  .drop-review-inline-btn[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .product-list-inline { display:flex;flex-direction:column;gap:6px }
+  .product-name { font-weight:600; margin-right:8px }
+
   /* (Removed export buttons and recommendations styles - not needed) */
 
   /* Notification Center */
@@ -265,38 +286,42 @@ footer {
       </tr>
     </thead>
     <tbody>
-      <tr>
+      <tr data-order-id="90512">
         <td data-label="Order ID">#90512</td>
-        <td data-label="Product(s)" class="product-cell">
+        <td data-label="Product(s)" class="product-cell" data-product-ids="1001,1002" data-product-names="Wireless Earbuds,USB Cable">
           <img src="elon.jfif" alt="">
-          Wireless Earbuds, USB Cable
+          <div class="product-list-inline">
+            <div><span class="product-name">Wireless Earbuds</span></div>
+            <div><span class="product-name">USB Cable</span></div>
+          </div>
         </td>
         <td data-label="Date">June 20, 2025</td>
         <td data-label="Total">$35.00</td>
         <td data-label="Status" class="status Delivered">Delivered</td>
-        
       </tr>
-      <tr>
+      <tr data-order-id="90344">
         <td data-label="Order ID">#90344</td>
-        <td data-label="Product(s)" class="product-cell">
+        <td data-label="Product(s)" class="product-cell" data-product-ids="1003" data-product-names="Office Chair">
           <img src="electronics and accessories.jpg" alt="">
-          Office Chair
+          <div class="product-list-inline">
+            <div><span class="product-name">Office Chair</span></div>
+          </div>
         </td>
         <td data-label="Date">June 18, 2025</td>
         <td data-label="Total">$120.00</td>
         <td data-label="Status" class="status Delivered">Delivered</td>
-        
       </tr>
-      <tr>
+      <tr data-order-id="90128">
         <td data-label="Order ID">#90128</td>
-        <td data-label="Product(s)" class="product-cell">
+        <td data-label="Product(s)" class="product-cell" data-product-ids="1004" data-product-names="Fitness Watch">
           <img src="web dev.jpeg" alt="">
-          Fitness Watch
+          <div class="product-list-inline">
+            <div><span class="product-name">Fitness Watch</span></div>
+          </div>
         </td>
         <td data-label="Date">June 10, 2025</td>
         <td data-label="Total">$70.00</td>
         <td data-label="Status" class="status Cancelled">Cancelled</td>
-        
       </tr>
     </tbody>
   </table>
@@ -341,6 +366,76 @@ function notify(message) {
     note.remove();
     if (!center.hasChildNodes()) center.style.display = 'none';
   }, 3000);
+}
+
+// Enhance delivered order rows: add per-product "Drop Review" buttons that open the review modal
+function enhancePurchaseRows() {
+  const rows = document.querySelectorAll('#orderTable tbody tr');
+  rows.forEach(row => {
+    const statusCell = row.querySelector('[data-label="Status"]');
+    if (!statusCell) return;
+    const statusText = statusCell.innerText.trim();
+    if (statusText !== 'Delivered') return; // only for delivered orders
+
+    const orderId = row.dataset.orderId || (row.querySelector('[data-label="Order ID"]').innerText || '').replace('#','').trim();
+    const productCell = row.querySelector('.product-cell');
+    if (!productCell) return;
+
+    const ids = (productCell.dataset.productIds || '').split(',').map(s => s.trim()).filter(Boolean);
+    const names = (productCell.dataset.productNames || '').split(',').map(s => s.trim()).filter(Boolean);
+    const productListDiv = productCell.querySelector('.product-list-inline');
+    if (!productListDiv) return;
+
+    // Rebuild product list with inline buttons
+    productListDiv.innerHTML = '';
+    names.forEach((name, i) => {
+      const pid = ids[i] || null;
+
+      const itemDiv = document.createElement('div');
+      itemDiv.style.display = 'flex';
+      itemDiv.style.alignItems = 'center';
+      itemDiv.style.justifyContent = 'space-between';
+      itemDiv.style.gap = '8px';
+
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'product-name';
+      nameSpan.innerText = name;
+      itemDiv.appendChild(nameSpan);
+
+      if (pid) {
+        const btn = document.createElement('button');
+        btn.className = 'drop-review-inline-btn';
+        btn.innerText = 'Drop Review';
+        btn.dataset.orderId = orderId;
+        btn.dataset.productId = pid;
+
+        btn.addEventListener('click', () => {
+          if (typeof openProductReviewModal === 'function') {
+            openProductReviewModal({ id: pid, name: name }, { orderId: orderId });
+          } else {
+            alert('Review modal is not available. Please use your Reviews page to drop a review.');
+            window.location.href = 'reviews ratings.html';
+          }
+        });
+
+        itemDiv.appendChild(btn);
+      } else {
+        const hint = document.createElement('small');
+        hint.style.color = '#64748b';
+        hint.innerText = 'Use Reviews page to add a review';
+        itemDiv.appendChild(hint);
+      }
+
+      productListDiv.appendChild(itemDiv);
+    });
+  });
+}
+
+// Run on load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', enhancePurchaseRows);
+} else {
+  enhancePurchaseRows();
 }
 
 </script>

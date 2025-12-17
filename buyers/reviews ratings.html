@@ -599,10 +599,9 @@ footer {
 
       <div class="card" style="margin-top:12px">
         <h4>Write New Review</h4>
-        <p class="small muted">Review your purchased products</p>
-        <button class="btn" style="width:100%;margin:10px 0" onclick="showWriteReviewForm()">
-          <i class="fas fa-plus"></i> Write Review
-        </button>
+        <p class="small muted">Select a recently delivered product and drop a review</p>
+        <select id="dropProductSelect" style="width:100%;padding:10px;margin:10px 0"></select>
+        <button class="btn" style="width:100%" id="dropReviewBtn">Drop a Review</button>
       </div>
     </aside>
   </div>
@@ -815,6 +814,8 @@ async function loadPurchasedProducts() {
     if (response.ok && data.status === 'success') {
       purchasedProducts = data.data.products;
       populateProductSelect();
+      if (typeof populateDropProductSelect === 'function') populateDropProductSelect();
+      if (typeof setupDropReviewButton === 'function') setupDropReviewButton();
     } else {
       throw new Error(data.message || 'Failed to load products');
     }
@@ -846,6 +847,58 @@ function populateProductSelect() {
     }
     
     select.appendChild(option);
+  });
+}
+
+// Populate the drop-down used in the "Write New Review" card
+function populateDropProductSelect() {
+  const select = document.getElementById('dropProductSelect');
+  if (!select) return;
+
+  // Filter to recently delivered products that are not yet reviewed
+  const candidates = purchasedProducts.filter(p => !p.alreadyReviewed).slice(0,5);
+
+  if (candidates.length === 0) {
+    select.innerHTML = '<option value="">No eligible delivered products</option>';
+    return;
+  }
+
+  select.innerHTML = '<option value="">Select a product to review...</option>';
+  candidates.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = p.name;
+    opt.dataset.orderId = p.orderId;
+    select.appendChild(opt);
+  });
+}
+
+// Hook up the Drop Review button
+function setupDropReviewButton() {
+  const btn = document.getElementById('dropReviewBtn');
+  if (!btn) return;
+
+  btn.addEventListener('click', () => {
+    const select = document.getElementById('dropProductSelect');
+    if (!select) return;
+    const productId = select.value;
+    if (!productId) {
+      alert('Please choose a product to review');
+      return;
+    }
+
+    const product = purchasedProducts.find(p => String(p.id) === String(productId));
+    if (!product) {
+      alert('Selected product not found');
+      return;
+    }
+
+    // Open review modal and pass orderId so backend ties review to delivered order
+    if (typeof openProductReviewModal === 'function') {
+      openProductReviewModal({ id: product.id, name: product.name }, { orderId: product.orderId });
+    } else {
+      alert('Review modal not available');
+    }
   });
 }
 

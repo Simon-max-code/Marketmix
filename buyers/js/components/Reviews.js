@@ -38,6 +38,7 @@ function createReviews(product) {
       <!-- Reviews List -->
       <div>
         <h3 style="margin:0 0 16px;font-size:16px;font-weight:700;color:#1e293b">Customer Reviews</h3>
+        <p style="margin:0 0 12px;color:#64748b;font-size:13px">To leave a review you must be a buyer who received this product; use your <a href="../purchase history.html">Purchase History</a> or <a href="../reviews%20ratings.html">My Reviews</a> page.</p>
         
         ${reviews.length > 0 ? `
           ${reviews.slice(0, 5).map((review, idx) => `
@@ -99,9 +100,17 @@ function createReviews(product) {
 }
 
 // Open review modal for product
-function openProductReviewModal(product, isAnonymous = false) {
+function openProductReviewModal(product, options = {}) {
+  // Only allow reviews when the user is authenticated (buyers via purchase history or My Reviews)
   const token = localStorage.getItem('token');
-  const isLoggedIn = !!token;
+  if (!token) {
+    alert('Please log in to leave a review. Reviews can be left from your Purchase History.');
+    window.location.href = 'login for buyers.html';
+    return;
+  }
+
+  const isLoggedIn = true; // since token exists
+  const orderId = options.orderId || null;
 
   // Create and show modal
   let modal = document.getElementById('product-review-modal');
@@ -124,7 +133,7 @@ function openProductReviewModal(product, isAnonymous = false) {
     document.body.appendChild(modal);
   }
 
-  // Build modal content
+  // Build modal content (no guest/anonymous input - only logged-in buyers)
   const modalContent = `
     <div style="
       background: white;
@@ -148,23 +157,8 @@ function openProductReviewModal(product, isAnonymous = false) {
       </div>
 
       <p style="margin:0 0 16px;color:#666;font-size:14px">Product: <strong>${product.name}</strong></p>
-      ${!isLoggedIn ? '<p style="margin:0 0 12px;font-size:12px;color:#f97316;background:#fff7ed;padding:10px;border-radius:6px;">💡 Leave a guest review - no login needed!</p>' : ''}
 
       <form id="product-review-form" style="display:flex;flex-direction:column;gap:16px">
-        <!-- Guest Name (optional, for anonymous users) -->
-        ${!isLoggedIn ? `
-          <div>
-            <label style="display:block;margin-bottom:8px;font-weight:600;font-size:14px">Your Name (optional)</label>
-            <input type="text" id="guest-name" style="
-              width:100%;
-              padding:10px;
-              border:1px solid #ddd;
-              border-radius:8px;
-              font-size:14px;
-            " placeholder="Enter your name or leave blank for 'Anonymous'" maxlength="100">
-          </div>
-        ` : ''}
-
         <!-- Star Rating -->
         <div>
           <label style="display:block;margin-bottom:8px;font-weight:600;font-size:14px">Rating *</label>
@@ -313,23 +307,16 @@ function openProductReviewModal(product, isAnonymous = false) {
         body: body
       };
 
-      // Add guest name if user is NOT logged in
-      if (!isLoggedIn) {
-        const guestName = modal.querySelector('#guest-name')?.value?.trim() || 'Guest';
-        payload.guest_name = guestName;
-      }
+      // Include order id if available (ensures review ties to a delivered order)
+      if (orderId) payload.order_id = String(orderId);
 
       console.log('Submitting review to:', `${API_BASE_URL}/reviews`);
       console.log('Final payload:', payload);
 
       const headers = {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // token is required by design for purchase-history-based reviews
       };
-
-      // Add token only if user is logged in
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
 
       const response = await fetch(`${API_BASE_URL}/reviews`, {
         method: 'POST',
