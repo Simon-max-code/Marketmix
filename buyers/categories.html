@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Categories — MarketMix</title>
+  <link rel="stylesheet" href="buyers homepage.css">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="navbar">
+    <a href="buyers homepage.html" class="logo">MarketMix</a>
+    <form id="searchForm" class="search-container" action="search-results.html" method="get">
+      <input type="search" name="q" id="searchInput" placeholder="Search on MarketMix" aria-label="Search">
+      <button type="submit"><i class="fas fa-search"></i></button>
+      <div id="searchAutocomplete" class="autocomplete-dropdown"></div>
+    </form>
+    <div class="notification" id="bell"><a href="buyer notification page.html"><i class="fas fa-bell"></i><span class="badge">5</span></a></div>
+  </div>
+
+  <main class="main-content">
+    <section class="popular-categories">
+      <h2>All Categories</h2>
+      <div class="categories-container" id="allCategoriesGrid">
+        <div style="grid-column:1/-1; padding:20px; color:#666; text-align:center">Loading categories...</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-bottom"><p>&copy; 2025 MarketMix. All rights reserved.</p></div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="../utils/autocomplete.js"></script>
+  <script src="categories.js" defer></script>
+</body>
+</html>
