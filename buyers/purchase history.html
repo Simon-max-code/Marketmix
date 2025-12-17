@@ -408,14 +408,13 @@ function enhancePurchaseRows() {
         btn.innerText = 'Drop Review';
         btn.dataset.orderId = orderId;
         btn.dataset.productId = pid;
+        btn.title = `Leave a review for ${name}`;
+        btn.setAttribute('aria-label', `Leave a review for ${name}`);
 
+        // Instead of opening a modal here, navigate to the Reviews page and include product and order in the query string
         btn.addEventListener('click', () => {
-          if (typeof openProductReviewModal === 'function') {
-            openProductReviewModal({ id: pid, name: name }, { orderId: orderId });
-          } else {
-            alert('Review modal is not available. Please use your Reviews page to drop a review.');
-            window.location.href = 'reviews ratings.html';
-          }
+          const url = `reviews%20ratings.html?product=${encodeURIComponent(pid)}&order=${encodeURIComponent(orderId)}`;
+          window.location.href = url;
         });
 
         itemDiv.appendChild(btn);

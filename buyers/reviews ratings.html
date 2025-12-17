@@ -4,7 +4,6 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<!-- 🔒 BLOCK UNAUTHORIZED USERS -->
 <script>
   const token = localStorage.getItem('token');
   if (!token) {
@@ -95,10 +94,16 @@ h1 { text-align: center; margin-bottom: 24px; }
   border: 1px solid var(--border);
   background: #fff;
   transition: box-shadow 0.2s;
+  position: relative;
 }
 
 .review:hover {
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.review.editing {
+  border: 2px solid var(--accent);
+  background: #fff7ed;
 }
 
 .avatar {
@@ -162,6 +167,14 @@ h1 { text-align: center; margin-bottom: 24px; }
   background: #c53030;
 }
 
+.btn-success {
+  background: var(--success);
+}
+
+.btn-success:hover {
+  background: #2f855a;
+}
+
 textarea {
   width: 100%;
   min-height: 100px;
@@ -198,6 +211,7 @@ input[type="file"] {
 
 .toast.success { background: var(--success); }
 .toast.error { background: var(--danger); }
+.toast.info { background: #3b82f6; }
 .toast.show { transform: translateX(0); }
 
 .loading-overlay {
@@ -368,7 +382,6 @@ footer {
   margin-left: 8px;
 }
 
-/* Modal Styles */
 .modal {
   display: none;
   position: fixed;
@@ -470,7 +483,6 @@ footer {
   color: var(--muted);
 }
 
-/* Image Zoom Modal */
 .zoom-modal {
   display: none;
   position: fixed;
@@ -507,31 +519,6 @@ footer {
   padding: 0;
 }
 
-.report-reasons {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.report-reasons label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.report-reasons label:hover {
-  background: #f9f9f9;
-}
-
-.report-reasons input[type="radio"] {
-  width: auto;
-}
-
 .badge {
   display: inline-block;
   padding: 4px 8px;
@@ -544,11 +531,156 @@ footer {
   background: #fef3c7;
   color: #92400e;
 }
+
+.badge-achievement {
+  background: #dbeafe;
+  color: #1e40af;
+  margin: 2px;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat-box {
+  background: #f9fafb;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+
+.stat-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.alert-box {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fef3c7;
+  border: 1px solid #fbbf24;
+}
+
+.alert-box i {
+  color: #f59e0b;
+  font-size: 20px;
+}
+
+.template-btn {
+  background: #f3f4f6;
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin: 4px;
+  font-size: 13px;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.template-btn:hover {
+  background: #e5e7eb;
+  border-color: var(--accent);
+}
+
+.bulk-actions-bar {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: #f9fafb;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+.bulk-actions-bar.show {
+  display: flex;
+}
+
+.checkbox-review {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.inline-edit-form {
+  margin-top: 12px;
+}
+
+.inline-edit-form textarea {
+  width: 100%;
+  min-height: 80px;
+  margin-bottom: 8px;
+}
+
+.auto-save-indicator {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.export-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.export-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  min-width: 150px;
+  z-index: 100;
+  margin-top: 4px;
+}
+
+.export-dropdown.show {
+  display: block;
+}
+
+.export-dropdown button {
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.export-dropdown button:hover {
+  background: #f3f4f6;
+}
 </style>
 </head>
 <body>
 
-<!-- Loading Overlay -->
 <div id="loadingOverlay" class="loading-overlay" style="display:none;">
   <div class="loading-spinner"></div>
   <p>Loading...</p>
@@ -560,10 +692,31 @@ footer {
 
 <div class="wrap">
   <h1>⭐ My Reviews</h1>
+  
+  <!-- Pending Reviews Alert -->
+  <div id="pendingAlert" class="alert-box" style="display:none;">
+    <i class="fas fa-bell"></i>
+    <div style="flex:1">
+      <strong>You have <span id="pendingCount">0</span> products waiting for review!</strong>
+      <p style="margin:4px 0 0;font-size:13px">Share your experience to help others</p>
+    </div>
+    <button class="btn" onclick="showPendingProducts()">Review Now</button>
+  </div>
+
   <div class="grid">
     <!-- LEFT: Reviews list -->
     <main>
       <div class="card">
+        <!-- Bulk Actions Bar -->
+        <div id="bulkActionsBar" class="bulk-actions-bar">
+          <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)">
+          <span id="selectedCount">0 selected</span>
+          <button class="btn btn-danger" onclick="bulkDelete()">
+            <i class="fas fa-trash"></i> Delete Selected
+          </button>
+          <button class="btn ghost" onclick="clearSelection()">Cancel</button>
+        </div>
+
         <div class="controls">
           <select id="sortBy">
             <option value="newest">Sort: Newest</option>
@@ -581,25 +734,78 @@ footer {
           </select>
           <input type="search" id="searchQuery" placeholder="Search reviews..." />
           <button id="clearFilters" class="btn ghost">Clear</button>
+          <button class="btn ghost" onclick="toggleBulkMode()">
+            <i class="fas fa-check-square"></i> Select
+          </button>
+          <div class="export-menu">
+            <button class="btn ghost" onclick="toggleExportMenu()">
+              <i class="fas fa-download"></i> Export
+            </button>
+            <div id="exportDropdown" class="export-dropdown">
+              <button onclick="exportReviews('csv')">
+                <i class="fas fa-file-csv"></i> Export as CSV
+              </button>
+              <button onclick="exportReviews('json')">
+                <i class="fas fa-file-code"></i> Export as JSON
+              </button>
+            </div>
+          </div>
         </div>
 
         <div id="reviewList" class="review-list"></div>
       </div>
     </main>
 
-    <!-- RIGHT: Summary + Write new review -->
+    <!-- RIGHT: Summary + Analytics + Write new review -->
     <aside>
+      <!-- Analytics Dashboard -->
       <div class="card">
-        <h4>Summary</h4>
-        <div style="margin-top:12px">
-          <div style="font-size:28px;font-weight:700" id="avgRating">0.0</div>
-          <div class="small muted" id="totalReviews">0 reviews</div>
+        <h4>📊 Review Analytics</h4>
+        <div class="analytics-grid">
+          <div class="stat-box">
+            <div class="stat-number" id="avgRating">0.0</div>
+            <div class="stat-label">Avg Rating</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="totalReviews">0</div>
+            <div class="stat-label">Total Reviews</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="totalHelpful">0</div>
+            <div class="stat-label">Helpful Votes</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="totalViews">0</div>
+            <div class="stat-label">Total Views</div>
+          </div>
+        </div>
+        
+        <!-- Badges -->
+        <div id="badgesContainer" style="margin-top:12px;">
+          <h5 style="margin:0 0 8px;font-size:13px;color:var(--muted)">Your Achievements</h5>
+          <div id="badgesList"></div>
         </div>
       </div>
 
+      <!-- Write New Review -->
       <div class="card" style="margin-top:12px">
-        <h4>Write New Review</h4>
-        <p class="small muted">Select a recently delivered product and drop a review</p>
+        <h4>✍️ Write New Review</h4>
+        
+        <!-- Templates -->
+        <div style="margin:12px 0">
+          <p class="small muted">Quick templates:</p>
+          <button class="template-btn" onclick="useTemplate('positive')">
+            😊 Positive
+          </button>
+          <button class="template-btn" onclick="useTemplate('detailed')">
+            📝 Detailed
+          </button>
+          <button class="template-btn" onclick="useTemplate('issue')">
+            ⚠️ Had Issues
+          </button>
+        </div>
+        
+        <p class="small muted">Select a recently delivered product</p>
         <select id="dropProductSelect" style="width:100%;padding:10px;margin:10px 0"></select>
         <button class="btn" style="width:100%" id="dropReviewBtn">Drop a Review</button>
       </div>
@@ -639,6 +845,7 @@ footer {
         <label>Review</label>
         <textarea id="reviewBody" rows="5" placeholder="Share your experience with this product..." required></textarea>
         <small class="muted">Between 4 and 1200 characters</small>
+        <div class="auto-save-indicator" id="autoSaveStatus"></div>
       </div>
 
       <div class="form-group">
@@ -664,67 +871,31 @@ footer {
   <div id="zoomContent"></div>
 </div>
 
-<!-- Report Modal -->
-<div id="reportModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Report Review</h2>
-      <button class="close-modal" onclick="closeReportModal()">&times;</button>
-    </div>
-    
-    <form id="reportForm" onsubmit="submitReport(event)">
-      <div class="form-group required">
-        <label>Reason for reporting</label>
-        <div class="report-reasons">
-          <label>
-            <input type="radio" name="reason" value="spam" required>
-            Spam or fake review
-          </label>
-          <label>
-            <input type="radio" name="reason" value="offensive" required>
-            Offensive or inappropriate content
-          </label>
-          <label>
-            <input type="radio" name="reason" value="misleading" required>
-            Misleading information
-          </label>
-          <label>
-            <input type="radio" name="reason" value="other" required>
-            Other
-          </label>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Additional details (Optional)</label>
-        <textarea id="reportDetails" rows="3" placeholder="Please provide more information..."></textarea>
-      </div>
-
-      <div style="display:flex;gap:10px;margin-top:20px">
-        <button type="submit" class="btn btn-danger">
-          <i class="fas fa-flag"></i> Submit Report
-        </button>
-        <button type="button" class="btn ghost" onclick="closeReportModal()">Cancel</button>
-      </div>
-    </form>
-  </div>
-</div>
-
 <div id="toast" class="toast success">Saved</div>
 
 <footer>© MarketMix 2025</footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script>
 // ==============================================
 // CONFIGURATION
 // ==============================================
 const API_BASE_URL = 'https://marketmix-backend-production.up.railway.app/api';
 let allReviews = [];
+let purchasedProducts = [];
 let currentEditingId = null;
 let currentRating = 0;
 let selectedFiles = [];
-let purchasedProducts = [];
-let currentReportingReviewId = null;
+let bulkModeActive = false;
+let selectedReviewIds = new Set();
+let autoSaveTimer = null;
+
+// Review Templates
+const reviewTemplates = {
+  positive: "I'm really happy with this product! The quality exceeded my expectations and it arrived quickly. Would definitely recommend to others.",
+  detailed: "Quality: Great build and materials\nValue: Good price for what you get\nDelivery: Fast and well-packaged\nOverall: Very satisfied with this purchase",
+  issue: "While the product has good features, I experienced some issues with [describe issue]. However, customer service was helpful in resolving it."
+};
 
 // ==============================================
 // UTILITY FUNCTIONS
@@ -768,6 +939,461 @@ function debounce(func, wait) {
 }
 
 // ==============================================
+// AUTO-SAVE DRAFT FUNCTIONALITY
+// ==============================================
+function saveDraft() {
+  const productId = document.getElementById('productSelect').value;
+  const rating = document.getElementById('ratingValue').value;
+  const body = document.getElementById('reviewBody').value;
+  
+  if (productId && (rating || body)) {
+    const draft = {
+      productId,
+      rating,
+      body,
+      timestamp: Date.now()
+    };
+    
+    localStorage.setItem(`review_draft_${productId}`, JSON.stringify(draft));
+    
+    const indicator = document.getElementById('autoSaveStatus');
+    indicator.textContent = '✓ Draft saved';
+    indicator.style.color = 'var(--success)';
+    
+    setTimeout(() => {
+      indicator.textContent = '';
+    }, 2000);
+  }
+}
+
+function loadDraft(productId) {
+  const draftKey = `review_draft_${productId}`;
+  const draft = localStorage.getItem(draftKey);
+  
+  if (draft) {
+    try {
+      const parsed = JSON.parse(draft);
+      
+      // Check if draft is less than 7 days old
+      const age = Date.now() - parsed.timestamp;
+      if (age < 7 * 24 * 60 * 60 * 1000) {
+        if (confirm('Found a saved draft for this product. Would you like to restore it?')) {
+          document.getElementById('ratingValue').value = parsed.rating;
+          document.getElementById('reviewBody').value = parsed.body;
+          
+          // Update star rating display
+          currentRating = parseInt(parsed.rating);
+          const stars = document.querySelectorAll('#starRating button');
+          stars.forEach((s, i) => {
+            s.classList.toggle('active', i < currentRating);
+          });
+          
+          showToast('Draft restored', 'info');
+        }
+      } else {
+        // Clean up old draft
+        localStorage.removeItem(draftKey);
+      }
+    } catch (e) {
+      console.error('Error loading draft:', e);
+    }
+  }
+}
+
+function clearDraft(productId) {
+  localStorage.removeItem(`review_draft_${productId}`);
+}
+
+// Setup auto-save
+const debouncedSaveDraft = debounce(saveDraft, 2000);
+
+// ==============================================
+// REVIEW TEMPLATES
+// ==============================================
+function useTemplate(type) {
+  const template = reviewTemplates[type];
+  if (!template) return;
+  
+  const textarea = document.getElementById('reviewBody');
+  
+  if (textarea.value && !confirm('This will replace your current text. Continue?')) {
+    return;
+  }
+  
+  textarea.value = template;
+  showToast('Template applied! Feel free to customize it.', 'info');
+}
+
+// ==============================================
+// BULK ACTIONS
+// ==============================================
+function toggleBulkMode() {
+  bulkModeActive = !bulkModeActive;
+  const checkboxes = document.querySelectorAll('.checkbox-review');
+  const bulkBar = document.getElementById('bulkActionsBar');
+  
+  if (bulkModeActive) {
+    checkboxes.forEach(cb => cb.style.display = 'block');
+    bulkBar.classList.add('show');
+  } else {
+    checkboxes.forEach(cb => {
+      cb.style.display = 'none';
+      cb.checked = false;
+    });
+    bulkBar.classList.remove('show');
+    selectedReviewIds.clear();
+    updateSelectedCount();
+  }
+}
+
+function toggleSelectAll(checked) {
+  const checkboxes = document.querySelectorAll('.checkbox-review');
+  checkboxes.forEach(cb => {
+    cb.checked = checked;
+    const reviewId = cb.dataset.reviewId;
+    if (checked) {
+      selectedReviewIds.add(reviewId);
+    } else {
+      selectedReviewIds.delete(reviewId);
+    }
+  });
+  updateSelectedCount();
+}
+
+function toggleReviewSelection(reviewId, checked) {
+  if (checked) {
+    selectedReviewIds.add(reviewId);
+  } else {
+    selectedReviewIds.delete(reviewId);
+    document.getElementById('selectAll').checked = false;
+  }
+  updateSelectedCount();
+}
+
+function updateSelectedCount() {
+  document.getElementById('selectedCount').textContent = `${selectedReviewIds.size} selected`;
+}
+
+function clearSelection() {
+  toggleBulkMode();
+}
+
+async function bulkDelete() {
+  if (selectedReviewIds.size === 0) {
+    showToast('No reviews selected', 'error');
+    return;
+  }
+
+  if (!confirm(`Delete ${selectedReviewIds.size} review(s)? This cannot be undone.`)) {
+    return;
+  }
+
+  showLoading(true, 'Deleting reviews...');
+
+  try {
+    const token = localStorage.getItem('token');
+    const deletePromises = Array.from(selectedReviewIds).map(reviewId =>
+      fetch(`${API_BASE_URL}/reviews/${reviewId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(async res => {
+        const json = await res.json().catch(() => ({}));
+        return { ok: res.ok, status: res.status, body: json, reviewId };
+      }).catch(err => ({ ok: false, error: err, reviewId }))
+    );
+
+    const results = await Promise.allSettled(deletePromises);
+
+    let successful = 0;
+    const failed = [];
+
+    results.forEach(r => {
+      if (r.status === 'fulfilled' && r.value && r.value.ok && r.value.body && r.value.body.status === 'success') {
+        successful += 1;
+      } else if (r.status === 'fulfilled') {
+        failed.push(r.value);
+      } else {
+        failed.push(r.reason);
+      }
+    });
+
+    if (successful > 0) {
+      showToast(`${successful} review(s) deleted successfully`, 'success');
+    }
+    if (failed.length > 0) {
+      console.error('Bulk delete failures:', failed);
+      showToast(`${failed.length} deletion(s) failed`, 'error');
+    }
+
+    // Clear selection and refresh data
+    selectedReviewIds.clear();
+    if (bulkModeActive) toggleBulkMode();
+    await loadMyReviews();
+    await loadPurchasedProducts();
+  } catch (error) {
+    console.error('Error bulk deleting:', error);
+    showToast('Failed to delete some reviews', 'error');
+  } finally {
+    showLoading(false);
+  }
+}
+
+// ==============================================
+// EVENT LISTENERS & INITIALIZATION
+// ==============================================
+document.addEventListener('DOMContentLoaded', () => {
+  loadMyReviews();
+  loadPurchasedProducts();
+  initializeStarRating();
+
+  document.getElementById('sortBy').addEventListener('change', renderReviews);
+  document.getElementById('filterStar').addEventListener('change', renderReviews);
+  
+  const debouncedSearch = debounce(renderReviews, 300);
+  document.getElementById('searchQuery').addEventListener('input', debouncedSearch);
+
+  document.getElementById('clearFilters').addEventListener('click', () => {
+    document.getElementById('sortBy').value = 'newest';
+    document.getElementById('filterStar').value = '';
+    document.getElementById('searchQuery').value = '';
+    renderReviews();
+  });
+
+  document.getElementById('mediaInput').addEventListener('change', handleFileSelect);
+
+  document.getElementById('reviewModal').addEventListener('click', (e) => {
+    if (e.target.id === 'reviewModal') {
+      closeReviewModal();
+    }
+  });
+});
+
+// ==============================================
+// EXPORT FUNCTIONALITY
+// ==============================================
+function toggleExportMenu() {
+  const dropdown = document.getElementById('exportDropdown');
+  dropdown.classList.toggle('show');
+}
+
+// Close export menu when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.export-menu')) {
+    document.getElementById('exportDropdown').classList.remove('show');
+  }
+});
+
+function exportReviews(format) {
+  if (allReviews.length === 0) {
+    showToast('No reviews to export', 'error');
+    return;
+  }
+  
+  const exportData = allReviews.map(r => ({
+    product: r.productName || 'Unknown',
+    rating: r.rating,
+    review: r.body,
+    date: new Date(r.createdAt).toLocaleDateString(),
+    helpful_votes: r.helpfulCount || 0,
+    verified: r.verifiedPurchase ? 'Yes' : 'No'
+  }));
+  
+  if (format === 'csv') {
+    const csv = Papa.unparse(exportData);
+    downloadFile(csv, 'my-reviews.csv', 'text/csv');
+    showToast('Reviews exported as CSV', 'success');
+  } else if (format === 'json') {
+    const json = JSON.stringify(exportData, null, 2);
+    downloadFile(json, 'my-reviews.json', 'application/json');
+    showToast('Reviews exported as JSON', 'success');
+  }
+  
+  document.getElementById('exportDropdown').classList.remove('show');
+}
+
+function downloadFile(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ==============================================
+// ANALYTICS & BADGES
+// ==============================================
+function updateAnalytics() {
+  const total = allReviews.length;
+  const avg = total > 0 ? (allReviews.reduce((sum, r) => sum + r.rating, 0) / total).toFixed(1) : 0;
+  const totalHelpful = allReviews.reduce((sum, r) => sum + (r.helpfulCount || 0), 0);
+  const totalViews = allReviews.reduce((sum, r) => sum + (r.viewCount || 0), 0);
+  
+  document.getElementById('avgRating').textContent = avg;
+  document.getElementById('totalReviews').textContent = total;
+  document.getElementById('totalHelpful').textContent = totalHelpful;
+  document.getElementById('totalViews').textContent = totalViews;
+  
+  // Update badges
+  updateBadges(total, totalHelpful, allReviews);
+}
+
+function updateBadges(reviewCount, helpfulCount, reviews) {
+  const badges = [];
+  
+  if (reviewCount >= 50) {
+    badges.push({ icon: '🏆', text: 'Top Reviewer', color: '#fbbf24' });
+  } else if (reviewCount >= 25) {
+    badges.push({ icon: '⭐', text: 'Power Reviewer', color: '#f97316' });
+  } else if (reviewCount >= 10) {
+    badges.push({ icon: '✍️', text: '10+ Reviews', color: '#3b82f6' });
+  } else if (reviewCount >= 5) {
+    badges.push({ icon: '📝', text: '5+ Reviews', color: '#8b5cf6' });
+  }
+  
+  if (helpfulCount >= 50) {
+    badges.push({ icon: '💬', text: 'Helpful Reviewer', color: '#10b981' });
+  }
+  
+  const mediaReviews = reviews.filter(r => r.media && r.media.length > 0).length;
+  if (mediaReviews >= 5) {
+    badges.push({ icon: '📸', text: 'Media Master', color: '#ec4899' });
+  }
+  
+  const highRatingReviews = reviews.filter(r => r.rating >= 4).length;
+  if (highRatingReviews >= 10) {
+    badges.push({ icon: '😊', text: 'Positive Vibes', color: '#14b8a6' });
+  }
+  
+  const badgesList = document.getElementById('badgesList');
+  if (badges.length === 0) {
+    badgesList.innerHTML = '<p class="small muted">Write more reviews to earn badges!</p>';
+  } else {
+    badgesList.innerHTML = badges.map(b => 
+      `<span class="badge-achievement" style="background:${b.color}20;color:${b.color}">${b.icon} ${b.text}</span>`
+    ).join('');
+  }
+}
+
+// ==============================================
+// PENDING REVIEWS ALERT
+// ==============================================
+function updatePendingAlert() {
+  const pendingProducts = purchasedProducts.filter(p => !p.alreadyReviewed);
+  
+  if (pendingProducts.length > 0) {
+    document.getElementById('pendingCount').textContent = pendingProducts.length;
+    document.getElementById('pendingAlert').style.display = 'flex';
+  } else {
+    document.getElementById('pendingAlert').style.display = 'none';
+  }
+}
+
+function showPendingProducts() {
+  // Open modal and pre-select first pending product
+  const pendingProducts = purchasedProducts.filter(p => !p.alreadyReviewed);
+  if (pendingProducts.length > 0) {
+    showWriteReviewForm();
+    document.getElementById('productSelect').value = pendingProducts[0].id;
+  }
+}
+
+// ==============================================
+// INLINE EDIT MODE
+// ==============================================
+function enableInlineEdit(reviewId) {
+  const review = allReviews.find(r => r.id === reviewId);
+  if (!review) return;
+  
+  const reviewEl = document.querySelector(`[data-review-id="${reviewId}"]`);
+  if (!reviewEl) return;
+  
+  reviewEl.classList.add('editing');
+  
+  const contentDiv = reviewEl.querySelector('.review-content');
+  const originalText = review.body;
+  
+  contentDiv.innerHTML = `
+    <div class="inline-edit-form">
+      <div class="star-input" id="inline-star-${reviewId}">
+        ${[1,2,3,4,5].map(i => `<button type="button" data-rating="${i}" class="${i <= review.rating ? 'active' : ''}" onclick="updateInlineStars('${reviewId}', ${i})">★</button>`).join('')}
+      </div>
+      <textarea id="inline-text-${reviewId}" style="width:100%;min-height:80px;margin:8px 0">${escapeHtml(originalText)}</textarea>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-success" onclick="saveInlineEdit('${reviewId}')">
+          <i class="fas fa-save"></i> Save
+        </button>
+        <button class="btn ghost" onclick="cancelInlineEdit('${reviewId}', \`${escapeHtml(originalText)}\`)">
+          Cancel
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function updateInlineStars(reviewId, rating) {
+  const stars = document.querySelectorAll(`#inline-star-${reviewId} button`);
+  stars.forEach((s, i) => {
+    s.classList.toggle('active', i < rating);
+  });
+}
+
+async function saveInlineEdit(reviewId) {
+  const textarea = document.getElementById(`inline-text-${reviewId}`);
+  const stars = document.querySelectorAll(`#inline-star-${reviewId} button.active`);
+  const newRating = stars.length;
+  const newText = textarea.value.trim();
+  
+  if (!newText || newText.length < 4 || newText.length > 1200) {
+    showToast('Review must be 4-1200 characters', 'error');
+    return;
+  }
+  
+  if (!newRating) {
+    showToast('Please select a rating', 'error');
+    return;
+  }
+  
+  showLoading(true, 'Saving...');
+  
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        rating: newRating,
+        body: newText
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok && data.status === 'success') {
+      showToast('Review updated successfully!', 'success');
+      await loadMyReviews();
+    } else {
+      throw new Error(data.message || 'Failed to update review');
+    }
+  } catch (error) {
+    console.error('Error updating review:', error);
+    showToast(error.message || 'Failed to update review', 'error');
+  } finally {
+    showLoading(false);
+  }
+}
+
+function cancelInlineEdit(reviewId, originalText) {
+  renderReviews();
+}
+
+// ==============================================
 // LOAD REVIEWS
 // ==============================================
 async function loadMyReviews() {
@@ -785,7 +1411,7 @@ async function loadMyReviews() {
     if (response.ok && data.status === 'success') {
       allReviews = data.data.reviews;
       renderReviews();
-      updateSummary();
+      updateAnalytics();
     } else {
       throw new Error(data.message || 'Failed to load reviews');
     }
@@ -814,8 +1440,10 @@ async function loadPurchasedProducts() {
     if (response.ok && data.status === 'success') {
       purchasedProducts = data.data.products;
       populateProductSelect();
-      if (typeof populateDropProductSelect === 'function') populateDropProductSelect();
-      if (typeof setupDropReviewButton === 'function') setupDropReviewButton();
+      populateDropProductSelect();
+      setupDropReviewButton();
+      updatePendingAlert();
+      if (typeof processQueryParamsForReview === 'function') processQueryParamsForReview();
     } else {
       throw new Error(data.message || 'Failed to load products');
     }
@@ -840,7 +1468,6 @@ function populateProductSelect() {
     option.textContent = product.name;
     option.dataset.orderId = product.orderId;
     
-    // Disable if already reviewed
     if (product.alreadyReviewed) {
       option.textContent += ' (Already reviewed)';
       option.disabled = true;
@@ -850,12 +1477,10 @@ function populateProductSelect() {
   });
 }
 
-// Populate the drop-down used in the "Write New Review" card
 function populateDropProductSelect() {
   const select = document.getElementById('dropProductSelect');
   if (!select) return;
 
-  // Filter to recently delivered products that are not yet reviewed
   const candidates = purchasedProducts.filter(p => !p.alreadyReviewed).slice(0,5);
 
   if (candidates.length === 0) {
@@ -873,7 +1498,6 @@ function populateDropProductSelect() {
   });
 }
 
-// Hook up the Drop Review button
 function setupDropReviewButton() {
   const btn = document.getElementById('dropReviewBtn');
   if (!btn) return;
@@ -893,13 +1517,57 @@ function setupDropReviewButton() {
       return;
     }
 
-    // Open review modal and pass orderId so backend ties review to delivered order
-    if (typeof openProductReviewModal === 'function') {
-      openProductReviewModal({ id: product.id, name: product.name }, { orderId: product.orderId });
-    } else {
-      alert('Review modal not available');
-    }
+    showWriteReviewForm();
+    document.getElementById('productSelect').value = product.id;
+    
+    // Load draft if exists
+    setTimeout(() => loadDraft(product.id), 100);
   });
+}
+
+// If the page was opened with ?product=...&order=... (e.g., from Purchase History), pre-select and open the review flow
+function processQueryParamsForReview() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const productParam = params.get('product');
+    const orderParam = params.get('order');
+    if (!productParam && !orderParam) return;
+
+    // If an order is specified, open the review modal for that product/order immediately
+    if (productParam && orderParam) {
+      const productSelect = document.getElementById('productSelect');
+      const option = productSelect ? productSelect.querySelector(`option[value="${productParam}"]`) : null;
+      if (option) {
+        option.dataset.orderId = orderParam;
+        productSelect.value = productParam;
+      }
+
+      showWriteReviewForm();
+      setTimeout(() => loadDraft(productParam), 120);
+      return;
+    }
+
+    // If only product is supplied, try to pre-select it in the Drop Review selector if present
+    if (productParam) {
+      const dropSelect = document.getElementById('dropProductSelect');
+      const dropOption = dropSelect ? Array.from(dropSelect.options).find(o => o.value === productParam) : null;
+      if (dropOption) {
+        dropSelect.value = productParam;
+        dropSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        showToast('Product selected — click "Drop a Review" to leave your review', 'info');
+        return;
+      }
+
+      const productSelect = document.getElementById('productSelect');
+      const option = productSelect ? productSelect.querySelector(`option[value="${productParam}"]`) : null;
+      if (option) {
+        productSelect.value = productParam;
+        showToast('This product is pre-selected. To submit a review, open Purchase History and click "Drop Review" for the delivered order.', 'info');
+      }
+    }
+  } catch (e) {
+    console.error('Error processing review query params:', e);
+  }
 }
 
 // ==============================================
@@ -913,12 +1581,10 @@ function renderReviews() {
 
   let filtered = allReviews.slice();
 
-  // Filter by rating
   if (filterStar) {
     filtered = filtered.filter(r => r.rating == filterStar);
   }
 
-  // Filter by search query
   if (query) {
     filtered = filtered.filter(r => 
       (r.body || '').toLowerCase().includes(query) ||
@@ -926,7 +1592,6 @@ function renderReviews() {
     );
   }
 
-  // Sort
   if (sortBy === 'newest') {
     filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   } else if (sortBy === 'oldest') {
@@ -938,7 +1603,7 @@ function renderReviews() {
   }
 
   if (filtered.length === 0) {
-    container.innerHTML = '<div class="empty-state"><i class="fas fa-star" style="font-size:48px;color:#ddd;"></i><p>No reviews found. Try adjusting your filters or write your first review!</p></div>';
+    container.innerHTML = '<div class="empty-state"><i class="fas fa-star" style="font-size:48px;color:#ddd;"></i><p>No reviews yet. Share your experience with products you\'ve purchased! 🌟</p></div>';
     return;
   }
 
@@ -947,11 +1612,11 @@ function renderReviews() {
   filtered.forEach(review => {
     const div = document.createElement('div');
     div.className = 'review';
+    div.dataset.reviewId = review.id;
     
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const initial = (user.firstName || 'U')[0].toUpperCase();
 
-    // Build media HTML
     let mediaHtml = '';
     if (review.media && review.media.length > 0) {
       mediaHtml = '<div class="review-media">';
@@ -965,7 +1630,6 @@ function renderReviews() {
       mediaHtml += '</div>';
     }
 
-    // Build replies HTML
     let repliesHtml = '';
     if (review.replies && review.replies.length > 0) {
       review.replies.forEach(reply => {
@@ -973,13 +1637,16 @@ function renderReviews() {
       });
     }
 
-    // Status badges
     let statusBadge = '';
     if (review.status === 'flagged') {
       statusBadge = '<span class="badge badge-warning"><i class="fas fa-flag"></i> Flagged</span>';
     }
 
+    const checkboxDisplay = bulkModeActive ? 'block' : 'none';
+
     div.innerHTML = `
+      <input type="checkbox" class="checkbox-review" data-review-id="${review.id}" 
+             style="display:${checkboxDisplay}" onchange="toggleReviewSelection('${review.id}', this.checked)">
       <div class="avatar">${initial}</div>
       <div style="flex:1">
         <div style="display:flex;justify-content:space-between;align-items:start">
@@ -994,11 +1661,12 @@ function renderReviews() {
             <span class="small muted"><i class="fas fa-thumbs-up"></i> ${review.helpfulCount || 0}</span>
           </div>
         </div>
-        <div style="margin-top:8px">${escapeHtml(review.body)}</div>
+        <div class="review-content" style="margin-top:8px">${escapeHtml(review.body)}</div>
         ${mediaHtml}
         ${repliesHtml}
         <div style="margin-top:10px">
-          <button class="btn ghost" onclick="editReview('${review.id}')"><i class="fas fa-edit"></i> Edit</button>
+          <button class="btn ghost" onclick="enableInlineEdit('${review.id}')"><i class="fas fa-edit"></i> Quick Edit</button>
+          <button class="btn ghost" onclick="editReview('${review.id}')"><i class="fas fa-pen"></i> Full Edit</button>
           <button class="btn ghost" onclick="deleteReview('${review.id}')"><i class="fas fa-trash"></i> Delete</button>
         </div>
       </div>
@@ -1006,17 +1674,6 @@ function renderReviews() {
 
     container.appendChild(div);
   });
-}
-
-// ==============================================
-// UPDATE SUMMARY
-// ==============================================
-function updateSummary() {
-  const total = allReviews.length;
-  const avg = total > 0 ? (allReviews.reduce((sum, r) => sum + r.rating, 0) / total).toFixed(1) : 0;
-
-  document.getElementById('avgRating').textContent = avg;
-  document.getElementById('totalReviews').textContent = `${total} review${total !== 1 ? 's' : ''}`;
 }
 
 // ==============================================
@@ -1057,21 +1714,17 @@ function initializeStarRating() {
 function handleFileSelect(event) {
   const files = Array.from(event.target.files);
   
-  // Validate file count
   if (selectedFiles.length + files.length > 5) {
     showToast('Maximum 5 files allowed', 'error');
     return;
   }
 
-  // Validate each file
   for (const file of files) {
-    // Check file size (10MB max)
     if (file.size > 10 * 1024 * 1024) {
       showToast(`${file.name} exceeds 10MB limit`, 'error');
       continue;
     }
 
-    // Check file type
     if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
       showToast(`${file.name} is not a valid image or video`, 'error');
       continue;
@@ -1081,7 +1734,7 @@ function handleFileSelect(event) {
   }
 
   updateMediaPreview();
-  event.target.value = ''; // Reset input
+  event.target.value = '';
 }
 
 function updateMediaPreview() {
@@ -1129,16 +1782,31 @@ function showWriteReviewForm() {
   document.getElementById('reviewForm').reset();
   document.getElementById('ratingValue').value = '';
   document.getElementById('mediaPreview').innerHTML = '';
+  document.getElementById('autoSaveStatus').textContent = '';
   
-  // Reset star rating
   document.querySelectorAll('#starRating button').forEach(s => s.classList.remove('active'));
   
-  // Load products if not already loaded
   if (purchasedProducts.length === 0) {
     loadPurchasedProducts();
   }
   
   document.getElementById('reviewModal').classList.add('show');
+  
+  // Setup auto-save for new review
+  const textarea = document.getElementById('reviewBody');
+  textarea.removeEventListener('input', debouncedSaveDraft);
+  textarea.addEventListener('input', debouncedSaveDraft);
+  
+  const productSelect = document.getElementById('productSelect');
+  productSelect.removeEventListener('change', handleProductChange);
+  productSelect.addEventListener('change', handleProductChange);
+}
+
+function handleProductChange() {
+  const productId = document.getElementById('productSelect').value;
+  if (productId) {
+    loadDraft(productId);
+  }
 }
 
 function closeReviewModal() {
@@ -1166,12 +1834,6 @@ function closeZoom() {
   document.getElementById('zoomContent').innerHTML = '';
 }
 
-function closeReportModal() {
-  document.getElementById('reportModal').classList.remove('show');
-  document.getElementById('reportForm').reset();
-  currentReportingReviewId = null;
-}
-
 // ==============================================
 // EDIT REVIEW
 // ==============================================
@@ -1184,14 +1846,13 @@ async function editReview(reviewId) {
 
   currentEditingId = reviewId;
   currentRating = review.rating;
-  selectedFiles = []; // Note: Can't pre-populate files from URLs
+  selectedFiles = [];
 
   document.getElementById('modalTitle').textContent = 'Edit Review';
   document.getElementById('productSelect').value = review.productId;
   document.getElementById('reviewBody').value = review.body;
   document.getElementById('ratingValue').value = review.rating;
 
-  // Set star rating
   const stars = document.querySelectorAll('#starRating button');
   stars.forEach((s, i) => {
     s.classList.toggle('active', i < currentRating);
@@ -1210,7 +1871,6 @@ async function submitReview(event) {
   const rating = parseInt(document.getElementById('ratingValue').value);
   const body = document.getElementById('reviewBody').value.trim();
 
-  // Validation
   if (!productId) {
     showToast('Please select a product', 'error');
     return;
@@ -1238,9 +1898,8 @@ async function submitReview(event) {
   try {
     const token = localStorage.getItem('token');
     
-    // Convert files to base64 if present
     const mediaArray = [];
-    for (const file of selectedFiles.slice(0, 3)) { // Max 3 files
+    for (const file of selectedFiles.slice(0, 3)) {
       const base64 = await fileToBase64(file);
       mediaArray.push({
         type: file.type,
@@ -1248,7 +1907,6 @@ async function submitReview(event) {
       });
     }
 
-    // Find the order ID for this product
     const selectedOption = document.querySelector(`#productSelect option[value="${productId}"]`);
     const orderId = selectedOption ? selectedOption.dataset.orderId : null;
 
@@ -1267,11 +1925,10 @@ async function submitReview(event) {
     if (currentEditingId) {
       url = `${API_BASE_URL}/reviews/${currentEditingId}`;
       method = 'PUT';
-      // For update, only send fields that can be updated
       delete payload.review_type;
       delete payload.product_id;
       delete payload.order_id;
-      delete payload.media; // Media can't be updated
+      delete payload.media;
     }
 
     const response = await fetch(url, {
@@ -1287,8 +1944,15 @@ async function submitReview(event) {
 
     if (response.ok && data.status === 'success') {
       showToast(currentEditingId ? 'Review updated successfully!' : 'Review submitted successfully!', 'success');
+      
+      // Clear draft after successful submission
+      if (!currentEditingId) {
+        clearDraft(productId);
+      }
+      
       closeReviewModal();
       await loadMyReviews();
+      await loadPurchasedProducts(); // Refresh to update "already reviewed" status
     } else {
       throw new Error(data.message || 'Failed to submit review');
     }
@@ -1301,7 +1965,6 @@ async function submitReview(event) {
   }
 }
 
-// Helper function to convert file to base64
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -1330,11 +1993,12 @@ async function deleteReview(reviewId) {
       }
     });
 
-    const data = await response.json();
+    const data = await response.json().catch(() => ({}));
 
     if (response.ok && data.status === 'success') {
       showToast('Review deleted successfully', 'success');
       await loadMyReviews();
+      await loadPurchasedProducts();
     } else {
       throw new Error(data.message || 'Failed to delete review');
     }
@@ -1346,86 +2010,6 @@ async function deleteReview(reviewId) {
   }
 }
 
-// ==============================================
-// REPORT REVIEW
-// ==============================================
-async function submitReport(event) {
-  event.preventDefault();
-
-  const reason = document.querySelector('input[name="reason"]:checked')?.value;
-  const details = document.getElementById('reportDetails').value.trim();
-
-  if (!reason) {
-    showToast('Please select a reason', 'error');
-    return;
-  }
-
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE_URL}/reviews/${currentReportingReviewId}/report`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ reason, details })
-    });
-
-    const data = await response.json();
-
-    if (response.ok && data.status === 'success') {
-      showToast('Report submitted successfully. Our team will review it shortly.', 'success');
-      closeReportModal();
-    } else {
-      throw new Error(data.message || 'Failed to submit report');
-    }
-  } catch (error) {
-    console.error('Error submitting report:', error);
-    showToast(error.message || 'Failed to submit report', 'error');
-  }
-}
-
-// ==============================================
-// EVENT LISTENERS & INITIALIZATION
-// ==============================================
-document.addEventListener('DOMContentLoaded', () => {
-  // Initialize
-  loadMyReviews();
-  loadPurchasedProducts();
-  initializeStarRating();
-
-  // Sort/Filter controls
-  document.getElementById('sortBy').addEventListener('change', renderReviews);
-  document.getElementById('filterStar').addEventListener('change', renderReviews);
-  
-  // Search with debounce
-  const debouncedSearch = debounce(renderReviews, 300);
-  document.getElementById('searchQuery').addEventListener('input', debouncedSearch);
-
-  // Clear filters
-  document.getElementById('clearFilters').addEventListener('click', () => {
-    document.getElementById('sortBy').value = 'newest';
-    document.getElementById('filterStar').value = '';
-    document.getElementById('searchQuery').value = '';
-    renderReviews();
-  });
-
-  // File input
-  document.getElementById('mediaInput').addEventListener('change', handleFileSelect);
-
-  // Close modals on outside click
-  document.getElementById('reviewModal').addEventListener('click', (e) => {
-    if (e.target.id === 'reviewModal') {
-      closeReviewModal();
-    }
-  });
-
-  document.getElementById('reportModal').addEventListener('click', (e) => {
-    if (e.target.id === 'reportModal') {
-      closeReportModal();
-    }
-  });
-});
 </script>
 </body>
 </html>
