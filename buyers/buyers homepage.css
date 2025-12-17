@@ -416,6 +416,14 @@ body {
   justify-items: start;
 }
 
+/* Category products grid - same responsive layout but separate from best-selling filter */
+.category-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 22px;
+  justify-items: start;
+}
+
 .product-card {
   background: #f9f9f9;
   border-radius: 10px;
@@ -549,6 +557,7 @@ body {
 
 /* Responsive product grid: mobile 2 cols → tablet 3 → small-laptop 4 → laptop 5 */
 .best-selling-grid,
+.category-products-grid,
 .recommended-grid,
 .categories-container {
   grid-template-columns: repeat(2, 1fr);
@@ -556,6 +565,7 @@ body {
 
 @media (min-width: 640px) {
   .best-selling-grid,
+  .category-products-grid,
   .recommended-grid,
   .categories-container {
     grid-template-columns: repeat(3, 1fr);
@@ -564,6 +574,7 @@ body {
 
 @media (min-width: 992px) {
   .best-selling-grid,
+  .category-products-grid,
   .recommended-grid,
   .categories-container {
     grid-template-columns: repeat(4, 1fr);
@@ -572,6 +583,7 @@ body {
 
 @media (min-width: 1200px) {
   .best-selling-grid,
+  .category-products-grid,
   .recommended-grid,
   .categories-container {
     grid-template-columns: repeat(5, 1fr);
