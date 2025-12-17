@@ -424,7 +424,6 @@ body {
   text-align: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
-  max-width: 140px;
   display: flex;
   flex-direction: column;
 }
@@ -508,7 +507,6 @@ body {
   text-align: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
-  max-width: 140px;
   display: flex;
   flex-direction: column;
 }
@@ -546,6 +544,37 @@ body {
 
 .recommended-grid .product-card button:hover {
   background: #EA580C;
+}
+
+/* Responsive product grid: mobile 2 cols → tablet 3 → small-laptop 4 → laptop 5 */
+.best-selling-grid,
+.recommended-grid,
+.categories-container {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 640px) {
+  .best-selling-grid,
+  .recommended-grid,
+  .categories-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 992px) {
+  .best-selling-grid,
+  .recommended-grid,
+  .categories-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .best-selling-grid,
+  .recommended-grid,
+  .categories-container {
+    grid-template-columns: repeat(5, 1fr);
+  }
 }
 
 /* Recommended Item Cards (for API-generated content) */
