@@ -7,6 +7,10 @@ window.addEventListener('DOMContentLoaded', () => {
   let flashCountdownInterval = null;
   // Interval handle for the original demo countdown (kept for fallback)
   let demoCountdownInterval = null;
+  // Interval handle for periodic refresh that re-fetches flash products
+  let flashRefreshInterval = null;
+  // How often to re-fetch flash products (minutes)
+  const FLASH_REFRESH_MINUTES = 1; // default: 1 minute
 
   // Helper: format milliseconds into human-friendly countdown string
   function formatMsAsCountdown(ms) {
@@ -582,6 +586,15 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // Load products early
   loadFlashProducts();
+  // Periodically re-fetch flash products so the summed countdown stays in sync with DB
+  try {
+    if (flashRefreshInterval) clearInterval(flashRefreshInterval);
+    flashRefreshInterval = setInterval(() => {
+      loadFlashProducts();
+    }, FLASH_REFRESH_MINUTES * 60 * 1000);
+  } catch (e) {
+    console.warn('Failed to start flash refresh interval', e);
+  }
   loadBestSellingProducts();
   loadNewArrivalsProducts();
   loadRecommendedProducts();
@@ -636,6 +649,12 @@ window.addEventListener('DOMContentLoaded', () => {
   });
   window.addEventListener('focus', () => {
     syncCartFromStorage();
+  });
+  // Clear timers when leaving the page to avoid background intervals
+  window.addEventListener('beforeunload', () => {
+    if (flashCountdownInterval) clearInterval(flashCountdownInterval);
+    if (demoCountdownInterval) clearInterval(demoCountdownInterval);
+    if (flashRefreshInterval) clearInterval(flashRefreshInterval);
   });
   // Listen to storage events from other tabs/windows
   window.addEventListener('storage', (e) => {
