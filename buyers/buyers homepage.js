@@ -140,6 +140,44 @@ window.addEventListener('DOMContentLoaded', () => {
     fetchAndPopulateCategories();
   })();
 
+    // ===== QUICK LINKS LOADER FROM SUPABASE =====
+    (function() {
+      const quickLinksContainer = document.getElementById('quickLinksContainer');
+      if (!quickLinksContainer) return;
+
+      async function fetchAndPopulateQuickLinks() {
+        try {
+          const response = await fetch(`${CONFIG.API_BASE_URL}/categories`);
+          if (!response.ok) throw new Error('Failed to fetch categories');
+        
+          const result = await response.json();
+          const categories = result.data || [];
+
+          if (categories.length === 0) {
+            quickLinksContainer.innerHTML = '<div class="category-skeleton">No categories available</div>';
+            return;
+          }
+
+          // Generate quick link cards from categories
+          const quickLinkCards = categories.map(category => {
+            return `
+              <a href="buyers-category.html?id=${category.id}" class="link-card" title="${category.name}">
+                <img src="marketplace.png" alt="${category.name}">
+                <p>${category.name}</p>
+              </a>
+            `;
+          }).join('');
+
+          quickLinksContainer.innerHTML = quickLinkCards;
+        } catch (error) {
+          console.error('Error fetching quick links categories:', error);
+          quickLinksContainer.innerHTML = '<div class="category-skeleton">Unable to load categories</div>';
+        }
+      }
+
+      fetchAndPopulateQuickLinks();
+    })();
+
   // ===== DYNAMICALLY LOAD FILTER BUTTONS FROM SUPABASE =====
   (function() {
     const filterContainer = document.getElementById('bestSellingFilterContainer');
