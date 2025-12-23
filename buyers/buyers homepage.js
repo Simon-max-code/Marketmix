@@ -117,65 +117,66 @@ window.addEventListener('DOMContentLoaded', () => {
       const filterButtons = document.querySelectorAll('.filter-btn');
 
       filterButtons.forEach(btn => {
-      btn.addEventListener('click', async function() {
-        const rawCategory = this.dataset.category || '';
-        const category = normalizeCategoryRaw(rawCategory);
-        const section = this.dataset.section;
+        btn.addEventListener('click', async function() {
+          const rawCategory = this.dataset.category || '';
+          const category = normalizeCategoryRaw(rawCategory);
+          const section = this.dataset.section;
 
-        document.querySelectorAll(`.${section}-filter .filter-btn`).forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
+          document.querySelectorAll(`.${section}-filter .filter-btn`).forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
 
-        // If "All" is clicked, reload all best-selling products
-        if (category === 'all' && section === 'best-selling') {
-          loadBestSellingProducts();
-          return;
-        }
+          // If "All" is clicked, reload all best-selling products
+          if (category === 'all' && section === 'best-selling') {
+            loadBestSellingProducts();
+            return;
+          }
 
-        const products = document.querySelectorAll(`.${section}-grid .product-card`);
+          const products = document.querySelectorAll(`.${section}-grid .product-card`);
 
-        // Try to match existing products in the section first
-        const matched = Array.from(products).filter(product => {
-          const pcat = normalizeCategoryRaw(product.dataset.category || '');
-          return category === 'all' || pcat === category;
-        });
+          // Try to match existing products in the section first
+          const matched = Array.from(products).filter(product => {
+            const pcat = normalizeCategoryRaw(product.dataset.category || '');
+            return category === 'all' || pcat === category;
+          });
 
-        // If no existing products match and a specific category was selected,
-        // fetch more products from the API (larger limit) and render matches into the section.
-        if (matched.length === 0 && category !== 'all') {
-          try {
-            const base = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend-production.up.railway.app/api';
-            const resp = await fetch(`${base}/products?limit=200`);
-            if (resp.ok) {
-              const json = await resp.json();
-              const items = json.data || [];
-              const filtered = items.filter(it => normalizeCategoryRaw(it.category || it.category_name || '') === category);
-              const grid = document.querySelector(`.${section}-grid`);
-              if (grid) {
-                grid.innerHTML = filtered.length > 0 ? filtered.map(renderProductCard).join('') : '<div class="no-results" style="grid-column:1/-1; padding:20px; color:#334155;">No products in this category</div>';
-                attachProductCardListeners(grid);
-                attachCartListeners(); // Re-attach cart listeners
+          // If no existing products match and a specific category was selected,
+          // fetch more products from the API (larger limit) and render matches into the section.
+          if (matched.length === 0 && category !== 'all') {
+            try {
+              const base = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend-production.up.railway.app/api';
+              const resp = await fetch(`${base}/products?limit=200`);
+              if (resp.ok) {
+                const json = await resp.json();
+                const items = json.data || [];
+                const filtered = items.filter(it => normalizeCategoryRaw(it.category || it.category_name || '') === category);
+                const grid = document.querySelector(`.${section}-grid`);
+                if (grid) {
+                  grid.innerHTML = filtered.length > 0 ? filtered.map(renderProductCard).join('') : '<div class="no-results" style="grid-column:1/-1; padding:20px; color:#334155;">No products in this category</div>';
+                  attachProductCardListeners(grid);
+                  attachCartListeners(); // Re-attach cart listeners
+                }
+              } else {
+                console.warn('Buyers homepage: failed to fetch products for category filter', resp.status);
               }
-            } else {
-              console.warn('Buyers homepage: failed to fetch products for category filter', resp.status);
+            } catch (err) {
+              console.error('Buyers homepage: error fetching category products', err);
             }
-          } catch (err) {
-            console.error('Buyers homepage: error fetching category products', err);
+
+            return;
           }
 
-          return;
-        }
-
-        // Otherwise show/hide existing DOM products
-        products.forEach(product => {
-          const productCategory = normalizeCategoryRaw(product.dataset.category || '');
-          const shouldShow = category === 'all' || productCategory === category;
-          if (shouldShow) {
-            product.style.display = '';
-            product.style.visibility = 'visible';
-          } else {
-            product.style.display = 'none';
-            product.style.visibility = 'hidden';
-          }
+          // Otherwise show/hide existing DOM products
+          products.forEach(product => {
+            const productCategory = normalizeCategoryRaw(product.dataset.category || '');
+            const shouldShow = category === 'all' || productCategory === category;
+            if (shouldShow) {
+              product.style.display = '';
+              product.style.visibility = 'visible';
+            } else {
+              product.style.display = 'none';
+              product.style.visibility = 'hidden';
+            }
+          });
         });
       });
     }
