@@ -27,9 +27,14 @@ window.addEventListener('DOMContentLoaded', () => {
           document.querySelectorAll(`.${section}-filter .filter-btn`).forEach(b => b.classList.remove('active'));
           this.classList.add('active');
 
-          // If "All" is clicked, reload all best-selling products
+          // If "All" is clicked, reload all products for the section
           if (category === 'all' && section === 'best-selling') {
             loadBestSellingProducts();
+            return;
+          }
+
+          if (category === 'all' && section === 'new-arrivals') {
+            loadNewArrivalsProducts();
             return;
           }
 
