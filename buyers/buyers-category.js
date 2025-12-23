@@ -227,65 +227,19 @@ document.addEventListener('DOMContentLoaded', function() {
   // Load best-selling on page load
   loadBestSellingProducts();
 
-  // ===== DYNAMICALLY LOAD FILTER BUTTONS FROM SUPABASE =====
-  (function() {
-    const filterContainer = document.getElementById('bestSellingFilterContainer');
-    if (!filterContainer) return;
+  // ===== HELPER FUNCTION FOR CATEGORY NORMALIZATION =====
+  function normalizeCategoryRaw(input) {
+    if (!input) return '';
+    return String(input)
+      .toLowerCase()
+      .replace(/&nbsp;/g, ' ')
+      .replace(/\s*&\s*/g, ' & ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
 
-    async function fetchAndPopulateFilterButtons() {
-      try {
-        const response = await fetch(`${CONFIG.API_BASE_URL}/categories`);
-        if (!response.ok) throw new Error('Failed to fetch categories');
-        
-        const result = await response.json();
-        const categories = result.data || [];
-
-        if (categories.length === 0) {
-          // Keep only "All" button if no categories
-          return;
-        }
-
-        // Generate filter buttons from categories
-        const categoryButtons = categories.map(category => {
-          return `<button class="filter-btn" data-category="${category.name.toLowerCase()}" data-section="best-selling">${category.name}</button>`;
-        }).join('');
-
-        // Append new buttons after the "All" button
-        const allButton = filterContainer.querySelector('[data-category="all"]');
-        if (allButton && allButton.nextSibling) {
-          // Insert after the "All" button
-          allButton.insertAdjacentHTML('afterend', categoryButtons);
-        } else if (allButton) {
-          // If "All" is the last element, append
-          allButton.insertAdjacentHTML('afterend', categoryButtons);
-        }
-
-        // Re-attach filter button listeners to include new buttons
-        attachFilterButtonListeners();
-      } catch (error) {
-        console.error('Error fetching categories for filter buttons:', error);
-      }
-    }
-
-    fetchAndPopulateFilterButtons();
-  })();
-
-  // ===== FILTER BUTTONS FOR BEST-SELLING =====
-  (function() {
-    function normalizeCategoryRaw(input) {
-      if (!input) return '';
-      return String(input)
-        .toLowerCase()
-        .replace(/&nbsp;/g, ' ')
-        .replace(/\s*&\s*/g, ' & ')
-        .replace(/\s+/g, ' ')
-        .trim();
-    }
-
-    // Initialize filter button listeners on load
-    attachFilterButtonListeners();
-
-    function attachFilterButtonListeners() {
+  // ===== ATTACH FILTER BUTTON LISTENERS (defined early so it can be called later) =====
+  function attachFilterButtonListeners() {
       const filterButtons = document.querySelectorAll('.filter-btn');
 
       filterButtons.forEach(btn => {
@@ -352,5 +306,48 @@ document.addEventListener('DOMContentLoaded', function() {
           });
         });
       });
-    }  })();
+    }
+
+  // ===== DYNAMICALLY LOAD FILTER BUTTONS FROM SUPABASE =====
+  (function() {
+    const filterContainer = document.getElementById('bestSellingFilterContainer');
+    if (!filterContainer) return;
+
+    async function fetchAndPopulateFilterButtons() {
+      try {
+        const response = await fetch(`${CONFIG.API_BASE_URL}/categories`);
+        if (!response.ok) throw new Error('Failed to fetch categories');
+        
+        const result = await response.json();
+        const categories = result.data || [];
+
+        if (categories.length === 0) {
+          // Keep only "All" button if no categories
+          return;
+        }
+
+        // Generate filter buttons from categories
+        const categoryButtons = categories.map(category => {
+          return `<button class="filter-btn" data-category="${category.name.toLowerCase()}" data-section="best-selling">${category.name}</button>`;
+        }).join('');
+
+        // Append new buttons after the "All" button
+        const allButton = filterContainer.querySelector('[data-category="all"]');
+        if (allButton && allButton.nextSibling) {
+          // Insert after the "All" button
+          allButton.insertAdjacentHTML('afterend', categoryButtons);
+        } else if (allButton) {
+          // If "All" is the last element, append
+          allButton.insertAdjacentHTML('afterend', categoryButtons);
+        }
+
+        // Re-attach filter button listeners to include new buttons
+        attachFilterButtonListeners();
+      } catch (error) {
+        console.error('Error fetching categories for filter buttons:', error);
+      }
+    }
+
+    fetchAndPopulateFilterButtons();
+  })();
 });
