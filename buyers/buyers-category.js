@@ -352,4 +352,5 @@ document.addEventListener('DOMContentLoaded', function() {
           });
         });
       });
-    }
+    }  })();
+});
