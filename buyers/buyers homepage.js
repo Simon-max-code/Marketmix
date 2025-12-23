@@ -308,13 +308,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function attachProductCardListeners(container) {
     if (!container) return;
-    // Attach click listeners to both regular product cards and flash sale cards
-    container.querySelectorAll('.product-card, .flash-card').forEach((card) => {
+    // Attach click listeners to product cards, flash cards and recommended items
+    container.querySelectorAll('.product-card, .flash-card, .recommended-item').forEach((card) => {
       const productId = card.getAttribute('data-product-id');
       card.style.cursor = 'pointer';
       
       card.addEventListener('click', (e) => {
         if (e.target.closest('.add-to-cart')) return;
+        if (!productId) return;
         window.location.href = `product.html?id=${productId}`;
       });
     });
@@ -453,6 +454,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
       // Re-attach event listeners to new buttons
       attachCartListeners();
+      // Ensure recommended items open product pages like other cards
+      attachProductCardListeners(container);
       // Ensure clicking a flash card opens the product page like regular cards
       attachProductCardListeners(container);
     } catch (error) {
