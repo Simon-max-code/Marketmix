@@ -537,6 +537,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
       // Re-attach event listeners to new buttons
       attachCartListeners();
+      // Ensure recommended items open their product pages like other cards
+      attachProductCardListeners(container);
     } catch (error) {
       console.error('Error loading recommended products:', error);
       const container = document.querySelector('.recommended-grid');
