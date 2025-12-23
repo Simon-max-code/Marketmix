@@ -3,6 +3,23 @@
 // Wrap initialization in DOMContentLoaded to avoid null element errors
 window.addEventListener('DOMContentLoaded', () => {
 
+  // Interval handle for the flash sale summed countdown
+  let flashCountdownInterval = null;
+
+  // Helper: format milliseconds into human-friendly countdown string
+  function formatMsAsCountdown(ms) {
+    if (ms <= 0) return '00:00:00';
+    const totalSeconds = Math.floor(ms / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const two = (n) => String(n).padStart(2, '0');
+    if (days > 0) {
+      return `${days}d ${two(hours)}:${two(minutes)}:${two(seconds)}`;
+    }
+    return `${two(hours)}:${two(minutes)}:${two(seconds)}`;
+  }
   // ===== HELPER FUNCTION FOR CATEGORY NORMALIZATION =====
   function normalizeCategoryRaw(input) {
     if (!input) return '';
@@ -363,6 +380,49 @@ window.addEventListener('DOMContentLoaded', () => {
         const sb = Date.parse(b.flash_start) || 0;
         return sa - sb;
       });
+
+      // --- Start a summed countdown showing total remaining time for all flash items ---
+      try {
+        const countdownEl = document.getElementById('countdown');
+        // Clear any previous interval
+        if (flashCountdownInterval) {
+          clearInterval(flashCountdownInterval);
+          flashCountdownInterval = null;
+        }
+
+        // Sum remaining milliseconds for all active flash items
+        const totalRemainingMs = flashItems.reduce((sum, p) => {
+          try {
+            const end = Date.parse(p.flash_end);
+            const rem = Math.max(0, end - Date.now());
+            return sum + rem;
+          } catch (e) { return sum; }
+        }, 0);
+
+        if (countdownEl) {
+          if (totalRemainingMs <= 0) {
+            countdownEl.textContent = '';
+          } else {
+            let remaining = totalRemainingMs;
+            countdownEl.textContent = formatMsAsCountdown(remaining);
+            flashCountdownInterval = setInterval(() => {
+              remaining -= 1000;
+              if (remaining <= 0) {
+                clearInterval(flashCountdownInterval);
+                flashCountdownInterval = null;
+                countdownEl.textContent = '';
+                // Optionally reload flash products when countdown finishes
+                // so the UI reflects expired items
+                loadFlashProducts();
+                return;
+              }
+              countdownEl.textContent = formatMsAsCountdown(remaining);
+            }, 1000);
+          }
+        }
+      } catch (err) {
+        console.warn('Flash countdown error', err);
+      }
 
       if (flashItems.length === 0) {
         container.innerHTML = '<p style="text-align:center; padding: 20px; color: #666;">No flash products currently running</p>';
