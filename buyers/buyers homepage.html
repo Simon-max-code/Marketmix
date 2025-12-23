@@ -161,15 +161,10 @@
    <!-- 🛒 Best-Selling Products Section -->
 <section class="best-selling">
   <h2>Best-Selling Products</h2>
-  <div class="filter-row best-selling-filter" role="tablist">
+  <div class="filter-row best-selling-filter" id="bestSellingFilterContainer" role="tablist">
+    <!-- Filter buttons will be dynamically loaded from Supabase -->
     <button class="filter-btn active" data-category="all" data-section="best-selling">All</button>
-    <button class="filter-btn" data-category="electronics" data-section="best-selling">Electronics</button>
-    <button class="filter-btn" data-category="fashion" data-section="best-selling">Fashion</button>
-    <button class="filter-btn" data-category="home & garden" data-section="best-selling">Home & Garden</button>
-    <button class="filter-btn" data-category="sports & outdoors" data-section="best-selling">Sports & Outdoors</button>
-    <button class="filter-btn" data-category="books & media" data-section="best-selling">Books & Media</button>
-    <button class="filter-btn" data-category="toys & games" data-section="best-selling">Toys & Games</button>
-    <button class="filter-btn" data-category="health & beauty" data-section="best-selling">Health & Beauty</button>
+    <div class="filter-loading" style="display:none; color:#999; padding:8px;">Loading categories...</div>
   </div>
   <div class="best-selling-grid">
     <!-- Product Card -->
