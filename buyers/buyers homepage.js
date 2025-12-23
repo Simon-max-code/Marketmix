@@ -5,6 +5,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // Interval handle for the flash sale summed countdown
   let flashCountdownInterval = null;
+  // Interval handle for the original demo countdown (kept for fallback)
+  let demoCountdownInterval = null;
 
   // Helper: format milliseconds into human-friendly countdown string
   function formatMsAsCountdown(ms) {
@@ -400,6 +402,11 @@ window.addEventListener('DOMContentLoaded', () => {
         }, 0);
 
         if (countdownEl) {
+          // If there's a demo interval running, stop it so flash timer has precedence
+          if (demoCountdownInterval) {
+            clearInterval(demoCountdownInterval);
+            demoCountdownInterval = null;
+          }
           if (totalRemainingMs <= 0) {
             countdownEl.textContent = '';
           } else {
@@ -604,7 +611,10 @@ window.addEventListener('DOMContentLoaded', () => {
   const countdownDisplay = document.querySelector('#countdown');
   if (countdownDisplay) {
     let countdownDuration = 24 * 60 * 60; // 24 hours
-    startCountdown(countdownDuration, countdownDisplay);
+    // Only start the demo countdown if a flash countdown is not active
+    if (!flashCountdownInterval) {
+      demoCountdownInterval = startCountdown(countdownDuration, countdownDisplay);
+    }
   }
 
   // Hero Slider (simple rotating slides)
