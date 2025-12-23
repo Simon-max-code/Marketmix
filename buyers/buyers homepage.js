@@ -334,22 +334,48 @@ window.addEventListener('DOMContentLoaded', () => {
     try {
       const container = document.getElementById('flashProducts');
       if (!container) return;
-
-      const response = await fetch(`${CONFIG.API_BASE_URL}/products?limit=5`);
+      // Fetch a wider set of products and filter locally for flash sales
+      const response = await fetch(`${CONFIG.API_BASE_URL}/products?limit=200`);
       const data = await response.json();
 
-      if (!response.ok || !data.data || data.data.length === 0) {
-        container.innerHTML = '<p style="text-align:center; padding: 20px; color: #666;">No products available</p>';
+      if (!response.ok || !data.data) {
+        container.innerHTML = '<p style="text-align:center; padding: 20px; color: #666;">No flash products available</p>';
+        return;
+      }
+
+      const now = Date.now();
+      const items = data.data || [];
+
+      // Filter products that have flash_start and flash_end and are active now
+      const flashItems = items.filter(p => {
+        try {
+          if (!p.flash_start || !p.flash_end) return false;
+          const start = Date.parse(p.flash_start);
+          const end = Date.parse(p.flash_end);
+          if (Number.isNaN(start) || Number.isNaN(end)) return false;
+          return now >= start && now <= end;
+        } catch (e) {
+          return false;
+        }
+      }).sort((a,b) => {
+        // sort by earliest flash_start first
+        const sa = Date.parse(a.flash_start) || 0;
+        const sb = Date.parse(b.flash_start) || 0;
+        return sa - sb;
+      });
+
+      if (flashItems.length === 0) {
+        container.innerHTML = '<p style="text-align:center; padding: 20px; color: #666;">No flash products currently running</p>';
         return;
       }
 
       // Render flash product cards
-      container.innerHTML = data.data.map(product => `
+      container.innerHTML = flashItems.map(product => `
         <div class="flash-card" data-product-id="${product.id}">
-          <img src="${product.main_image_url || product.image || 'marketplace.png'}" alt="${product.name}">
-          <h4>${product.name}</h4>
-          <p class="price">$${product.price}</p>
-          <button>Add to Cart</button>
+          <img src="${product.main_image_url || product.image || 'marketplace.png'}" alt="${escapeHtml(product.name)}">
+          <h4>${escapeHtml(product.name)}</h4>
+          <p class="price">$${(typeof product.price === 'number') ? product.price.toFixed(2) : product.price}</p>
+          <button class="add-to-cart">Add to Cart</button>
         </div>
       `).join('');
 
