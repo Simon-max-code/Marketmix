@@ -178,6 +178,49 @@ window.addEventListener('DOMContentLoaded', () => {
     fetchAndPopulateFilterButtons();
   })();
 
+  // ===== DYNAMICALLY LOAD FILTER BUTTONS FOR NEW ARRIVALS FROM SUPABASE =====
+  (function() {
+    const filterContainer = document.getElementById('newArrivalsFilterContainer');
+    if (!filterContainer) return;
+
+    async function fetchAndPopulateNewArrivalsFilterButtons() {
+      try {
+        const response = await fetch(`${CONFIG.API_BASE_URL}/categories`);
+        if (!response.ok) throw new Error('Failed to fetch categories');
+        
+        const result = await response.json();
+        const categories = result.data || [];
+
+        if (categories.length === 0) {
+          // Keep only "All" button if no categories
+          return;
+        }
+
+        // Generate filter buttons from categories
+        const categoryButtons = categories.map(category => {
+          return `<button class="filter-btn" data-category="${category.name.toLowerCase()}" data-section="new-arrivals">${category.name}</button>`;
+        }).join('');
+
+        // Append new buttons after the "All" button
+        const allButton = filterContainer.querySelector('[data-category="all"]');
+        if (allButton && allButton.nextSibling) {
+          // Insert after the "All" button
+          allButton.insertAdjacentHTML('afterend', categoryButtons);
+        } else if (allButton) {
+          // If "All" is the last element, append
+          allButton.insertAdjacentHTML('afterend', categoryButtons);
+        }
+
+        // Re-attach filter button listeners to include new buttons
+        attachFilterButtonListeners();
+      } catch (error) {
+        console.error('Error fetching categories for new arrivals filter buttons:', error);
+      }
+    }
+
+    fetchAndPopulateNewArrivalsFilterButtons();
+  })();
+
   function renderProductCard(product) {
     const img = product.image || product.main_image_url || 'marketplace.png';
     const price = typeof product.price === 'number' ? product.price.toFixed(2) : product.price;
@@ -357,9 +400,54 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Load and render new arrivals products from API
+  async function loadNewArrivalsProducts() {
+    try {
+      const container = document.querySelector('.new-arrivals-grid');
+      if (!container) return;
+
+      const response = await fetch(`${CONFIG.API_BASE_URL}/products?limit=8`);
+      const data = await response.json();
+
+      if (!response.ok || !data.data || data.data.length === 0) {
+        container.innerHTML = '<p style="text-align:center; padding: 20px; color: #666;">No products available</p>';
+        return;
+      }
+
+      // Render new arrivals product cards with category data-attribute
+      container.innerHTML = data.data.map(product => {
+        const category = (product.category || product.category_name || 'all').toLowerCase().trim();
+        return `
+          <div class="product-card" data-product-id="${product.id}" data-name="${escapeHtml(product.name)}" data-price="${product.price}" data-category="${category}">
+            <img src="${product.main_image_url || product.image || 'marketplace.png'}" alt="${product.name}">
+            <div class="product-info">
+              <div class="product-name">${escapeHtml(product.name)}</div>
+              <!-- description removed to keep cards compact -->
+              <div class="meta">
+                <div class="price">$${product.price}</div>
+              </div>
+            </div>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        `;
+      }).join('');
+
+      // Re-attach event listeners to new buttons
+      attachProductCardListeners(container);
+      attachCartListeners();
+    } catch (error) {
+      console.error('Error loading new arrivals products:', error);
+      const container = document.querySelector('.new-arrivals-grid');
+      if (container) {
+        container.innerHTML = '<p style="text-align:center; padding: 20px; color: #666;">Error loading products</p>';
+      }
+    }
+  }
+
   // Load products early
   loadFlashProducts();
   loadBestSellingProducts();
+  loadNewArrivalsProducts();
   loadRecommendedProducts();
 
   // Countdown Timer
