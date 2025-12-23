@@ -453,6 +453,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
       // Re-attach event listeners to new buttons
       attachCartListeners();
+      // Ensure clicking a flash card opens the product page like regular cards
+      attachProductCardListeners(container);
     } catch (error) {
       console.error('Error loading flash products:', error);
       const container = document.getElementById('flashProducts');
