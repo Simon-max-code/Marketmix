@@ -308,7 +308,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function attachProductCardListeners(container) {
     if (!container) return;
-    container.querySelectorAll('.product-card').forEach((card) => {
+    // Attach click listeners to both regular product cards and flash sale cards
+    container.querySelectorAll('.product-card, .flash-card').forEach((card) => {
       const productId = card.getAttribute('data-product-id');
       card.style.cursor = 'pointer';
       
