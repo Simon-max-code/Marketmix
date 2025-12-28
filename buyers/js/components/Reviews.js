@@ -289,7 +289,7 @@ function openProductReviewModal(product, options = {}) {
       const token = localStorage.getItem('token');
 
       // Determine API base URL
-      let API_BASE_URL = 'https://marketmix-backend-production.up.railway.app/api';
+      let API_BASE_URL = 'https://marketmix-backend.onrender.com/api';
       if (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) {
         API_BASE_URL = CONFIG.API_BASE_URL;
       }
