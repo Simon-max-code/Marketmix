@@ -5,13 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Purchase History - MarketMix</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-   <!-- 🔒 BLOCK UNAUTHORIZED USERS -->
-    <script>
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.replace("login for buyers.html");
-        }
-    </script>
 <style>
   body {
     margin: 0;
@@ -29,6 +22,34 @@
   h2 {
     text-align: center;
     margin-bottom: 20px;
+  }
+
+  /* Loading Spinner */
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #F97316;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 
   /* Insights Dashboard */
@@ -55,14 +76,13 @@
     color: #777;
   }
   
-  /* Mobile grid layout */
-@media (max-width: 768px) {
-  .dashboard {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+  @media (max-width: 768px) {
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
   }
-}
 
   /* Search and filter bar */
   .search-filter {
@@ -81,10 +101,38 @@
   }
   .search-filter button {
     background: #F97316; 
+    color: white;
     border: none;
     padding: 8px 14px;
     border-radius: 6px;
     cursor: pointer;
+  }
+  .search-filter button:hover {
+    background: #EA580C;
+  }
+
+  /* Pagination */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .pagination button {
+    background: #F97316;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .pagination button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  .pagination span {
+    font-weight: 600;
   }
 
   /* Table styles */
@@ -104,6 +152,7 @@
   }
   .history-table th {
     background-color: #F97316; 
+    color: white;
     font-weight: bold;
   }
   .history-table tr:nth-child(even) {
@@ -122,27 +171,21 @@
   }
   .status {
     font-weight: bold;
+    text-transform: capitalize;
   }
-  .Delivered {
+  .status.delivered, .status.completed {
     color: green;
   }
-  .Cancelled {
+  .status.cancelled {
     color: red;
   }
-  .btn {
-    background-color: #333;
-    color: #fff;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin: 2px;
-    font-size: 0.85em;
+  .status.pending, .status.processing {
+    color: orange;
   }
-  .btn:hover {
-    background-color: #555;
+  .status.shipped {
+    color: blue;
   }
-  /* Inline drop review button */
+  
   .drop-review-inline-btn {
     display: inline-flex;
     align-items: center;
@@ -155,15 +198,38 @@
     cursor: pointer;
     font-size: 0.8em;
   }
+  .drop-review-inline-btn:hover {
+    background: #EA580C;
+  }
   .drop-review-inline-btn[disabled] {
     opacity: 0.6;
     cursor: not-allowed;
   }
 
-  .product-list-inline { display:flex;flex-direction:column;gap:6px }
-  .product-name { font-weight:600; margin-right:8px }
+  .product-list-inline { 
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .product-name { 
+    font-weight:600; 
+    margin-right:8px;
+  }
 
-  /* (Removed export buttons and recommendations styles - not needed) */
+  .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+  }
+
+  .error-message {
+    background: #fee;
+    color: #c00;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+    text-align: center;
+  }
 
   /* Notification Center */
   .notifications {
@@ -178,6 +244,7 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     display: none;
     flex-direction: column;
+    z-index: 999;
   }
   .notification {
     padding: 10px;
@@ -197,6 +264,7 @@
       display: block;
       text-align: right;
       position: relative;
+      padding-left: 50%;
     }
     .history-table td::before {
       content: attr(data-label);
@@ -205,48 +273,51 @@
       font-weight: bold;
     }
   }
-  /*footer*/
-footer {
-     background: rgba(0, 0, 0, 0.7);
-      color: #f8fafc;
-      text-align: center;
-      padding: 25px 15px;
-      margin-top: 60px;
-      font-size: 15px;
-    }
 
+  footer {
+    background: rgba(0, 0, 0, 0.7);
+    color: #f8fafc;
+    text-align: center;
+    padding: 25px 15px;
+    margin-top: 60px;
+    font-size: 15px;
+  }
 
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #F97316;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 2px;
+    transition: 0.3s;
+  }
 
-    .back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #F97316; /* your site yellow theme */
-  color: #000;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 10px;
-  font-size: 16px;
-  cursor: pointer;
-  margin: 2px;
-  transition: 0.3s;
-}
+  .back-btn i {
+    font-size: 18px;
+  }
 
-.back-btn i {
-  font-size: 18px;
-}
-
-.back-btn:hover {
-  background: #EA580C;
-  transform: translateY(-2px);
-}
-
+  .back-btn:hover {
+    background: #EA580C;
+    transform: translateY(-2px);
+  }
 </style>
 </head>
 <body>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+</div>
+
 <button class="back-btn" onclick="history.back()">
-      <i class="fas fa-chevron-left"></i> Back
-    </button>
+  <i class="fas fa-chevron-left"></i> Back
+</button>
 
 <div class="container">
   <h2>🧾 Purchase History</h2>
@@ -254,24 +325,39 @@ footer {
   <!-- Dashboard -->
   <div class="dashboard">
     <div class="card">
-      <h3>$225.00</h3>
-      <p>Total Spent This Year</p>
+      <h3 id="totalSpent">$0.00</h3>
+      <p>Total Spent</p>
     </div>
     <div class="card">
-      <h3>12</h3>
+      <h3 id="totalOrders">0</h3>
       <p>Total Orders</p>
     </div>
+    <div class="card">
+      <h3 id="deliveredOrders">0</h3>
+      <p>Delivered Orders</p>
+    </div>
+    <div class="card">
+      <h3 id="pendingOrders">0</h3>
+      <p>Pending Orders</p>
+    </div>
   </div>
+
+  <!-- Error Message -->
+  <div id="errorMessage" class="error-message" style="display:none;"></div>
 
   <!-- Search and filter -->
   <div class="search-filter">
     <input type="text" id="searchInput" placeholder="Search by product or order ID...">
     <select id="statusFilter">
       <option value="">All Statuses</option>
-      <option value="Delivered">Delivered</option>
-      <option value="Cancelled">Cancelled</option>
+      <option value="pending">Pending</option>
+      <option value="processing">Processing</option>
+      <option value="shipped">Shipped</option>
+      <option value="delivered">Delivered</option>
+      <option value="completed">Completed</option>
+      <option value="cancelled">Cancelled</option>
     </select>
-    <button onclick="filterOrders()">Apply Filters</button>
+    <button onclick="applyFilters()">Apply Filters</button>
   </div>
 
   <!-- Purchase history table -->
@@ -286,102 +372,295 @@ footer {
         <th>Status</th>
       </tr>
     </thead>
-    <tbody>
-      <tr data-order-id="90512">
-        <td data-label="Order ID">#90512</td>
-        <td data-label="Product(s)" class="product-cell" data-product-ids="1001,1002" data-product-names="Wireless Earbuds,USB Cable">
-          <img src="elon.jfif" alt="">
-          <div class="product-list-inline">
-            <div><span class="product-name">Wireless Earbuds</span></div>
-            <div><span class="product-name">USB Cable</span></div>
-          </div>
-        </td>
-        <td data-label="Date">June 20, 2025</td>
-        <td data-label="Total item">2</td>
-        <td data-label="Total Amount">$35.00</td>
-        <td data-label="Status" class="status Delivered">Delivered</td>
-      </tr>
-      <tr data-order-id="90344">
-        <td data-label="Order ID">#90344</td>
-        <td data-label="Product(s)" class="product-cell" data-product-ids="1003" data-product-names="Office Chair">
-          <img src="electronics and accessories.jpg" alt="">
-          <div class="product-list-inline">
-            <div><span class="product-name">Office Chair</span></div>
-          </div>
-        </td>
-        <td data-label="Date">June 18, 2025</td>
-        <td data-label="Total item">1</td>
-        <td data-label="Total Amount">$120.00</td>
-        <td data-label="Status" class="status Delivered">Delivered</td>
-      </tr>
-      <tr data-order-id="90128">
-        <td data-label="Order ID">#90128</td>
-        <td data-label="Product(s)" class="product-cell" data-product-ids="1004" data-product-names="Fitness Watch">
-          <img src="web dev.jpeg" alt="">
-          <div class="product-list-inline">
-            <div><span class="product-name">Fitness Watch</span></div>
-          </div>
-        </td>
-        <td data-label="Date">June 10, 2025</td>
-        <td data-label="Total item">1</td>
-        <td data-label="Total Amount">$70.00</td>
-        <td data-label="Status" class="status Cancelled">Cancelled</td>
-      </tr>
+    <tbody id="orderTableBody">
+      <!-- Orders will be loaded dynamically -->
     </tbody>
   </table>
 
-  <!-- Export buttons -->
-  
+  <!-- Empty State -->
+  <div id="emptyState" class="empty-state" style="display:none;">
+    <i class="fas fa-shopping-bag" style="font-size: 48px; color: #ccc;"></i>
+    <p>No orders found</p>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" id="pagination" style="display:none;">
+    <button id="prevBtn" onclick="changePage(-1)">
+      <i class="fas fa-chevron-left"></i> Previous
+    </button>
+    <span id="pageInfo">Page 1 of 1</span>
+    <button id="nextBtn" onclick="changePage(1)">
+      Next <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
 </div>
 
 <!-- Notification Center -->
 <div class="notifications" id="notificationCenter"></div>
 
 <script>
-function filterOrders() {
-  const searchValue = document.getElementById('searchInput').value.toLowerCase();
-  const statusValue = document.getElementById('statusFilter').value;
-  const rows = document.querySelectorAll('#orderTable tbody tr');
+const API_BASE_URL = 'https://marketmix-backend.onrender.com';
+let currentPage = 1;
+let totalPages = 1;
+let currentFilters = {
+  search: '',
+  status: ''
+};
 
-  rows.forEach(row => {
-    const productText = row.cells[1].innerText.toLowerCase();
-    const orderIdText = row.cells[0].innerText.toLowerCase();
-    const statusText = row.cells[5].innerText;
-
-    const matchesSearch = productText.includes(searchValue) || orderIdText.includes(searchValue);
-    const matchesStatus = statusValue === "" || statusText === statusValue;
-
-    if (matchesSearch && matchesStatus) {
-      row.style.display = "";
-    } else {
-      row.style.display = "none";
-    }
-  });
+// Authentication check
+function checkAuth() {
+  const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+  if (!token) {
+    window.location.replace('login for buyers.html');
+    return null;
+  }
+  return token;
 }
 
-function notify(message) {
+// Show/Hide Loading
+function showLoading(show = true) {
+  const overlay = document.getElementById('loadingOverlay');
+  overlay.style.display = show ? 'flex' : 'none';
+}
+
+// Show notification
+function notify(message, type = 'info') {
   const center = document.getElementById('notificationCenter');
   center.style.display = 'flex';
   const note = document.createElement('div');
   note.className = 'notification';
+  note.style.borderLeft = type === 'error' ? '4px solid #c00' : '4px solid #F97316';
   note.innerText = message;
   center.prepend(note);
   setTimeout(() => {
     note.remove();
     if (!center.hasChildNodes()) center.style.display = 'none';
-  }, 3000);
+  }, 4000);
 }
 
-// Enhance delivered order rows: add per-product "Drop Review" buttons that open the review modal
+// Show error message
+function showError(message) {
+  const errorDiv = document.getElementById('errorMessage');
+  errorDiv.innerText = message;
+  errorDiv.style.display = 'block';
+  setTimeout(() => {
+    errorDiv.style.display = 'none';
+  }, 5000);
+}
+
+// Format date
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+}
+
+// Format currency
+function formatCurrency(amount) {
+  return `$${parseFloat(amount).toFixed(2)}`;
+}
+
+// Load orders from backend with pagination
+async function loadOrders(page = 1) {
+  const token = checkAuth();
+  if (!token) return;
+
+  showLoading(true);
+  
+  try {
+    // Build query parameters
+    const params = new URLSearchParams({
+      page: page,
+      limit: 10
+    });
+
+    if (currentFilters.status) {
+      params.append('status', currentFilters.status);
+    }
+
+    const response = await fetch(`${API_BASE_URL}/orders?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        sessionStorage.clear();
+        localStorage.clear();
+        window.location.replace('login for buyers.html');
+        return;
+      }
+      throw new Error('Failed to load orders');
+    }
+
+    const data = await response.json();
+    
+    if (data.success) {
+      const orders = data.data.orders || [];
+      const pagination = data.data.pagination || {};
+      
+      currentPage = pagination.currentPage || 1;
+      totalPages = pagination.totalPages || 1;
+      
+      renderOrders(orders);
+      updatePagination();
+      updateDashboard(orders);
+    } else {
+      throw new Error(data.message || 'Failed to load orders');
+    }
+    
+  } catch (error) {
+    console.error('Error loading orders:', error);
+    showError('Failed to load purchase history. Please try again.');
+  } finally {
+    showLoading(false);
+  }
+}
+
+// Update dashboard statistics
+function updateDashboard(orders) {
+  // Calculate totals from current page orders
+  const totalSpent = orders.reduce((sum, order) => sum + parseFloat(order.total_amount || 0), 0);
+  const totalCount = orders.length;
+  const deliveredCount = orders.filter(o => 
+    o.status === 'delivered' || o.status === 'completed'
+  ).length;
+  const pendingCount = orders.filter(o => 
+    o.status === 'pending' || o.status === 'processing'
+  ).length;
+
+  document.getElementById('totalSpent').innerText = formatCurrency(totalSpent);
+  document.getElementById('totalOrders').innerText = totalCount;
+  document.getElementById('deliveredOrders').innerText = deliveredCount;
+  document.getElementById('pendingOrders').innerText = pendingCount;
+}
+
+// Render orders in table
+function renderOrders(orders) {
+  const tbody = document.getElementById('orderTableBody');
+  const emptyState = document.getElementById('emptyState');
+  
+  tbody.innerHTML = '';
+  
+  // Apply client-side search filter if exists
+  let filteredOrders = orders;
+  if (currentFilters.search) {
+    const searchLower = currentFilters.search.toLowerCase();
+    filteredOrders = orders.filter(order => {
+      const orderId = (order.id || '').toString().toLowerCase();
+      const products = order.items?.map(item => 
+        (item.product_name || '').toLowerCase()
+      ).join(' ') || '';
+      
+      return orderId.includes(searchLower) || products.includes(searchLower);
+    });
+  }
+  
+  if (filteredOrders.length === 0) {
+    emptyState.style.display = 'block';
+    document.getElementById('orderTable').style.display = 'none';
+    return;
+  }
+  
+  emptyState.style.display = 'none';
+  document.getElementById('orderTable').style.display = 'table';
+  
+  filteredOrders.forEach(order => {
+    const row = document.createElement('tr');
+    row.dataset.orderId = order.id;
+    
+    // Get first product image or default
+    const firstItem = order.items && order.items[0];
+    let productImage = 'placeholder.jpg';
+    
+    if (firstItem && firstItem.images) {
+      try {
+        const images = typeof firstItem.images === 'string' 
+          ? JSON.parse(firstItem.images) 
+          : firstItem.images;
+        productImage = images[0] || 'placeholder.jpg';
+      } catch (e) {
+        productImage = 'placeholder.jpg';
+      }
+    }
+    
+    // Build product list
+    const productNames = order.items?.map(item => item.product_name) || [];
+    const productIds = order.items?.map(item => item.product_id) || [];
+
+    row.innerHTML = `
+      <td data-label="Order ID">#${order.id}</td>
+      <td data-label="Product(s)" class="product-cell" 
+          data-product-ids="${productIds.join(',')}" 
+          data-product-names="${productNames.join(',')}">
+        <img src="${productImage}" alt="Product" onerror="this.src='placeholder.jpg'">
+        <div class="product-list-inline" id="product-list-${order.id}">
+          ${productNames.map(name => `<div><span class="product-name">${name}</span></div>`).join('')}
+        </div>
+      </td>
+      <td data-label="Date">${formatDate(order.created_at)}</td>
+      <td data-label="Total">${formatCurrency(order.total_amount)}</td>
+      <td data-label="Status" class="status ${order.status}">${order.status}</td>
+    `;
+    
+    tbody.appendChild(row);
+  });
+  
+  // Add review buttons for delivered orders
+  enhancePurchaseRows();
+}
+
+// Update pagination controls
+function updatePagination() {
+  const paginationDiv = document.getElementById('pagination');
+  const pageInfo = document.getElementById('pageInfo');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  
+  if (totalPages > 1) {
+    paginationDiv.style.display = 'flex';
+    pageInfo.innerText = `Page ${currentPage} of ${totalPages}`;
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage === totalPages;
+  } else {
+    paginationDiv.style.display = 'none';
+  }
+}
+
+// Change page
+function changePage(direction) {
+  const newPage = currentPage + direction;
+  if (newPage >= 1 && newPage <= totalPages) {
+    loadOrders(newPage);
+  }
+}
+
+// Apply filters
+function applyFilters() {
+  currentFilters.search = document.getElementById('searchInput').value.toLowerCase();
+  currentFilters.status = document.getElementById('statusFilter').value;
+  currentPage = 1; // Reset to first page
+  loadOrders(1);
+}
+
+// Add review buttons for delivered orders
 function enhancePurchaseRows() {
-  const rows = document.querySelectorAll('#orderTable tbody tr');
+  const rows = document.querySelectorAll('#orderTableBody tr');
+  
   rows.forEach(row => {
     const statusCell = row.querySelector('[data-label="Status"]');
     if (!statusCell) return;
+    
     const statusText = statusCell.innerText.trim();
-    if (statusText !== 'Delivered') return; // only for delivered orders
+    if (statusText !== 'delivered' && statusText !== 'completed') return;
 
-    const orderId = row.dataset.orderId || (row.querySelector('[data-label="Order ID"]').innerText || '').replace('#','').trim();
+    const orderId = row.dataset.orderId || '';
     const productCell = row.querySelector('.product-cell');
     if (!productCell) return;
 
@@ -390,7 +669,7 @@ function enhancePurchaseRows() {
     const productListDiv = productCell.querySelector('.product-list-inline');
     if (!productListDiv) return;
 
-    // Rebuild product list with inline buttons
+    // Rebuild product list with review buttons
     productListDiv.innerHTML = '';
     names.forEach((name, i) => {
       const pid = ids[i] || null;
@@ -409,24 +688,16 @@ function enhancePurchaseRows() {
       if (pid) {
         const btn = document.createElement('button');
         btn.className = 'drop-review-inline-btn';
-        btn.innerText = 'Drop Review';
+        btn.innerHTML = '<i class="fas fa-star"></i> Review';
         btn.dataset.orderId = orderId;
         btn.dataset.productId = pid;
         btn.title = `Leave a review for ${name}`;
-        btn.setAttribute('aria-label', `Leave a review for ${name}`);
 
-        // Instead of opening a modal here, navigate to the Reviews page and include product and order in the query string
         btn.addEventListener('click', () => {
-          const url = `reviews%20ratings.html?product=${encodeURIComponent(pid)}&order=${encodeURIComponent(orderId)}`;
-          window.location.href = url;
+          window.location.href = `reviews ratings.html?product=${encodeURIComponent(pid)}&order=${encodeURIComponent(orderId)}`;
         });
 
         itemDiv.appendChild(btn);
-      } else {
-        const hint = document.createElement('small');
-        hint.style.color = '#64748b';
-        hint.innerText = 'Use Reviews page to add a review';
-        itemDiv.appendChild(hint);
       }
 
       productListDiv.appendChild(itemDiv);
@@ -434,13 +705,17 @@ function enhancePurchaseRows() {
   });
 }
 
-// Run on load
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', enhancePurchaseRows);
-} else {
-  enhancePurchaseRows();
-}
-
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+  loadOrders(1);
+  
+  // Add event listeners for real-time search
+  document.getElementById('searchInput').addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') {
+      applyFilters();
+    }
+  });
+});
 </script>
 
 <footer>

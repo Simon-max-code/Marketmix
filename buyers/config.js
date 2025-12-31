@@ -7,7 +7,7 @@ const CONFIG = {
   // API Base URL - automatically switches based on environment
   API_BASE_URL: isDevelopment 
     ? 'http://localhost:5000/api'  // Local development
-    : 'https://marketmix-backend-production.up.railway.app/api',  // Production
+    : 'https://marketmix-backend.onrender.com/api',  // Production
 
   // Other settings
   APP_NAME: 'MarketMix',

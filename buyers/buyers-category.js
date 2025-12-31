@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
           // fetch more products from the API
           if (matched.length === 0 && category !== 'all') {
             try {
-              const base = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend-production.up.railway.app/api';
+              const base = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend.onrender.com/api';
               const resp = await fetch(`${base}/products?limit=200`);
               if (resp.ok) {
                 const json = await resp.json();

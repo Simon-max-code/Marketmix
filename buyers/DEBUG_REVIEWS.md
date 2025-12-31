@@ -19,7 +19,7 @@ Look for any of these messages in the Console:
 
 ```
 ✅ GOOD: 
-- "Submitting review to: https://marketmix-backend-production.up.railway.app/api/reviews"
+- "Submitting review to: https://marketmix-backend.onrender.com/api/reviews"
 - "Response status: 201"
 - "Response data: {status: 'success', ...}"
 
@@ -72,7 +72,7 @@ console.log('CONFIG.API_BASE_URL:', CONFIG.API_BASE_URL);
 Expected output:
 ```
 Token: eyJhbGc... (long string)
-CONFIG.API_BASE_URL: https://marketmix-backend-production.up.railway.app/api
+CONFIG.API_BASE_URL: https://marketmix-backend.onrender.com/api
 ```
 
 If Token is `null`, user is not logged in.

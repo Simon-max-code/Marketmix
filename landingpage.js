@@ -144,7 +144,7 @@
             // fetch more products from the API (larger limit) and render matches into the section.
             if (matched.length === 0 && category !== 'all') {
               try {
-                const base = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend-production.up.railway.app/api';
+                const base = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend.onrender.com/api';
                 const resp = await fetch(`${base}/products?limit=200`);
                 if (resp.ok) {
                   const json = await resp.json();
@@ -276,7 +276,7 @@
     (async () => {
       try {
         const token = (window.Auth && typeof Auth.getToken === 'function') ? Auth.getToken() : localStorage.getItem('token');
-        const base = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend-production.up.railway.app/api';
+        const base = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend.onrender.com/api';
         if (token && productObj.productId) {
           const resp = await fetch(`${base}/cart/add`, {
             method: 'POST',
@@ -313,7 +313,7 @@
   // Load products from backend and render into the grids
   async function loadLandingProducts(limit = 8) {
     try {
-      const base = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend-production.up.railway.app/api';
+      const base = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend.onrender.com/api';
       const res = await fetch(`${base}/products?limit=${limit}`);
       if (!res.ok) throw new Error('Failed to fetch products');
       const json = await res.json();
