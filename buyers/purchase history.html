@@ -481,7 +481,8 @@ async function loadOrders(page = 1) {
       params.append('status', currentFilters.status);
     }
 
-    const response = await fetch(`${API_BASE_URL}/orders?${params.toString()}`, {
+    // NOTE: backend routes are mounted under /api in server.js
+    const response = await fetch(`${API_BASE_URL}/api/orders?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -490,13 +491,16 @@ async function loadOrders(page = 1) {
     });
 
     if (!response.ok) {
+      // Try to read body text for more details
+      let bodyText = '';
+      try { bodyText = await response.text(); } catch (e) { /* ignore */ }
       if (response.status === 401) {
         sessionStorage.clear();
         localStorage.clear();
         window.location.replace('login for buyers.html');
         return;
       }
-      throw new Error('Failed to load orders');
+      throw new Error(`Failed to load orders: HTTP ${response.status} ${response.statusText} ${bodyText}`);
     }
 
     const data = await response.json();
