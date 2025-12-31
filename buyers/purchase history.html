@@ -365,7 +365,6 @@
     <thead>
       <tr>
         <th>Order ID</th>
-        <th>Product(s)</th>
         <th>Date</th>
         <th>Total item</th>
         <th>Total Amount</th>
@@ -579,37 +578,11 @@ function renderOrders(orders) {
     const row = document.createElement('tr');
     row.dataset.orderId = order.id;
     
-    // Get first product image or default
-    const firstItem = order.items && order.items[0];
-    let productImage = 'placeholder.jpg';
-    
-    if (firstItem && firstItem.images) {
-      try {
-        const images = typeof firstItem.images === 'string' 
-          ? JSON.parse(firstItem.images) 
-          : firstItem.images;
-        productImage = images[0] || 'placeholder.jpg';
-      } catch (e) {
-        productImage = 'placeholder.jpg';
-      }
-    }
-    
-    // Build product list
-    const productNames = order.items?.map(item => item.product_name) || [];
-    const productIds = order.items?.map(item => item.product_id) || [];
+    // Use total_items from order_details (or aggregated value from backend)
+    const totalItems = order.total_items || 0;
 
-    const totalItems = order.items?.reduce((sum, item) => sum + (item.quantity || 1), 0) || 0;
-    
     row.innerHTML = `
       <td data-label="Order ID">#${order.id}</td>
-      <td data-label="Product(s)" class="product-cell" 
-          data-product-ids="${productIds.join(',')}" 
-          data-product-names="${productNames.join(',')}">
-        <img src="${productImage}" alt="Product" onerror="this.src='placeholder.jpg'">
-        <div class="product-list-inline" id="product-list-${order.id}">
-          ${productNames.map(name => `<div><span class="product-name">${name}</span></div>`).join('')}
-        </div>
-      </td>
       <td data-label="Date">${formatDate(order.created_at)}</td>
       <td data-label="Total item">${totalItems}</td>
       <td data-label="Total Amount">${formatCurrency(order.total_amount)}</td>
