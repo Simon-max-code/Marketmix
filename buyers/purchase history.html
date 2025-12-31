@@ -594,6 +594,8 @@ function renderOrders(orders) {
     const productNames = order.items?.map(item => item.product_name) || [];
     const productIds = order.items?.map(item => item.product_id) || [];
 
+    const totalItems = order.items?.reduce((sum, item) => sum + (item.quantity || 1), 0) || 0;
+    
     row.innerHTML = `
       <td data-label="Order ID">#${order.id}</td>
       <td data-label="Product(s)" class="product-cell" 
@@ -605,7 +607,8 @@ function renderOrders(orders) {
         </div>
       </td>
       <td data-label="Date">${formatDate(order.created_at)}</td>
-      <td data-label="Total">${formatCurrency(order.total_amount)}</td>
+      <td data-label="Total item">${totalItems}</td>
+      <td data-label="Total Amount">${formatCurrency(order.total_amount)}</td>
       <td data-label="Status" class="status ${order.status}">${order.status}</td>
     `;
     
