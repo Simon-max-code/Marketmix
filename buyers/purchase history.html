@@ -281,7 +281,8 @@ footer {
         <th>Order ID</th>
         <th>Product(s)</th>
         <th>Date</th>
-        <th>Total</th>
+        <th>Total item</th>
+        <th>Total Amount</th>
         <th>Status</th>
       </tr>
     </thead>
@@ -296,7 +297,8 @@ footer {
           </div>
         </td>
         <td data-label="Date">June 20, 2025</td>
-        <td data-label="Total">$35.00</td>
+        <td data-label="Total item">2</td>
+        <td data-label="Total Amount">$35.00</td>
         <td data-label="Status" class="status Delivered">Delivered</td>
       </tr>
       <tr data-order-id="90344">
@@ -308,7 +310,8 @@ footer {
           </div>
         </td>
         <td data-label="Date">June 18, 2025</td>
-        <td data-label="Total">$120.00</td>
+        <td data-label="Total item">1</td>
+        <td data-label="Total Amount">$120.00</td>
         <td data-label="Status" class="status Delivered">Delivered</td>
       </tr>
       <tr data-order-id="90128">
@@ -320,7 +323,8 @@ footer {
           </div>
         </td>
         <td data-label="Date">June 10, 2025</td>
-        <td data-label="Total">$70.00</td>
+        <td data-label="Total item">1</td>
+        <td data-label="Total Amount">$70.00</td>
         <td data-label="Status" class="status Cancelled">Cancelled</td>
       </tr>
     </tbody>
@@ -342,7 +346,7 @@ function filterOrders() {
   rows.forEach(row => {
     const productText = row.cells[1].innerText.toLowerCase();
     const orderIdText = row.cells[0].innerText.toLowerCase();
-    const statusText = row.cells[4].innerText;
+    const statusText = row.cells[5].innerText;
 
     const matchesSearch = productText.includes(searchValue) || orderIdText.includes(searchValue);
     const matchesStatus = statusValue === "" || statusText === statusValue;
