@@ -406,6 +406,64 @@ let currentFilters = {
   status: ''
 };
 
+// Optional Supabase configuration: set in localStorage or window.SUPABASE_CONFIG
+// Example: localStorage.setItem('SUPABASE_URL', 'https://xyz.supabase.co');
+//          localStorage.setItem('SUPABASE_KEY', 'anon-or-service-key');
+function getSupabaseConfig() {
+  try {
+    if (window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url && window.SUPABASE_CONFIG.key) {
+      return { url: window.SUPABASE_CONFIG.url, key: window.SUPABASE_CONFIG.key };
+    }
+    const url = localStorage.getItem('SUPABASE_URL');
+    const key = localStorage.getItem('SUPABASE_KEY');
+    if (url && key) return { url, key };
+  } catch (e) {
+    // ignore
+  }
+  return null;
+}
+
+// Fetch orders directly from Supabase order_details table when config is available.
+// Falls back to backend API when supabase config is not set or request fails.
+async function fetchOrdersFromSupabase(buyerId) {
+  const cfg = getSupabaseConfig();
+  if (!cfg) return null;
+
+  try {
+    // Fetch all order_details for buyer (client-side pagination)
+    const url = `${cfg.url.replace(/\/+$/,'')}/rest/v1/order_details?buyer_id=eq.${encodeURIComponent(buyerId)}&select=*&order=created_at.desc`;
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'apikey': cfg.key,
+        'Authorization': `Bearer ${cfg.key}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!res.ok) {
+      console.warn('Supabase fetch failed', res.status, await res.text());
+      return null;
+    }
+
+    const rows = await res.json();
+    // Map Supabase rows to the format expected by renderOrders()
+    const orders = rows.map(r => ({
+      id: r.order_id || r.id,
+      created_at: r.created_at || r.createdAt || r.created,
+      total_items: r.total_items || r.total_item_count || r.total_items_count || 0,
+      total_amount: r.total_amount || r.amount || 0,
+      status: r.status || 'pending',
+      raw: r
+    }));
+
+    return orders;
+  } catch (err) {
+    console.error('Error querying Supabase order_details', err);
+    return null;
+  }
+}
+
 // Authentication check
 function checkAuth() {
   const token = sessionStorage.getItem('token') || localStorage.getItem('token');
@@ -462,15 +520,44 @@ function formatCurrency(amount) {
   return `$${parseFloat(amount).toFixed(2)}`;
 }
 
-// Load orders from backend with pagination
+// Load orders: prefer Supabase `order_details` when configured, otherwise fallback to backend API
 async function loadOrders(page = 1) {
   const token = checkAuth();
   if (!token) return;
 
   showLoading(true);
-  
+
   try {
-    // Build query parameters
+    // Try Supabase first (optional). We'll paginate client-side when using Supabase.
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const buyerId = user.id || user.user_id || user.buyer_id || user.uuid || null;
+    const supabaseCfg = getSupabaseConfig();
+
+    if (supabaseCfg && buyerId) {
+      const allOrders = await fetchOrdersFromSupabase(buyerId);
+      if (Array.isArray(allOrders)) {
+        // Apply status filter client-side
+        let filtered = allOrders;
+        if (currentFilters.status) {
+          filtered = filtered.filter(o => (o.status || '').toLowerCase() === currentFilters.status.toLowerCase());
+        }
+
+        // Client-side pagination
+        const pageSize = 10;
+        totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+        currentPage = Math.min(Math.max(1, page), totalPages);
+        const start = (currentPage - 1) * pageSize;
+        const pageItems = filtered.slice(start, start + pageSize);
+
+        renderOrders(pageItems);
+        updatePagination();
+        updateDashboard(pageItems);
+        return;
+      }
+      // if supabase returned null, fall through to backend
+    }
+
+    // Fallback to backend API (original behavior)
     const params = new URLSearchParams({
       page: page,
       limit: 10
@@ -480,7 +567,6 @@ async function loadOrders(page = 1) {
       params.append('status', currentFilters.status);
     }
 
-    // NOTE: backend routes are mounted under /api in server.js
     const response = await fetch(`${API_BASE_URL}/api/orders?${params.toString()}`, {
       method: 'GET',
       headers: {
@@ -490,7 +576,6 @@ async function loadOrders(page = 1) {
     });
 
     if (!response.ok) {
-      // Try to read body text for more details
       let bodyText = '';
       try { bodyText = await response.text(); } catch (e) { /* ignore */ }
       if (response.status === 401) {
@@ -503,21 +588,20 @@ async function loadOrders(page = 1) {
     }
 
     const data = await response.json();
-    
     if (data.success) {
       const orders = data.data.orders || [];
       const pagination = data.data.pagination || {};
-      
+
       currentPage = pagination.currentPage || 1;
       totalPages = pagination.totalPages || 1;
-      
+
       renderOrders(orders);
       updatePagination();
       updateDashboard(orders);
     } else {
       throw new Error(data.message || 'Failed to load orders');
     }
-    
+
   } catch (error) {
     console.error('Error loading orders:', error);
     showError('Failed to load purchase history. Please try again.');
