@@ -417,8 +417,13 @@ function getSupabaseConfig() {
     const url = localStorage.getItem('SUPABASE_URL');
     const key = localStorage.getItem('SUPABASE_KEY');
     if (url && key) return { url, key };
+    
+    // Check global CONFIG object (from config.js)
+    if (window.CONFIG && window.CONFIG.SUPABASE && window.CONFIG.SUPABASE.URL && window.CONFIG.SUPABASE.KEY) {
+      return { url: window.CONFIG.SUPABASE.URL, key: window.CONFIG.SUPABASE.KEY };
+    }
   } catch (e) {
-    // ignore
+    console.warn('Error reading Supabase config:', e);
   }
   return null;
 }

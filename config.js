@@ -26,5 +26,11 @@ const CONFIG = {
     USER: 'user',
     USER_ROLE: 'userRole',
     CART: 'cart'
+  },
+  
+  // Supabase Configuration
+  SUPABASE: {
+    URL: 'https://<YOUR-PROJECT-ID>.supabase.co',  // Replace with your Supabase URL
+    KEY: '<YOUR-ANON-KEY>'  // Replace with your Supabase anon key
   }
 };
