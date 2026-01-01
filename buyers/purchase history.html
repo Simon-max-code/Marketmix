@@ -599,7 +599,9 @@ async function loadOrders(page = 1) {
     }
 
     const data = await response.json();
-    if (data.success) {
+    
+    // Check for success (backend returns status: 'success')
+    if (data.status === 'success' || data.success) {
       const orders = data.data.orders || [];
       const pagination = data.data.pagination || {};
 
