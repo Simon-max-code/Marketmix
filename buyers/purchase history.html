@@ -423,15 +423,18 @@ function getSupabaseConfig() {
   return null;
 }
 
-// Fetch orders directly from Supabase order_details table when config is available.
+// Fetch orders directly from Supabase `orders` table with items joined and total_items calculated.
 // Falls back to backend API when supabase config is not set or request fails.
 async function fetchOrdersFromSupabase(buyerId) {
   const cfg = getSupabaseConfig();
   if (!cfg) return null;
 
   try {
-    // Fetch all order_details for buyer (client-side pagination)
-    const url = `${cfg.url.replace(/\/+$/,'')}/rest/v1/order_details?buyer_id=eq.${encodeURIComponent(buyerId)}&select=*&order=created_at.desc`;
+    // Fetch orders for this buyer with included order_items/order_details
+    // Using PostgREST API to include related records
+    const baseUrl = cfg.url.replace(/\/+$/, '');
+    const url = `${baseUrl}/rest/v1/orders?buyer_id=eq.${encodeURIComponent(buyerId)}&select=*,order_items(*)&order=created_at.desc`;
+    
     const res = await fetch(url, {
       method: 'GET',
       headers: {
@@ -442,24 +445,31 @@ async function fetchOrdersFromSupabase(buyerId) {
     });
 
     if (!res.ok) {
-      console.warn('Supabase fetch failed', res.status, await res.text());
+      console.warn('Supabase orders fetch failed', res.status, await res.text());
       return null;
     }
 
     const rows = await res.json();
+    
     // Map Supabase rows to the format expected by renderOrders()
-    const orders = rows.map(r => ({
-      id: r.order_id || r.id,
-      created_at: r.created_at || r.createdAt || r.created,
-      total_items: r.total_items || r.total_item_count || r.total_items_count || 0,
-      total_amount: r.total_amount || r.amount || 0,
-      status: r.status || 'pending',
-      raw: r
-    }));
+    // Calculate total_items by summing quantities from order_items
+    const orders = rows.map(r => {
+      const items = r.order_items || [];
+      const totalItems = items.reduce((sum, item) => sum + (item.quantity || 0), 0);
+      
+      return {
+        id: r.id,
+        created_at: r.created_at,
+        total_items: totalItems, // Calculated field from sum of quantities
+        total_amount: r.total_amount || 0,
+        status: r.status || 'pending',
+        raw: r
+      };
+    });
 
     return orders;
   } catch (err) {
-    console.error('Error querying Supabase order_details', err);
+    console.error('Error querying Supabase orders table', err);
     return null;
   }
 }
