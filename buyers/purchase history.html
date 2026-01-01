@@ -412,17 +412,26 @@ let currentFilters = {
 //          localStorage.setItem('SUPABASE_KEY', 'anon-or-service-key');
 function getSupabaseConfig() {
   try {
-    if (window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url && window.SUPABASE_CONFIG.key) {
+    // 1) runtime override object on window
+    if (typeof window !== 'undefined' && window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url && window.SUPABASE_CONFIG.key) {
       return { url: window.SUPABASE_CONFIG.url, key: window.SUPABASE_CONFIG.key };
     }
-    const url = localStorage.getItem('SUPABASE_URL');
-    const key = localStorage.getItem('SUPABASE_KEY');
-    if (url && key) return { url, key };
-    
-    // Check global CONFIG object (from config.js)
-    if (window.CONFIG && window.CONFIG.SUPABASE && window.CONFIG.SUPABASE.URL && window.CONFIG.SUPABASE.KEY) {
+
+    // 2) explicit localStorage entries (useful for quick testing)
+    const urlLS = localStorage.getItem('SUPABASE_URL');
+    const keyLS = localStorage.getItem('SUPABASE_KEY');
+    if (urlLS && keyLS) return { url: urlLS, key: keyLS };
+
+    // 3) global `CONFIG` variable from config.js (declared as `const CONFIG = {...}`)
+    // Top-level `const` may not be on `window`, so check both places and the identifier.
+    if (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.SUPABASE && CONFIG.SUPABASE.URL && CONFIG.SUPABASE.KEY) {
+      return { url: CONFIG.SUPABASE.URL, key: CONFIG.SUPABASE.KEY };
+    }
+    // also accept window.CONFIG for compatibility
+    if (typeof window !== 'undefined' && window.CONFIG && window.CONFIG.SUPABASE && window.CONFIG.SUPABASE.URL && window.CONFIG.SUPABASE.KEY) {
       return { url: window.CONFIG.SUPABASE.URL, key: window.CONFIG.SUPABASE.KEY };
     }
+
   } catch (e) {
     console.warn('Error reading Supabase config:', e);
   }
