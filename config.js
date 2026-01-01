@@ -30,7 +30,7 @@ const CONFIG = {
   
   // Supabase Configuration
   SUPABASE: {
-    URL: 'https://<YOUR-PROJECT-ID>.supabase.co',  // Replace with your Supabase URL
-    KEY: '<YOUR-ANON-KEY>'  // Replace with your Supabase anon key
+    URL: 'https://zfyoxmwwuwgvaevwlgzn.supabase.co',
+    KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpmeW94bXd3dXdndmFldndsZ3puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2NzIxNzIsImV4cCI6MjA3OTI0ODE3Mn0.k35O8K2mQyoI8T2PCI5RhInlaSTDMpwJ8xRw5zITL_0'
   }
 };
