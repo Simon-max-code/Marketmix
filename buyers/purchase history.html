@@ -545,7 +545,7 @@ function formatCurrency(amount) {
   return `$${parseFloat(amount).toFixed(2)}`;
 }
 
-// Load orders from Supabase ONLY. No fallback to backend API.
+// Load orders from backend API (aggregated). This is reliable and computes total_items server-side.
 async function loadOrders(page = 1) {
   const token = checkAuth();
   if (!token) return;
@@ -553,44 +553,54 @@ async function loadOrders(page = 1) {
   showLoading(true);
 
   try {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    const buyerId = user.id || user.user_id || user.buyer_id || user.uuid || null;
-    const supabaseCfg = getSupabaseConfig();
+    // Build query parameters
+    const params = new URLSearchParams({
+      page: page,
+      limit: 10
+    });
 
-    // Require both Supabase config and buyer ID
-    if (!supabaseCfg) {
-      throw new Error('Supabase configuration not found. Please configure SUPABASE_URL and SUPABASE_KEY in localStorage.');
-    }
-    if (!buyerId) {
-      throw new Error('User ID not found. Please log in again.');
-    }
-
-    // Fetch all orders from Supabase for this buyer
-    const allOrders = await fetchOrdersFromSupabase(buyerId);
-    if (!Array.isArray(allOrders)) {
-      throw new Error('Failed to load orders from the database. Please try again later.');
-    }
-
-    // Apply status filter client-side
-    let filtered = allOrders;
     if (currentFilters.status) {
-      filtered = filtered.filter(o => (o.status || '').toLowerCase() === currentFilters.status.toLowerCase());
+      params.append('status', currentFilters.status);
     }
 
-    // Client-side pagination
-    const pageSize = 10;
-    totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-    currentPage = Math.min(Math.max(1, page), totalPages);
-    const start = (currentPage - 1) * pageSize;
-    const pageItems = filtered.slice(start, start + pageSize);
+    const response = await fetch(`${API_BASE_URL}/api/orders?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
 
-    renderOrders(pageItems);
-    updatePagination();
-    updateDashboard(pageItems);
+    if (!response.ok) {
+      let bodyText = '';
+      try { bodyText = await response.text(); } catch (e) { /* ignore */ }
+      if (response.status === 401) {
+        sessionStorage.clear();
+        localStorage.clear();
+        window.location.replace('login for buyers.html');
+        return;
+      }
+      throw new Error(`Failed to load orders: HTTP ${response.status} ${response.statusText} ${bodyText}`);
+    }
+
+    const data = await response.json();
+    if (data.success) {
+      const orders = data.data.orders || [];
+      const pagination = data.data.pagination || {};
+
+      currentPage = pagination.currentPage || 1;
+      totalPages = pagination.totalPages || 1;
+
+      renderOrders(orders);
+      updatePagination();
+      updateDashboard(orders);
+    } else {
+      throw new Error(data.message || 'Failed to load orders');
+    }
 
   } catch (error) {
-    console.error('Error loading orders from Supabase:', error);
-    showError(error.message || 'Failed to load purchase history. Please try again.');
+    console.error('Error loading orders:', error);
+    showError('Failed to load purchase history. Please try again.');
   } finally {
     showLoading(false);
   }
