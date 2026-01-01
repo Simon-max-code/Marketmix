@@ -521,13 +521,28 @@ function notify(message, type = 'info') {
 }
 
 // Show error message
+// Show error message (accepts string or object). Keeps message visible a bit longer for debugging.
 function showError(message) {
   const errorDiv = document.getElementById('errorMessage');
-  errorDiv.innerText = message;
+  try {
+    if (typeof message === 'object') {
+      // Pretty-print known shapes
+      if (message.status && message.message) {
+        errorDiv.innerText = `${message.status}: ${message.message}` + (message.errors ? ` — ${JSON.stringify(message.errors)}` : '');
+      } else {
+        errorDiv.innerText = JSON.stringify(message);
+      }
+    } else {
+      errorDiv.innerText = message;
+    }
+  } catch (e) {
+    errorDiv.innerText = String(message);
+  }
   errorDiv.style.display = 'block';
+  // Leave error visible longer so developer can read backend payload
   setTimeout(() => {
     errorDiv.style.display = 'none';
-  }, 5000);
+  }, 12000);
 }
 
 // Format date
@@ -600,7 +615,27 @@ async function loadOrders(page = 1) {
 
   } catch (error) {
     console.error('Error loading orders:', error);
-    showError('Failed to load purchase history. Please try again.');
+
+    // Try to extract backend JSON body if present in the thrown message
+    let displayObj = null;
+    try {
+      const msg = error.message || '';
+      const jsonStart = msg.indexOf('{');
+      if (jsonStart !== -1) {
+        const jsonPart = msg.substring(jsonStart);
+        displayObj = JSON.parse(jsonPart);
+      } else if (error.responseBody) {
+        displayObj = typeof error.responseBody === 'string' ? JSON.parse(error.responseBody) : error.responseBody;
+      }
+    } catch (e) {
+      // ignore JSON parse errors
+    }
+
+    if (displayObj) {
+      showError(displayObj);
+    } else {
+      showError(error.message || 'Failed to load purchase history. Please try again.');
+    }
   } finally {
     showLoading(false);
   }
