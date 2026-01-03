@@ -365,8 +365,8 @@
     <thead>
       <tr>
         <th>Order ID</th>
+        <th>Name</th>
         <th>Date</th>
-        <th>Total item</th>
         <th>Total Amount</th>
         <th>Status</th>
       </tr>
@@ -560,6 +560,17 @@ function formatCurrency(amount) {
   return `$${parseFloat(amount).toFixed(2)}`;
 }
 
+// Basic HTML escape for inserted text
+function escapeHtml(unsafe) {
+  if (!unsafe && unsafe !== 0) return '';
+  return String(unsafe)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 // Load orders from backend API (aggregated). This is reliable and computes total_items server-side.
 async function loadOrders(page = 1) {
   const token = checkAuth();
@@ -614,7 +625,7 @@ async function loadOrders(page = 1) {
       currentPage = pagination.currentPage || 1;
       totalPages = pagination.totalPages || 1;
 
-      renderOrders(orders);
+      await renderOrders(orders);
       updatePagination();
       updateDashboard(orders);
     } else {
@@ -668,54 +679,127 @@ function updateDashboard(orders) {
 }
 
 // Render orders in table
-function renderOrders(orders) {
+// Fetch product names from Supabase for a list of product IDs
+async function fetchProductNamesMap(productIds) {
+  const cfg = getSupabaseConfig();
+  const map = {};
+  if (!cfg || !productIds || productIds.length === 0) return map;
+
+  const uniqueIds = Array.from(new Set(productIds.filter(Boolean)));
+  if (uniqueIds.length === 0) return map;
+
+  try {
+    const baseUrl = cfg.url.replace(/\/+$/, '');
+    // Build a simple OR query by id (PostgREST supports multiple eq filters joined by , - use multiple id=eq.x&id=eq.y)
+    const url = `${baseUrl}/rest/v1/products?${uniqueIds.map(id => `id=eq.${encodeURIComponent(id)}`).join('&')}&select=id,name`;
+
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'apikey': cfg.key,
+        'Authorization': `Bearer ${cfg.key}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!res.ok) return map;
+    const rows = await res.json();
+    rows.forEach(r => {
+      if (r.id) map[r.id] = r.name || '';
+    });
+  } catch (e) {
+    console.warn('Failed to fetch product names from Supabase', e);
+  }
+
+  return map;
+}
+
+// Render orders in table (one row per product)
+async function renderOrders(orders) {
   const tbody = document.getElementById('orderTableBody');
   const emptyState = document.getElementById('emptyState');
-  
+
   tbody.innerHTML = '';
-  
+
+  // Flatten orders -> item entries
+  const entries = [];
+  orders.forEach(order => {
+    const items = order.items || [];
+    if (items.length === 0) {
+      entries.push({
+        orderId: order.id,
+        created_at: order.created_at,
+        status: order.status,
+        product_id: null,
+        product_name: null,
+        quantity: 0,
+        item_total: parseFloat(order.total_amount || 0)
+      });
+    } else {
+      items.forEach(item => {
+        const pid = item.product_id || item.productId || item.product || null;
+        const qty = item.quantity || 1;
+        const price = item.price || item.unit_price || 0;
+        const itemTotal = item.total_price || (price * qty) || 0;
+        entries.push({
+          orderId: order.id,
+          created_at: order.created_at,
+          status: order.status,
+          product_id: pid,
+          product_name: item.product_name || item.name || null,
+          quantity: qty,
+          item_total: itemTotal
+        });
+      });
+    }
+  });
+
   // Apply client-side search filter if exists
-  let filteredOrders = orders;
+  let filtered = entries;
   if (currentFilters.search) {
     const searchLower = currentFilters.search.toLowerCase();
-    filteredOrders = orders.filter(order => {
-      const orderId = (order.id || '').toString().toLowerCase();
-      const products = order.items?.map(item => 
-        (item.product_name || '').toLowerCase()
-      ).join(' ') || '';
-      
-      return orderId.includes(searchLower) || products.includes(searchLower);
+    filtered = entries.filter(e => {
+      const orderId = (e.orderId || '').toString().toLowerCase();
+      const prod = (e.product_name || '').toString().toLowerCase();
+      return orderId.includes(searchLower) || prod.includes(searchLower);
     });
   }
-  
-  if (filteredOrders.length === 0) {
+
+  if (filtered.length === 0) {
     emptyState.style.display = 'block';
     document.getElementById('orderTable').style.display = 'none';
     return;
   }
-  
+
   emptyState.style.display = 'none';
   document.getElementById('orderTable').style.display = 'table';
-  
-  filteredOrders.forEach(order => {
+
+  // Fetch missing product names from Supabase if needed
+  const missingIds = filtered.filter(e => !e.product_name && e.product_id).map(e => e.product_id);
+  let namesMap = {};
+  if (missingIds.length > 0) {
+    namesMap = await fetchProductNamesMap(missingIds);
+  }
+
+  filtered.forEach(entry => {
     const row = document.createElement('tr');
-    row.dataset.orderId = order.id;
-    
-    // Use total_items from order_details (or aggregated value from backend)
-    const totalItems = order.total_items || 0;
+    row.dataset.orderId = entry.orderId || '';
+    row.dataset.productId = entry.product_id || '';
+
+    const productName = entry.product_name || (entry.product_id ? (namesMap[entry.product_id] || '') : '');
 
     row.innerHTML = `
-      <td data-label="Order ID">#${order.id}</td>
-      <td data-label="Date">${formatDate(order.created_at)}</td>
-      <td data-label="Total item">${totalItems}</td>
-      <td data-label="Total Amount">${formatCurrency(order.total_amount)}</td>
-      <td data-label="Status" class="status ${order.status}">${order.status}</td>
+      <td data-label="Order ID">#${entry.orderId}</td>
+      <td data-label="Name" class="product-cell">${escapeHtml(productName || '')}</td>
+      <td data-label="Date">${formatDate(entry.created_at)}</td>
+      <td data-label="Total Amount">${formatCurrency(entry.item_total)}</td>
+      <td data-label="Status" class="status ${entry.status}">${entry.status}</td>
     `;
-    
+
     tbody.appendChild(row);
   });
-  
-  // Add review buttons for delivered orders
+
+  // Add review buttons for delivered orders (per-row)
   enhancePurchaseRows();
 }
 
@@ -755,56 +839,50 @@ function applyFilters() {
 // Add review buttons for delivered orders
 function enhancePurchaseRows() {
   const rows = document.querySelectorAll('#orderTableBody tr');
-  
+
   rows.forEach(row => {
     const statusCell = row.querySelector('[data-label="Status"]');
     if (!statusCell) return;
-    
-    const statusText = statusCell.innerText.trim();
+
+    const statusText = statusCell.innerText.trim().toLowerCase();
     if (statusText !== 'delivered' && statusText !== 'completed') return;
 
     const orderId = row.dataset.orderId || '';
-    const productCell = row.querySelector('.product-cell');
-    if (!productCell) return;
+    const productId = row.dataset.productId || '';
+    const nameCell = row.querySelector('[data-label="Name"]') || row.querySelector('.product-cell');
+    if (!nameCell) return;
 
-    const ids = (productCell.dataset.productIds || '').split(',').map(s => s.trim()).filter(Boolean);
-    const names = (productCell.dataset.productNames || '').split(',').map(s => s.trim()).filter(Boolean);
-    const productListDiv = productCell.querySelector('.product-list-inline');
-    if (!productListDiv) return;
+    // Avoid duplicating button
+    if (nameCell.querySelector('.drop-review-inline-btn')) return;
 
-    // Rebuild product list with review buttons
-    productListDiv.innerHTML = '';
-    names.forEach((name, i) => {
-      const pid = ids[i] || null;
+    if (productId) {
+      const btn = document.createElement('button');
+      btn.className = 'drop-review-inline-btn';
+      btn.innerHTML = '<i class="fas fa-star"></i> Review';
+      btn.dataset.orderId = orderId;
+      btn.dataset.productId = productId;
 
-      const itemDiv = document.createElement('div');
-      itemDiv.style.display = 'flex';
-      itemDiv.style.alignItems = 'center';
-      itemDiv.style.justifyContent = 'space-between';
-      itemDiv.style.gap = '8px';
+      btn.addEventListener('click', () => {
+        window.location.href = `reviews ratings.html?product=${encodeURIComponent(productId)}&order=${encodeURIComponent(orderId)}`;
+      });
 
-      const nameSpan = document.createElement('span');
-      nameSpan.className = 'product-name';
-      nameSpan.innerText = name;
-      itemDiv.appendChild(nameSpan);
+      // append the button after the product name
+      nameCell.style.display = 'flex';
+      nameCell.style.justifyContent = 'space-between';
+      nameCell.style.alignItems = 'center';
+      const wrapper = document.createElement('div');
+      wrapper.style.display = 'flex';
+      wrapper.style.alignItems = 'center';
+      wrapper.style.gap = '8px';
 
-      if (pid) {
-        const btn = document.createElement('button');
-        btn.className = 'drop-review-inline-btn';
-        btn.innerHTML = '<i class="fas fa-star"></i> Review';
-        btn.dataset.orderId = orderId;
-        btn.dataset.productId = pid;
-        btn.title = `Leave a review for ${name}`;
+      const textSpan = document.createElement('span');
+      textSpan.innerHTML = nameCell.innerHTML;
+      wrapper.appendChild(textSpan);
+      wrapper.appendChild(btn);
 
-        btn.addEventListener('click', () => {
-          window.location.href = `reviews ratings.html?product=${encodeURIComponent(pid)}&order=${encodeURIComponent(orderId)}`;
-        });
-
-        itemDiv.appendChild(btn);
-      }
-
-      productListDiv.appendChild(itemDiv);
-    });
+      nameCell.innerHTML = '';
+      nameCell.appendChild(wrapper);
+    }
   });
 }
 
