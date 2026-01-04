@@ -731,10 +731,17 @@
       fetchNotifications();
     });
 
-    // Auto-refresh every 30 seconds
-    setInterval(() => {
-      fetchNotifications(currentFilter === 'unread');
-    }, 30000);
+    
+  // Auto-refresh every 30 seconds
+setInterval(() => {
+  // Only auto-refresh if page is visible and user is still authenticated
+  if (document.visibilityState === 'visible' && checkAuth()) {
+    fetchNotifications(currentFilter === 'unread').catch(err => {
+      // Silently fail on auto-refresh - don't show error to user
+      console.log('Auto-refresh failed (server may be sleeping):', err.message);
+    });
+  }
+}, 30000);
   </script>
 
 </body>
