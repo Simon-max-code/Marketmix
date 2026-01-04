@@ -479,11 +479,6 @@
       }
     });
 
-    // Log the response for debugging
-    const responseText = await response.text();
-    console.log('Response status:', response.status);
-    console.log('Response body:', responseText);
-
     if (!response.ok) {
       if (response.status === 401) {
         sessionStorage.clear();
@@ -491,12 +486,14 @@
         window.location.replace('login for buyers.html');
         return;
       }
-      throw new Error(`Failed to fetch notifications: ${responseText}`);
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to fetch notifications');
     }
 
-    const data = JSON.parse(responseText);
+    const data = await response.json();
 
-    if (data.success) {
+    // Changed from data.success to data.status === 'success'
+    if (data.status === 'success') {
       notifications = data.data.notifications || [];
       const unreadCount = data.data.unreadCount || 0;
       
@@ -602,7 +599,7 @@
 
         const data = await response.json();
 
-        if (data.success) {
+        if (data.status === 'success') {
           // Refresh notifications
           await fetchNotifications(currentFilter === 'unread');
         }
@@ -637,7 +634,7 @@
 
         const data = await response.json();
 
-        if (data.success) {
+        if (data.status === 'success') {
           // Refresh notifications
           await fetchNotifications(currentFilter === 'unread');
         }
@@ -670,7 +667,7 @@
 
         const data = await response.json();
 
-        if (data.success) {
+        if (data.status === 'success') {
           await fetchNotifications(currentFilter === 'unread');
         }
 
@@ -704,7 +701,7 @@
 
         const data = await response.json();
 
-        if (data.success) {
+        if (data.status === 'success') {
           notifications = [];
           renderNotifications([]);
           updateUnreadBadge(0);
