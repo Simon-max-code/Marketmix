@@ -55,6 +55,13 @@
       border-radius:12px;
       background:var(--card);
       margin-bottom:12px;
+      cursor:pointer;
+      transition: all 0.2s ease;
+    }
+
+    .cart-item:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-color: var(--accent);
     }
 
     .item-details h3{
@@ -427,6 +434,17 @@
         `;
 
         const [minusBtn, quantitySpan, plusBtn, deleteBtn] = div.querySelectorAll('.item-actions *');
+
+        // Add click event to cart item to navigate to product page
+        div.addEventListener('click', (e) => {
+          // Don't navigate if clicking on action buttons
+          if (e.target.closest('.item-actions')) return;
+          
+          // Navigate to product page using productId
+          if (item.productId) {
+            window.location.href = `product.html?id=${item.productId}`;
+          }
+        });
 
         minusBtn.addEventListener('click', async ()=>{
           if(item.quantity > 1){ 
