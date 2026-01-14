@@ -1,4 +1,136 @@
 document.addEventListener('DOMContentLoaded', function() {
+  // ===== CART SYSTEM =====
+  // Load existing cart or create new
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+  // Function to update cart count in bottom nav
+  function updateCartCount() {
+    const count = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+    const cartCount = document.querySelector('.cart-count');
+    if (cartCount) {
+      cartCount.textContent = count;
+      cartCount.style.display = count > 0 ? 'inline-block' : 'none';
+    }
+  }
+
+  // Save cart to localStorage
+  function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount();
+  }
+
+  // Sync cart from localStorage (useful when returning via back button or other pages)
+  function syncCartFromStorage() {
+    try {
+      const stored = JSON.parse(localStorage.getItem('cart')) || [];
+      // only assign if different to avoid unnecessary updates
+      const changed = JSON.stringify(stored) !== JSON.stringify(cart);
+      if (changed) {
+        cart = stored;
+        updateCartCount();
+      }
+    } catch (e) {
+      console.warn('syncCartFromStorage failed', e);
+      cart = [];
+      updateCartCount();
+    }
+  }
+
+  // Function to add item to backend API
+  async function addToBackendCart(product) {
+    try {
+      // Check if user is logged in
+      const token = Auth.getToken();
+      if (!token) {
+        showToast('Please login to add items to cart');
+        setTimeout(() => {
+          window.location.href = 'login for buyers.html';
+        }, 1500);
+        return false;
+      }
+
+      // Prefer a real product id when provided by the markup; otherwise create a temporary id
+      const tempProductId = btoa(product.name).substring(0, 36);
+      const productIdToSend = product.productId || tempProductId;
+
+      const response = await fetch(`${CONFIG.API_BASE_URL}/cart/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          product_id: productIdToSend,
+          quantity: 1,
+          metadata: { name: product.name, image: product.image }
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error('Backend error:', data.message);
+        showToast(`Error: ${data.message}`);
+        return false;
+      }
+
+      console.log('✅ Item added to backend:', data);
+      return true;
+    } catch (error) {
+      console.error('Error adding to backend cart:', error);
+      showToast('Error adding to cart. Check console.');
+      return false;
+    }
+  }
+
+  // Add item to cart (with quantity handling)
+  async function addToCart(product) {
+    if (!product || !product.name) return;
+
+    // First, try to add to backend if logged in
+    const token = Auth.getToken();
+    if (token) {
+      const backendSuccess = await addToBackendCart(product);
+      if (!backendSuccess) {
+        // If backend fails, still save locally
+        showToast('Saved locally (backend sync failed)');
+      }
+    }
+
+    // Always save to localStorage for offline support
+    const existing = cart.find(item => item.name === product.name);
+    if (existing) {
+      existing.quantity = (existing.quantity || 1) + 1;
+    } else {
+      product.quantity = 1;
+      cart.push(product);
+    }
+    saveCart();
+    
+    if (!token) {
+      showToast(`${product.name} added to cart (login to save)`);
+    } else {
+      showToast(`${product.name} added to cart`);
+    }
+    
+    // Small delay to ensure UI updates properly
+    return new Promise(resolve => setTimeout(resolve, 100));
+  }
+
+  // Initial cart count update on page load
+  updateCartCount();
+
+  // Sync cart from localStorage (useful when returning via back button or other pages)
+  window.addEventListener('pageshow', () => {
+    syncCartFromStorage();
+  });
+  window.addEventListener('focus', () => {
+    syncCartFromStorage();
+  });
+  // Listen to storage events from other tabs/windows
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'cart') syncCartFromStorage();
+  });
   // Setup autocomplete for desktop search
   const topInput = document.getElementById('searchInput');
   const topAutocomplete = document.getElementById('searchAutocomplete');
@@ -105,15 +237,26 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Attach cart listeners
+  // Attach listeners to all "Add to Cart" buttons (guarded) - can be called after dynamic rendering
   function attachCartListeners() {
     const addButtons = document.querySelectorAll('.add-to-cart') || [];
     addButtons.forEach(button => {
-      button.onclick = null;
-      button.addEventListener('click', (e) => {
-        e.stopPropagation();
+      // Check if listener already attached to avoid duplicates
+      if (button.dataset.listenerAttached === 'true') return;
+      
+      button.addEventListener('click', async (e) => {
+        e.stopPropagation(); // Prevent event bubbling
+        
+        // Prevent double-click by disabling button temporarily
+        if (button.disabled) return;
+        button.disabled = true;
+        
         const card = button.closest('.product-card');
-        if (!card) return;
+        if (!card) {
+          button.disabled = false;
+          return;
+        }
+        
         const titleEl = card.querySelector('.product-name');
         const priceEl = card.querySelector('.price');
         const imgEl = card.querySelector('img');
@@ -126,23 +269,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         const image = imgEl ? (imgEl.src || '') : '';
 
+        // Prefer a real product_id if present on the card
         const productId = card.dataset && card.dataset.productId ? card.dataset.productId : null;
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const existing = cart.find(item => item.name === name);
-        if (existing) {
-          existing.quantity = (existing.quantity || 1) + 1;
-        } else {
-          cart.push({
-            name,
-            price,
-            image,
-            quantity: 1,
-            productId
-          });
-        }
-        localStorage.setItem('cart', JSON.stringify(cart));
-        showToast(`${name} added to cart`);
+        const product = { name, price, image, quantity: 1, productId };
+        
+        // Store original button text
+        const originalText = button.textContent;
+        
+        // Call addToCart and wait for completion
+        await addToCart(product);
+        
+        // Update button state to "Added"
+        button.textContent = 'Added';
+        button.classList.add('added');
+        
+        // Re-enable button after 2 seconds and reset text/class
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.classList.remove('added');
+          button.disabled = false;
+        }, 2000);
       });
+      
+      // Mark that listener has been attached
+      button.dataset.listenerAttached = 'true';
     });
   }
 
