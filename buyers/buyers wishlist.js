@@ -1,8 +1,7 @@
 // API Base URL - adjust this to match your backend URL
 const API_BASE_URL = 'https://marketmix-backend.onrender.com/api'; // Change this to your actual backend URL
 
-// Get token from localStorage
-const token = localStorage.getItem('token');
+/
 
 // Fetch wishlist from backend
 async function fetchWishlist() {
