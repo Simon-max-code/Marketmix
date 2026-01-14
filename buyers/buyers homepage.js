@@ -950,17 +950,31 @@ window.addEventListener('DOMContentLoaded', () => {
     } else {
       showToast(`${product.name} added to cart`);
     }
+    
+    // Small delay to ensure UI updates properly
+    return new Promise(resolve => setTimeout(resolve, 100));
   }
 
   // Attach listeners to all "Add to Cart" buttons (guarded) - can be called after dynamic rendering
   function attachCartListeners() {
     const addButtons = document.querySelectorAll('.add-to-cart, .flash-card button, .recommended-section button') || [];
     addButtons.forEach(button => {
-      // Remove existing listener to avoid duplicates
-      button.onclick = null;
-      button.addEventListener('click', () => {
+      // Check if listener already attached to avoid duplicates
+      if (button.dataset.listenerAttached === 'true') return;
+      
+      button.addEventListener('click', async (e) => {
+        e.stopPropagation(); // Prevent event bubbling
+        
+        // Prevent double-click by disabling button temporarily
+        if (button.disabled) return;
+        button.disabled = true;
+        
         const card = button.closest('.product-card, .flash-card, .recommended-item');
-        if (!card) return;
+        if (!card) {
+          button.disabled = false;
+          return;
+        }
+        
         const titleEl = card.querySelector('h3, h4');
         const priceEl = card.querySelector('.price');
         const imgEl = card.querySelector('img');
@@ -976,8 +990,27 @@ window.addEventListener('DOMContentLoaded', () => {
         // Prefer a real product_id if present on the card
         const productId = card.dataset && card.dataset.productId ? card.dataset.productId : null;
         const product = { name, price, image, quantity: 1, productId };
-        addToCart(product);
+        
+        // Store original button text
+        const originalText = button.textContent;
+        
+        // Call addToCart and wait for completion
+        await addToCart(product);
+        
+        // Update button state to "Added"
+        button.textContent = 'Added';
+        button.classList.add('added');
+        
+        // Re-enable button after 2 seconds and reset text/class
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.classList.remove('added');
+          button.disabled = false;
+        }, 2000);
       });
+      
+      // Mark that listener has been attached
+      button.dataset.listenerAttached = 'true';
     });
   }
 

@@ -562,6 +562,19 @@ body {
   background: #EA580C;
 }
 
+.add-to-cart:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.add-to-cart.added {
+  background: #F97316;
+}
+
+.add-to-cart.added:hover {
+  background: #EA580C;
+}
+
 /* Star Rating Styling */
 .rating {
   color: #F97316;
