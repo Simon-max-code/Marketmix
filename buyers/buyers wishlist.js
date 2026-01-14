@@ -1,7 +1,7 @@
-// API Base URL - adjust this to match your backend URL
-const API_BASE_URL = 'https://marketmix-backend.onrender.com/api'; // Change this to your actual backend URL
+// API Base URL - prefer global CONFIG when available to support development mode
+const API_BASE_URL = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend.onrender.com/api'; // Change this to your actual backend URL if needed
 
-/
+// NOTE: stray slash removed (it caused an unterminated regex / syntax error)
 
 // Fetch wishlist from backend
 async function fetchWishlist() {

@@ -415,7 +415,8 @@
         // =====================================================
         // CONFIGURATION
         // =====================================================
-        const API_BASE_URL = 'https://marketmix-backend.onrender.com/api';
+        // Prefer CONFIG.API_BASE_URL when present (supports local dev and environments)
+        const API_BASE_URL = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend.onrender.com/api';
         const GOOGLE_CLIENT_ID = '849940344676-n4kcsnk7ueqj3jlnbfm51nts7csg915r.apps.googleusercontent.com'; // Replace with your actual Google Client ID
         
         console.log('🚀 MarketMix Signup - API Base URL:', API_BASE_URL);
@@ -509,7 +510,8 @@
                     } catch(e) { console.warn('merge failed', e); }
 
                     setTimeout(() => {
-                        const target = localStorage.getItem('post_login_redirect') || 'buyers homepage.html';
+                        const target = localStorage.getItem('after_login_redirect') || localStorage.getItem('post_login_redirect') || 'buyers homepage.html';
+                        try { localStorage.removeItem('after_login_redirect'); } catch (e) {}
                         try { localStorage.removeItem('post_login_redirect'); } catch (e) {}
                         window.location.href = target;
                     }, 1500);
@@ -867,7 +869,8 @@
                         })();
                     } catch(e) { console.warn('merge failed', e); }
                     setTimeout(() => {
-                        const target = localStorage.getItem('post_login_redirect') || 'buyers homepage.html';
+                        const target = localStorage.getItem('after_login_redirect') || localStorage.getItem('post_login_redirect') || 'buyers homepage.html';
+                        try { localStorage.removeItem('after_login_redirect'); } catch (e) {}
                         try { localStorage.removeItem('post_login_redirect'); } catch (e) {}
                         window.location.href = target;
                     }, 1500);

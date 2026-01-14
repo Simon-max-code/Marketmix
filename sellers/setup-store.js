@@ -193,6 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
     galleryFiles.forEach((src, idx) => {
       const item = document.createElement('div');
       item.className = 'gallery-item';
+      // NOTE: Validate or sanitize user-supplied image URLs before inserting them into the DOM
       item.innerHTML = `<img src="${src}" alt="showcase ${idx+1}"><button type="button" class="remove-gallery" data-i="${idx}">✕</button>`;
       galleryGrid.appendChild(item);
 
@@ -245,6 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
         a.href = v;
         a.target = '_blank';
         a.rel = 'noopener';
+        // NOTE: Ensure s.icon and s.label originate from trusted sources or are sanitized
         a.innerHTML = `<i class="${s.icon}"></i> ${s.label}`;
         previewSocials.appendChild(a);
       }

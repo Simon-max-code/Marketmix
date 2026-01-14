@@ -289,10 +289,8 @@ function openProductReviewModal(product, options = {}) {
       const token = localStorage.getItem('token');
 
       // Determine API base URL
-      let API_BASE_URL = 'https://marketmix-backend.onrender.com/api';
-      if (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) {
-        API_BASE_URL = CONFIG.API_BASE_URL;
-      }
+      // Prefer global CONFIG.API_BASE_URL when present (keeps dev/prod consistent)
+      let API_BASE_URL = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend.onrender.com/api';
 
       // Validate product ID exists
       if (!product.id) {

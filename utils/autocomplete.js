@@ -218,6 +218,8 @@ function setupAutocomplete(inputElement, containerElement, onSelect) {
       const suggestions = await autocompleteEngine.debouncedGetSuggestions(query, 10);
 
       if (suggestions.length === 0) {
+        // NOTE: This innerHTML is rendering controlled suggestions. If suggestions may contain user-supplied HTML,
+        // sanitize or escape them first to avoid XSS. For now suggestions are treated as plain text.
         containerElement.innerHTML = '<div class="autocomplete-no-results">No results found</div>';
         containerElement.style.display = 'block';
         return;

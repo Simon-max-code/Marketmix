@@ -139,13 +139,14 @@ async function handleFormSubmit(event, formType, redirectUrl) {
 
         showNotification('Login successful');
         
-                // Check if there's a redirect URL saved (from checkout gate or other sources)
+                // Check if there's a redirect URL saved (support legacy key as well)
                 let finalRedirectUrl = redirectUrl;
-                const savedRedirect = localStorage.getItem('after_login_redirect');
+                const savedRedirect = localStorage.getItem('after_login_redirect') || localStorage.getItem('post_login_redirect');
                 if (savedRedirect) {
                     // Normalize to absolute path so redirects don't resolve relative to current folder
                     finalRedirectUrl = savedRedirect.startsWith('/') ? savedRedirect : ('/' + savedRedirect);
-                    localStorage.removeItem('after_login_redirect'); // Clear it after use
+                    try { localStorage.removeItem('after_login_redirect'); } catch (e) {}
+                    try { localStorage.removeItem('post_login_redirect'); } catch (e) {}
                     console.log('Login: redirecting to saved URL:', finalRedirectUrl);
                 } else {
                     // If no saved redirect, check URL query param `next` (e.g. ?next=checkout.html)
@@ -174,12 +175,13 @@ async function handleFormSubmit(event, formType, redirectUrl) {
 function handleGoogleSignIn(formType, redirectUrl) {
     showNotification(`${formType} with Google successful!`);
     
-    // Check if there's a redirect URL saved (from checkout gate or other sources)
+    // Check if there's a redirect URL saved (support legacy key as well)
     let finalRedirectUrl = redirectUrl;
-    const savedRedirect = localStorage.getItem('after_login_redirect');
+    const savedRedirect = localStorage.getItem('after_login_redirect') || localStorage.getItem('post_login_redirect');
     if (savedRedirect) {
       finalRedirectUrl = savedRedirect;
-      localStorage.removeItem('after_login_redirect'); // Clear it after use
+      try { localStorage.removeItem('after_login_redirect'); } catch (e) {}
+      try { localStorage.removeItem('post_login_redirect'); } catch (e) {}
       console.log('Google login: redirecting to saved URL:', finalRedirectUrl);
     }
     

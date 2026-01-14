@@ -204,41 +204,70 @@ function renderProduct(product) {
   // Set page title
   document.title = `${product.name} - MarketMix`;
 
-  // Update breadcrumb
-  document.getElementById('breadcrumb-category').textContent = getCategoryRules(product.category).displayName;
-  document.getElementById('breadcrumb-product').textContent = product.name;
+  // Update breadcrumb (guard elements before use)
+  const breadcrumbCategoryEl = document.getElementById('breadcrumb-category');
+  if (breadcrumbCategoryEl) breadcrumbCategoryEl.textContent = getCategoryRules(product.category).displayName;
+  const breadcrumbProductEl = document.getElementById('breadcrumb-product');
+  if (breadcrumbProductEl) breadcrumbProductEl.textContent = product.name;
 
   // Product header
-  document.getElementById('product-title').textContent = product.name;
-  document.getElementById('product-category').textContent = getCategoryRules(product.category).displayName;
+  const productTitleEl = document.getElementById('product-title');
+  if (productTitleEl) productTitleEl.textContent = product.name;
+  const productCategoryEl = document.getElementById('product-category');
+  if (productCategoryEl) productCategoryEl.textContent = getCategoryRules(product.category).displayName;
   
-  // Shop info
+  // Shop info (guarded to avoid runtime errors if elements missing)
   if (product.seller) {
-    document.getElementById('shop-avatar').src = product.seller.shop_avatar_url || 'https://via.placeholder.com/32';
-    document.getElementById('shop-link').textContent = product.seller.shop_name;
-    document.getElementById('shop-link').href = `./store-id.html?id=${product.seller.id}`;
-    document.getElementById('shop-rating').textContent = `⭐ ${(product.seller.rating || 0).toFixed(1)} rating`;
+    const shopAvatarEl = document.getElementById('shop-avatar');
+    if (shopAvatarEl) shopAvatarEl.src = product.seller.shop_avatar_url || 'https://via.placeholder.com/32';
+    const shopLinkEl = document.getElementById('shop-link');
+    if (shopLinkEl) {
+      shopLinkEl.textContent = product.seller.shop_name;
+      // Prefer seller.id but fall back to seller_id if present
+      shopLinkEl.href = `./store-id.html?id=${product.seller.id || product.seller_id || ''}`;
+    }
+    const shopRatingEl = document.getElementById('shop-rating');
+    if (shopRatingEl) shopRatingEl.textContent = `⭐ ${(product.seller.rating || 0).toFixed(1)} rating`;
   }
 
-  // Price
-  const displayPrice = product.flash_sale_active && product.flash_sale_discount 
-    ? (product.price * (100 - product.flash_sale_discount) / 100).toFixed(2)
-    : product.price;
-  document.getElementById('product-price').textContent = `$${displayPrice}`;
+  // Price (normalized to 2 decimals)
+  const displayPriceNum = Number(product.price);
+  const displayPrice = (product.flash_sale_active && product.flash_sale_discount) 
+    ? (displayPriceNum * (100 - Number(product.flash_sale_discount)) / 100).toFixed(2)
+    : displayPriceNum.toFixed(2);
+  const productPriceEl = document.getElementById('product-price');
+  if (productPriceEl) productPriceEl.textContent = `$${displayPrice}`;
   
   if (product.flash_sale_active && product.flash_sale_discount) {
-    document.getElementById('original-price').textContent = `$${product.price}`;
-    document.getElementById('original-price').style.display = 'inline';
+    const originalPriceEl = document.getElementById('original-price');
+    if (originalPriceEl) {
+      originalPriceEl.textContent = `$${Number(product.price).toFixed(2)}`;
+      originalPriceEl.style.display = 'inline';
+    }
   }
 
-  // Stock status
+  // Stock status (avoid direct innerHTML with interpolated values to reduce XSS risk)
   const stockStatus = document.getElementById('stock-status');
-  if (product.stock_quantity > 0) {
-    stockStatus.innerHTML = `<span style="color:#22c55e">✓ In Stock (${product.stock_quantity} available)</span>`;
-  } else {
-    stockStatus.innerHTML = `<span style="color:#ef4444">✗ Out of Stock</span>`;
-    document.getElementById('product-add-to-cart').disabled = true;
-    document.getElementById('product-add-to-cart').style.opacity = '0.5';
+  if (stockStatus) {
+    stockStatus.innerHTML = '';
+    if (Number(product.stock_quantity) > 0) {
+      const inStockSpan = document.createElement('span');
+      inStockSpan.style.color = '#22c55e';
+      inStockSpan.textContent = `✓ In Stock (${Number(product.stock_quantity)} available)`;
+      stockStatus.appendChild(inStockSpan);
+    } else {
+      const outSpan = document.createElement('span');
+      outSpan.style.color = '#ef4444';
+      outSpan.textContent = '✗ Out of Stock';
+      stockStatus.appendChild(outSpan);
+
+      // Guard add-to-cart modifications
+      const addToCartBtn = document.getElementById('product-add-to-cart');
+      if (addToCartBtn) {
+        addToCartBtn.disabled = true;
+        addToCartBtn.style.opacity = '0.5';
+      }
+    }
   }
 
   // Display view count
@@ -264,9 +293,11 @@ function renderProduct(product) {
 
 // Setup event listeners
 function setupEventListeners(product) {
-  // Add to cart
+  // Add to cart (guard element existence)
   const addToCartBtn = document.getElementById('product-add-to-cart');
-  addToCartBtn.addEventListener('click', () => addToCart(product));
+  if (addToCartBtn) {
+    addToCartBtn.addEventListener('click', () => addToCart(product));
+  }
 
   // Add to wishlist
   const wishlistBtn = document.getElementById('product-add-to-wishlist');
@@ -287,6 +318,7 @@ function setupEventListeners(product) {
 
   if (decreaseBtn) {
     decreaseBtn.addEventListener('click', () => {
+      if (!qtyInput) return;
       let qty = parseInt(qtyInput.value) || 1;
       if (qty > 1) qtyInput.value = qty - 1;
     });
@@ -294,6 +326,7 @@ function setupEventListeners(product) {
 
   if (increaseBtn) {
     increaseBtn.addEventListener('click', () => {
+      if (!qtyInput) return;
       let qty = parseInt(qtyInput.value) || 1;
       if (qty < product.stock_quantity) qtyInput.value = qty + 1;
     });
@@ -326,9 +359,12 @@ async function trackProductView(productId) {
 
 // Add to cart
 async function addToCart(product) {
-  const quantity = parseInt(document.getElementById('product-quantity').value) || 1;
+  // Safe retrieval of quantity and sellerId
+  const qtyInputEl = document.getElementById('product-quantity');
+  const quantity = qtyInputEl ? (parseInt(qtyInputEl.value) || 1) : 1;
   const color = window.productOptions?.color?.() || null;
   const size = window.productOptions?.size?.() || null;
+  const sellerId = product.seller?.id || product.seller_id || null;
 
   const cartItem = {
     id: product.id,
@@ -338,8 +374,8 @@ async function addToCart(product) {
     quantity,
     color,
     size,
-    sellerId: product.seller_id
-  };
+    sellerId
+  }; 
 
   // Save to localStorage
   let cart = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -445,9 +481,12 @@ async function toggleWishlist(product) {
 
 // Proceed to checkout
 function proceedToCheckout(product) {
-  const quantity = parseInt(document.getElementById('product-quantity').value) || 1;
+  // Safe retrieval of quantity and sellerId
+  const qtyInputEl = document.getElementById('product-quantity');
+  const quantity = qtyInputEl ? (parseInt(qtyInputEl.value) || 1) : 1;
   const color = window.productOptions?.color?.() || null;
   const size = window.productOptions?.size?.() || null;
+  const sellerId = product.seller?.id || product.seller_id || null;
 
   const cartItem = {
     id: product.id,
@@ -457,8 +496,8 @@ function proceedToCheckout(product) {
     quantity,
     color,
     size,
-    sellerId: product.seller_id
-  };
+    sellerId
+  }; 
 
   // Save to localStorage
   let cart = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -494,9 +533,11 @@ function proceedToCheckout(product) {
     window.location.href = './checkout.html';
   } else {
     try {
+      // Store both keys to remain backward compatible with older pages
+      localStorage.setItem('after_login_redirect', './checkout.html');
       localStorage.setItem('post_login_redirect', './checkout.html');
     } catch (e) {
-      console.warn('Could not set post_login_redirect', e);
+      console.warn('Could not set after_login_redirect/post_login_redirect', e);
     }
     window.location.href = 'login for buyers.html';
   }

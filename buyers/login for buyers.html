@@ -48,7 +48,8 @@
         // =====================================================
         // CONFIGURATION
         // =====================================================
-        const API_BASE_URL = 'https://marketmix-backend.onrender.com/api';
+        // Prefer CONFIG.API_BASE_URL when present (supports local dev and environments)
+        const API_BASE_URL = (window.CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : 'https://marketmix-backend.onrender.com/api';
         const GOOGLE_CLIENT_ID = '849940344676-n4kcsnk7ueqj3jlnbfm51nts7csg915r.apps.googleusercontent.com';
         
         console.log('🚀 MarketMix Login - API Base URL:', API_BASE_URL);
@@ -128,9 +129,10 @@
                         console.warn('Wishlist merge failed:', e);
                     }
 
-                    // Redirect after 1 second to post-login target if set
+                    // Redirect after 1 second to post-login target if set (support legacy key)
                     setTimeout(() => {
-                        const target = localStorage.getItem('post_login_redirect') || 'buyers homepage.html';
+                        const target = localStorage.getItem('after_login_redirect') || localStorage.getItem('post_login_redirect') || 'buyers homepage.html';
+                        try { localStorage.removeItem('after_login_redirect'); } catch (e) {}
                         try { localStorage.removeItem('post_login_redirect'); } catch (e) {}
                         window.location.href = target;
                     }, 1000);
@@ -224,7 +226,8 @@
                         console.warn('Wishlist merge failed:', e);
                     }
                     setTimeout(() => {
-                        const target = localStorage.getItem('post_login_redirect') || 'buyers homepage.html';
+                        const target = localStorage.getItem('after_login_redirect') || localStorage.getItem('post_login_redirect') || 'buyers homepage.html';
+                        try { localStorage.removeItem('after_login_redirect'); } catch (e) {}
                         try { localStorage.removeItem('post_login_redirect'); } catch (e) {}
                         window.location.href = target;
                     }, 1000);
