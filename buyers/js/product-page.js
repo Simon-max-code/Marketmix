@@ -431,7 +431,7 @@ async function addToCart(product) {
   const btn = document.getElementById('product-add-to-cart');
   const originalText = btn.textContent;
   btn.textContent = '✓ Added to Cart!';
-  btn.style.backgroundColor = '#22c55e';
+  btn.style.backgroundColor = '#f97316';
   setTimeout(() => {
     btn.textContent = originalText;
     btn.style.backgroundColor = '#f97316';
