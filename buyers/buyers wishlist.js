@@ -54,7 +54,7 @@ async function removeFromWishlist(itemId) {
 }
 
 // Move item to cart (you'll need to implement this endpoint on backend)
-async function moveToCart(productId) {
+async function moveToCart(productId, itemData) {
   try {
     // This assumes you have a cart endpoint - adjust as needed
     const response = await fetch(`${API_BASE_URL}/cart/add`, {
@@ -70,6 +70,32 @@ async function moveToCart(productId) {
 
     if (!response.ok) {
       throw new Error(data.message || 'Failed to add to cart');
+    }
+
+    // Also update localStorage cart for immediate sync across tabs
+    try {
+      let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const existing = cart.find(item => item.productId === productId);
+      if (existing) {
+        existing.quantity = (existing.quantity || 1) + 1;
+      } else {
+        cart.push({
+          name: itemData.name || 'Product',
+          price: itemData.price || 0,
+          image: itemData.image || '',
+          quantity: 1,
+          productId: productId
+        });
+      }
+      localStorage.setItem('cart', JSON.stringify(cart));
+      // Dispatch storage event to notify other tabs
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'cart',
+        newValue: JSON.stringify(cart),
+        oldValue: JSON.stringify(cart.slice(0, -1))
+      }));
+    } catch (e) {
+      console.warn('Failed to update localStorage cart', e);
     }
 
     return true;
@@ -130,8 +156,16 @@ function addEventListeners() {
     btn.addEventListener("click", async function () {
       const productId = this.dataset.productId;
       const itemId = this.closest('.wishlist-item').querySelector('.remove').dataset.itemId;
+      const wishlistItem = this.closest('.wishlist-item');
       
-      const success = await moveToCart(productId);
+      // Get item data for localStorage
+      const itemData = {
+        name: wishlistItem.querySelector('h4').textContent,
+        price: parseFloat(wishlistItem.querySelector('p').textContent.replace('$', '')),
+        image: wishlistItem.querySelector('img').src
+      };
+      
+      const success = await moveToCart(productId, itemData);
       if (success) {
         alert("Item moved to cart!");
         // Remove from wishlist after moving to cart

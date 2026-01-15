@@ -658,6 +658,12 @@ window.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('focus', () => {
     syncCartFromStorage();
   });
+  // Sync cart when tab becomes visible (important for detecting changes from other tabs/pages)
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      syncCartFromStorage();
+    }
+  });
   // Clear timers when leaving the page to avoid background intervals
   window.addEventListener('beforeunload', () => {
     if (flashCountdownInterval) clearInterval(flashCountdownInterval);
