@@ -3,222 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Seller Signup</title>
+  <title>Seller Login | MarketMix</title>
+  <link rel="stylesheet" href="sellers login.css">
   <link rel="stylesheet" href="../shared/notifications.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: "Poppins", sans-serif;
-      background: url('your-image.jpg') no-repeat center/cover;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-    }
-
-    .signup-container {
-      width: 100%;
-      max-width: 480px;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 2rem;
-      border-radius: 1rem;
-      backdrop-filter: blur(15px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-      position: relative;
-    }
-
-    .signup-container h2 {
-      text-align: center;
-      margin-bottom: 1.5rem;
-      font-weight: 600;
-      color: #ffffff;
-    }
-
-    .progressbar {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 1.5rem;
-      counter-reset: step;
-    }
-
-    .progressbar li {
-      list-style: none;
-      position: relative;
-      flex: 1;
-      text-align: center;
-      color: #aaa;
-    }
-
-    .progressbar li::before {
-      counter-increment: step;
-      content: counter(step);
-      width: 30px;
-      height: 30px;
-      line-height: 30px;
-      border: 2px solid #aaa;
-      display: block;
-      text-align: center;
-      margin: 0 auto 10px;
-      border-radius: 50%;
-      background: transparent;
-    }
-
-    .progressbar li.active::before {
-      border-color: #667eea;
-      background: #667eea;
-      color: #fff;
-    }
-
-    .progressbar li.active {
-      color: #fff;
-    }
-
-    .form-step {
-      display: none;
-      animation: fadeIn 0.5s ease;
-    }
-
-    .form-step.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(10px);} 
-      to {opacity: 1; transform: translateY(0);} 
-    }
-
-    .input-group {
-      margin-bottom: 1rem;
-    }
-
-    .input-group input,
-    .input-group select {
-      width: 100%;
-      padding: 0.75rem;
-      border: none;
-      border-radius: 0.6rem;
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-      font-size: 1rem;
-      outline: none;
-      box-sizing: border-box;
-    }
-
-    .input-group input:focus,
-    .input-group select:focus {
-      background: rgba(255, 255, 255, 0.2);
-      box-shadow: 0 0 0 2px #667eea;
-    }
-
-    .input-group input::placeholder {
-      color: #ccc;
-    }
-
-    select option {
-      background: #1e1e1e;
-      color: #fff;
-    }
-
-    .error {
-      font-size: 0.8rem;
-      color: #ff6b6b;
-      margin-top: 0.3rem;
-    }
-
-    .btn {
-      width: 100%;
-      padding: 0.8rem;
-      border: none;
-      border-radius: 0.6rem;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 0.8rem;
-      transition: transform 0.2s, background 0.3s;
-    }
-
-    .btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-    }
-
-    .btn:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: #fff;
-    }
-
-    .btn-google {
-      background: #fff;
-      color: #444;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-    }
-
-    .btn-google img {
-      width: 20px;
-      height: 20px;
-    }
-
-    .divider {
-      text-align: center;
-      margin: 1.5rem 0;
-      color: #ccc;
-    }
-
-    .shake {
-      animation: shake 0.3s;
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-8px); }
-      40%, 80% { transform: translateX(8px); }
-    }
-
-    .password-group {
-      position: relative;
-    }
-
-    .toggle-password {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      font-size: 1.2rem;
-      color: #ccc;
-      user-select: none;
-      transition: color 0.2s;
-    }
-
-    .toggle-password:hover {
-      color: #fff;
-    }
-
-    .strength-bar {
-      height: 6px;
-      border-radius: 5px;
-      background: rgba(255, 255, 255, 0.2);
-      margin-top: 5px;
-      overflow: hidden;
-    }
-
-    .strength-bar-fill {
-      height: 100%;
-      width: 0%;
-      transition: width 0.3s, background 0.3s;
-    }
-
-    /* Toast notification styles (in case shared/notifications.css isn't loaded) */
+    /* Toast fallback in case notifications.css isn't loaded */
     .toast {
       position: fixed;
       top: 20px;
@@ -231,118 +22,83 @@
       animation: slideIn 0.3s ease;
       max-width: 360px;
     }
-
     .toast.success { background: #4CAF50; }
     .toast.error   { background: #f44336; }
     .toast.info    { background: #2196F3; }
-
     @keyframes slideIn {
       from { transform: translateX(120%); opacity: 0; }
       to   { transform: translateX(0);    opacity: 1; }
     }
+    button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+    .error-msg {
+      color: #ff6b6b;
+      font-size: 0.82rem;
+      text-align: left;
+      margin-top: 4px;
+      display: none;
+    }
+    input.input-error {
+      box-shadow: 0 0 0 2px #ff6b6b !important;
+    }
   </style>
 </head>
 <body>
-  <div class="signup-container">
-    <h2>Seller Signup</h2>
-
-    <ul class="progressbar">
-      <li class="active">Step 1</li>
-      <li>Step 2</li>
-      <li>Step 3</li>
-    </ul>
-
-    <form id="signupForm">
-      <!-- Step 1: Personal Info -->
-      <div class="form-step active">
-        <div class="input-group">
-          <input type="text" id="fullname" placeholder="Full Name" required>
-          <div class="error" id="error-fullname"></div>
-        </div>
-        <div class="input-group">
-          <input type="email" id="email" placeholder="Email" required>
-          <div class="error" id="error-email"></div>
-        </div>
-        <div class="input-group">
-          <input type="tel" id="phone" placeholder="Phone Number" required>
-          <div class="error" id="error-phone"></div>
-        </div>
-        <button type="button" class="btn btn-primary next-btn">Next</button>
+  <div class="login-container">
+    <div class="login-box">
+      <div style="text-align:center; margin-bottom:12px;">
+        <img src="images/logo Picture1.png" alt="MarketMix Logo" style="width:120px; height:auto;">
       </div>
+      <h1>Login to your account</h1>
+      <p class="subtitle">Sign in to manage your seller account</p>
 
-      <!-- Step 2: Store Info -->
-      <div class="form-step">
-        <div class="input-group">
-          <input type="text" id="storeName" placeholder="Store Name" required>
-          <div class="error" id="error-storeName"></div>
-        </div>
-        <div class="input-group">
-          <select id="businessType" required>
-            <option value="">Select Business Type</option>
-            <option value="retail">Retail</option>
-            <option value="wholesale">Wholesale</option>
-            <option value="service">Service</option>
-          </select>
-          <div class="error" id="error-businessType"></div>
-        </div>
-        <div class="input-group">
-          <select id="productCategory" required>
-            <option value="">Select Product Category</option>
-            <option value="fashion">Fashion</option>
-            <option value="electronics">Electronics</option>
-            <option value="home">Home & Living</option>
-            <option value="other">Other</option>
-          </select>
-          <div class="error" id="error-productCategory"></div>
-        </div>
-        <div class="input-group">
-          <input type="text" id="address" placeholder="Business Address" required>
-          <div class="error" id="error-address"></div>
-        </div>
-        <button type="button" class="btn btn-primary next-btn">Next</button>
-      </div>
+      <form id="sellerLoginForm" novalidate>
+        <label for="email">Email address</label>
+        <input type="email" id="email" placeholder="you@yourshop.com" required>
+        <div class="error-msg" id="error-email"></div>
 
-      <!-- Step 3: Password -->
-      <div class="form-step">
-        <div class="input-group password-group">
-          <input type="password" id="password" placeholder="Password (min 6 chars)" required>
-          <span class="toggle-password" onclick="togglePassword('password', this)">👁</span>
-          <div class="strength-bar"><div id="strength-bar-fill" class="strength-bar-fill"></div></div>
-          <div class="error" id="error-password"></div>
+        <label for="password">Password</label>
+        <div style="position:relative;">
+          <input type="password" id="password" placeholder="Enter password" required style="padding-right:40px;">
+          <span id="togglePassword" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:#ccc; font-size:1.1rem;" onclick="togglePassword()">👁</span>
         </div>
-        <div class="input-group password-group">
-          <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
-          <span class="toggle-password" onclick="togglePassword('confirmPassword', this)">👁</span>
-          <div class="error" id="error-confirmPassword"></div>
-        </div>
-        <button type="submit" id="submitBtn" class="btn btn-primary">Create Account</button>
-      </div>
-    </form>
+        <div class="error-msg" id="error-password"></div>
 
-    <div class="divider">or</div>
-    <button class="btn btn-google" onclick="handleGoogleSignup()">
-      <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google Logo"> Sign up with Google
-    </button>
-    <p style="text-align:center; margin-top:1rem; color:#ccc;">
-      Already have an account?
-      <a href="sellers login.html" style="color:#667eea; font-weight:600; text-decoration:none;">Log in</a>
-    </p>
+        <a href="forgot-password.html" style="display:block; text-align:right; margin-top:8px; color:#667eea; text-decoration:none; font-size:0.9rem;">Forgot password?</a>
+
+        <button type="submit" id="loginBtn">Login</button>
+      </form>
+
+      <p class="note">Or continue with</p>
+
+      <button type="button" id="googleSigninBtn" onclick="handleGoogleSignin()" style="width:100%; padding:0.75rem; background:white; color:#333; border:1px solid #ddd; border-radius:6px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem; transition:all 0.3s; font-size:1rem; margin-top:0;">
+        <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Sign in with Google
+      </button>
+
+      <p class="note">Don't have an account? <a href="signup-sellers.html">Sign up</a></p>
+    </div>
   </div>
 
   <script>
-    // ─── Config ────────────────────────────────────────────────────────────────
     const API_BASE = 'https://marketmix-backend.onrender.com/api';
 
-    // ─── Toast Notification ────────────────────────────────────────────────────
+    // ─── Toast ────────────────────────────────────────────────────────────────
     function showToast(message, type = 'info') {
-      // Try shared showNotification if available, else fallback
       if (typeof showNotification === 'function') {
         showNotification(message, type);
         return;
       }
       const existing = document.querySelector('.toast');
       if (existing) existing.remove();
-
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
       toast.textContent = message;
@@ -350,205 +106,201 @@
       setTimeout(() => toast.remove(), 4000);
     }
 
-    // ─── Multi-step form logic ─────────────────────────────────────────────────
-    const formSteps   = document.querySelectorAll('.form-step');
-    const nextBtns    = document.querySelectorAll('.next-btn');
-    const progressbar = document.querySelectorAll('.progressbar li');
-    let currentStep   = 0;
-
-    function showStep(step) {
-      formSteps.forEach((div, i) => {
-        div.classList.toggle('active', i === step);
-        progressbar[i].classList.toggle('active', i <= step);
-      });
-    }
-
-    function validateStep(step) {
-      let isValid = true;
-      const inputs = formSteps[step].querySelectorAll('input, select');
-
-      inputs.forEach(input => {
-        const errorDiv = document.getElementById('error-' + input.id);
-        if (!errorDiv) return;
-
-        if (!input.value.trim()) {
-          errorDiv.textContent = 'This field is required';
-          isValid = false;
-        } else {
-          errorDiv.textContent = '';
-
-          if (input.type === 'email') {
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value)) {
-              errorDiv.textContent = 'Enter a valid email';
-              isValid = false;
-            }
-          }
-          if (input.id === 'phone') {
-            if (!/^\+?[\d\s\-()]{7,15}$/.test(input.value)) {
-              errorDiv.textContent = 'Enter a valid phone number';
-              isValid = false;
-            }
-          }
-          if (input.id === 'password' && input.value.length < 6) {
-            errorDiv.textContent = 'Password must be at least 6 characters';
-            isValid = false;
-          }
-          if (input.id === 'confirmPassword') {
-            if (input.value !== document.getElementById('password').value) {
-              errorDiv.textContent = 'Passwords do not match';
-              isValid = false;
-            }
-          }
-        }
-      });
-
-      if (!isValid) {
-        formSteps[step].classList.add('shake');
-        setTimeout(() => formSteps[step].classList.remove('shake'), 300);
+    // ─── Password toggle ──────────────────────────────────────────────────────
+    function togglePassword() {
+      const input = document.getElementById('password');
+      const icon  = document.getElementById('togglePassword');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        icon.textContent = '👁';
       }
-
-      return isValid;
     }
 
-    nextBtns.forEach(() => {
-      // We add one listener per button via index
-    });
+    // ─── Field validation ─────────────────────────────────────────────────────
+    function showError(fieldId, message) {
+      const el = document.getElementById('error-' + fieldId);
+      const input = document.getElementById(fieldId);
+      if (el) { el.textContent = message; el.style.display = 'block'; }
+      if (input) input.classList.add('input-error');
+    }
 
-    document.querySelectorAll('.next-btn').forEach((btn, index) => {
-      btn.addEventListener('click', () => {
-        if (validateStep(currentStep)) {
-          currentStep++;
-          showStep(currentStep);
-        }
+    function clearErrors() {
+      document.querySelectorAll('.error-msg').forEach(el => {
+        el.textContent = '';
+        el.style.display = 'none';
       });
-    });
+      document.querySelectorAll('.input-error').forEach(el => {
+        el.classList.remove('input-error');
+      });
+    }
 
-    // ─── Form Submit: Register + Setup Profile ─────────────────────────────────
-    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+    // ─── Save session ─────────────────────────────────────────────────────────
+    function saveSession(token, user) {
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+    }
+
+    // ─── Redirect after login ─────────────────────────────────────────────────
+    function redirectToDashboard() {
+      showToast('Login successful! Redirecting...', 'success');
+      setTimeout(() => {
+        window.location.href = 'sellers layout.html';
+      }, 1500);
+    }
+
+    // ─── Email/Password login ─────────────────────────────────────────────────
+    document.getElementById('sellerLoginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!validateStep(currentStep)) return;
+      clearErrors();
 
-      const submitBtn = document.getElementById('submitBtn');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Creating account...';
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const loginBtn = document.getElementById('loginBtn');
 
-      const fullname       = document.getElementById('fullname').value.trim();
-      const email          = document.getElementById('email').value.trim();
-      const phone          = document.getElementById('phone').value.trim();
-      const storeName      = document.getElementById('storeName').value.trim();
-      const businessType   = document.getElementById('businessType').value;
-      const productCategory = document.getElementById('productCategory').value;
-      const address        = document.getElementById('address').value.trim();
-      const password       = document.getElementById('password').value;
+      // Client-side validation
+      let valid = true;
+      if (!email) {
+        showError('email', 'Email is required');
+        valid = false;
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showError('email', 'Enter a valid email address');
+        valid = false;
+      }
+      if (!password) {
+        showError('password', 'Password is required');
+        valid = false;
+      }
+      if (!valid) return;
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Signing in...';
 
       try {
-        // ── Step 1: Register the user with role=seller ──────────────────────
-        const registerRes = await fetch(`${API_BASE}/auth/register`, {
+        const res  = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          // Surface the exact backend message
+          const msg = data.message || 'Login failed. Please try again.';
+
+          // Friendly message for Google-only accounts
+          if (msg.includes('Google Sign-In')) {
+            showToast('This account uses Google Sign-In. Use the button below.', 'error');
+          } else {
+            showToast(msg, 'error');
+          }
+
+          loginBtn.disabled = false;
+          loginBtn.textContent = 'Login';
+          return;
+        }
+
+        const user  = data.data?.user  || data.user;
+        const token = data.data?.token || data.token;
+
+        // Role check — only sellers should access this dashboard
+        if (user.role !== 'seller') {
+          showToast('This portal is for sellers only. Please use the buyer login.', 'error');
+          loginBtn.disabled = false;
+          loginBtn.textContent = 'Login';
+          return;
+        }
+
+        saveSession(token, user);
+        redirectToDashboard();
+
+      } catch (err) {
+        console.error('Login error:', err);
+        showToast('Network error. Please check your connection.', 'error');
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Login';
+      }
+    });
+
+    // ─── Google Sign-In ───────────────────────────────────────────────────────
+    window.onload = function () {
+      if (typeof google !== 'undefined') {
+        google.accounts.id.initialize({
+          client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+          callback: handleCredentialResponse
+        });
+      }
+    };
+
+    function handleGoogleSignin() {
+      if (typeof google === 'undefined') {
+        showToast('Google Sign-In is not available right now.', 'error');
+        return;
+      }
+      google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          showToast('Google prompt unavailable. Try again or use email login.', 'info');
+        }
+      });
+    }
+
+    async function handleCredentialResponse(response) {
+      const googleBtn = document.getElementById('googleSigninBtn');
+      googleBtn.disabled = true;
+      googleBtn.textContent = 'Signing in...';
+
+      try {
+        // Decode the Google JWT to get user info
+        const payload = JSON.parse(atob(response.credential.split('.')[1]));
+
+        const res = await fetch(`${API_BASE}/auth/google-login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            fullName: fullname,
-            email,
-            phone,
-            password,
-            role: 'seller'
+            email:    payload.email,
+            googleId: payload.sub,
           })
         });
 
-        const registerData = await registerRes.json();
+        const data = await res.json();
 
-        if (!registerRes.ok) {
-          const msg = registerData.message || 'Registration failed. Please try again.';
-          showToast(msg, 'error');
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Create Account';
+        if (!res.ok) {
+          // If user doesn't exist yet, send them to signup
+          if (res.status === 401) {
+            showToast('No account found. Redirecting to sign up...', 'info');
+            setTimeout(() => window.location.href = 'signup-sellers.html', 2000);
+          } else {
+            showToast(data.message || 'Google login failed.', 'error');
+          }
+          googleBtn.disabled = false;
+          googleBtn.textContent = 'Sign in with Google';
           return;
         }
 
-        const token = registerData.data?.token || registerData.token;
-        if (!token) {
-          showToast('Registration succeeded but no token returned. Please log in.', 'error');
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Create Account';
+        const user  = data.data?.user  || data.user;
+        const token = data.data?.token || data.token;
+
+        // Role check
+        if (user.role !== 'seller') {
+          showToast('This portal is for sellers only.', 'error');
+          googleBtn.disabled = false;
+          googleBtn.textContent = 'Sign in with Google';
           return;
         }
 
-        // Persist token for subsequent pages
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(registerData.data?.user || {}));
-
-        // ── Step 2: Save seller store profile ──────────────────────────────
-        submitBtn.textContent = 'Setting up store...';
-
-        const profileRes = await fetch(`${API_BASE}/seller/setup-profile`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ storeName, businessType, productCategory, address })
-        });
-
-        const profileData = await profileRes.json();
-
-        if (!profileRes.ok) {
-          // Registration succeeded — warn but don't block
-          console.warn('Store profile setup failed:', profileData.message);
-          showToast('Account created! Store details can be updated in your dashboard.', 'info');
-        } else {
-          showToast('Account created successfully! Welcome aboard 🚀', 'success');
-        }
-
-        // ── Redirect to store setup / dashboard ────────────────────────────
-        setTimeout(() => {
-          window.location.href = 'setup-store.html';
-        }, 2000);
+        saveSession(token, user);
+        redirectToDashboard();
 
       } catch (err) {
-        console.error('Signup error:', err);
-        showToast('Network error. Please check your connection and try again.', 'error');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Create Account';
-      }
-    });
-
-    // ─── Google Signup (placeholder — wire up your OAuth flow here) ───────────
-    function handleGoogleSignup() {
-      showToast('Google signup coming soon!', 'info');
-      // TODO: implement Google OAuth → POST /api/auth/google-register with role:'seller'
-    }
-
-    // ─── Password helpers ──────────────────────────────────────────────────────
-    function togglePassword(fieldId, el) {
-      const input = document.getElementById(fieldId);
-      if (input.type === 'password') {
-        input.type = 'text';
-        el.textContent = '🙈';
-      } else {
-        input.type = 'password';
-        el.textContent = '👁';
+        console.error('Google login error:', err);
+        showToast('Google login failed. Please try again.', 'error');
+        googleBtn.disabled = false;
+        googleBtn.textContent = 'Sign in with Google';
       }
     }
-
-    const passwordInput    = document.getElementById('password');
-    const strengthBarFill  = document.getElementById('strength-bar-fill');
-
-    passwordInput.addEventListener('input', () => {
-      const val = passwordInput.value;
-      let strength = 0;
-      if (val.length >= 6)            strength++;
-      if (/[A-Z]/.test(val))          strength++;
-      if (/[0-9]/.test(val))          strength++;
-      if (/[^A-Za-z0-9]/.test(val))   strength++;
-
-      const widths = ['0%', '25%', '50%', '75%', '100%'];
-      const colors = ['#ff6b6b', '#ff884d', '#ffcc00', '#4CAF50'];
-      strengthBarFill.style.width      = widths[strength];
-      strengthBarFill.style.background = colors[Math.max(0, strength - 1)] || '';
-    });
-
-    // ─── Init ──────────────────────────────────────────────────────────────────
-    showStep(currentStep);
   </script>
 </body>
 </html>
