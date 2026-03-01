@@ -232,6 +232,14 @@
       max-width: 360px;
     }
 
+    .btn-back {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
     .toast.success { background: #4CAF50; }
     .toast.error   { background: #f44336; }
     .toast.info    { background: #2196F3; }
@@ -299,6 +307,7 @@
           <input type="text" id="address" placeholder="Business Address" required>
           <div class="error" id="error-address"></div>
         </div>
+        <button type="button" class="btn btn-back prev-btn">Back</button>
         <button type="button" class="btn btn-primary next-btn">Next</button>
       </div>
 
@@ -315,6 +324,7 @@
           <span class="toggle-password" onclick="togglePassword('confirmPassword', this)">👁</span>
           <div class="error" id="error-confirmPassword"></div>
         </div>
+        <button type="button" class="btn btn-back prev-btn">Back</button>
         <button type="submit" id="submitBtn" class="btn btn-primary">Create Account</button>
       </div>
     </form>
@@ -417,6 +427,16 @@ function validateStep(step) {
     nextBtns.forEach(() => {
       // We add one listener per button via index
     });
+    
+    const prevBtns = document.querySelectorAll(".prev-btn");
+prevBtns.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    if (currentStep > 0) {
+      currentStep--;
+      showStep(currentStep);
+    }
+  });
+});
 
     document.querySelectorAll('.next-btn').forEach((btn, index) => {
       btn.addEventListener('click', () => {
