@@ -222,6 +222,14 @@ document.addEventListener('DOMContentLoaded', () => {
         address: address.value
       });
 
+      // if profile already has email verified, update UI accordingly
+      if (profile && profile.isVerified) {
+        verifyEmailBtn.textContent = 'Verified';
+        verifyEmailBtn.disabled = true;
+        emailError.textContent = 'Email already verified.';
+        emailError.style.color = 'green';
+      }
+
       // preselect category: try localStorage first, then parse from businessDescription if available
       try {
         let sc = localStorage.getItem('signupCategory');
@@ -832,8 +840,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         emailError.textContent = '✅ Email verified successfully.';
         emailError.style.color = 'green';
-        emailOtpSection.style.display = 'none';
-      } catch (err) {
+        emailOtpSection.style.display = 'none';      // mark verify button state
+      verifyEmailBtn.textContent = 'Verified';
+      verifyEmailBtn.disabled = true;      } catch (err) {
         console.warn('submitEmailOtp: backend verify failed', err);
         // fallback to demo storage check
         let stored = null;
