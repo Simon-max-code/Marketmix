@@ -362,50 +362,57 @@
         progressbar[i].classList.toggle('active', i <= step);
       });
     }
+function validateStep(step) {
+  let isValid = true;
+  const inputs = formSteps[step].querySelectorAll("input, select");
 
-    function validateStep(step) {
-      let isValid = true;
-      const inputs = formSteps[step].querySelectorAll('input, select');
+  inputs.forEach(input => {
+    const errorDiv = document.getElementById("error-" + input.id);
+    if (!errorDiv) return;
 
-      inputs.forEach(input => {
-        const errorDiv = document.getElementById('error-' + input.id);
-        if (!errorDiv) return;
+    // Reset error first
+    errorDiv.textContent = "";
 
-        if (!input.value.trim()) {
-          errorDiv.textContent = 'This field is required';
+    if (!input.value.trim()) {
+      errorDiv.textContent = "This field is required";
+      isValid = false;
+    } else {
+      if (input.type === "email") {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value)) {
+          errorDiv.textContent = "Enter a valid email";
           isValid = false;
-        } else {
-          errorDiv.textContent = '';
-
-          if (input.type === 'email') {
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value)) {
-              errorDiv.textContent = 'Enter a valid email';
-              isValid = false;
-            }
-          }
-         if (!/^\+?\d{11}$/.test(input.value)) {
-             errorDiv.textContent = 'enter a valid phone number, must be 11 digits';
-          }
-          if (input.id === 'password' && input.value.length < 6) {
-            errorDiv.textContent = 'Password must be at least 6 characters';
-            isValid = false;
-          }
-          if (input.id === 'confirmPassword') {
-            if (input.value !== document.getElementById('password').value) {
-              errorDiv.textContent = 'Passwords do not match';
-              isValid = false;
-            }
-          }
         }
-      });
-
-      if (!isValid) {
-        formSteps[step].classList.add('shake');
-        setTimeout(() => formSteps[step].classList.remove('shake'), 300);
       }
 
-      return isValid;
+      if (input.id === "phone") {
+        if (!/^\+?\d{11}$/.test(input.value)) {
+          errorDiv.textContent = "Phone number must be exactly 11 digits";
+          isValid = false;
+        }
+      }
+
+      if (input.id === "password" && input.value.length < 6) {
+        errorDiv.textContent = "Password must be at least 6 characters";
+        isValid = false;
+      }
+
+      if (input.id === "confirmPassword") {
+        if (input.value !== document.getElementById("password").value) {
+          errorDiv.textContent = "Passwords do not match";
+          isValid = false;
+        }
+      }
     }
+  });
+
+  if (!isValid) {
+    formSteps[step].classList.add("shake");
+    setTimeout(() => formSteps[step].classList.remove("shake"), 300);
+  }
+
+  return isValid;
+}
+
 
     nextBtns.forEach(() => {
       // We add one listener per button via index
