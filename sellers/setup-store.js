@@ -727,8 +727,12 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('✅ Email verify elements loaded:', { verifyEmailBtn, emailOtpSection, emailError });
 
   verifyEmailBtn.addEventListener("click", () => {
+    console.log('verifyEmailBtn clicked');
+    // always show OTP section so user can at least type something and see feedback
+    emailOtpSection.style.display = 'flex';
     (async () => {
       const emailInput = document.getElementById("email").value.trim();
+      console.log('verifyEmailBtn handler running, emailInput=', emailInput);
       if (!emailInput) {
         emailError.textContent = "Please enter your email before verifying.";
         emailError.style.color = 'red';
@@ -737,6 +741,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const apiBase = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api');
       const sendUrl = apiBase.replace(/\/+$/, '') + '/auth/send-otp';
+      console.log('will POST to', sendUrl);
 
       try {
         const res = await fetch(sendUrl, {
@@ -750,8 +755,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // success
+        console.log('sendOtp response body', body);
         emailError.textContent = 'OTP sent to your email.';
         emailError.style.color = 'green';
+        if (body.code) {
+          console.info('Demo OTP code (from backend):', body.code);
+          // also store it for the verify step so demo fallback won't be needed
+          try { sessionStorage.setItem('emailOtp', JSON.stringify({ email: emailInput, code: body.code, expiresAt: Date.now() + 5 * 60 * 1000 })); } catch(e) {}
+        }
         emailOtpSection.style.display = 'flex';
       } catch (err) {
         console.warn('verifyEmail: backend send-otp failed, falling back to demo or showing error', err);
@@ -783,8 +794,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById("submitEmailOtp").addEventListener("click", () => {
+    console.log('submitEmailOtp clicked');
     (async () => {
       const entered = document.getElementById('emailOtp').value.trim();
+      console.log('submitEmailOtp handler, entered=', entered);
       if (!entered) {
         emailError.textContent = 'Please enter the OTP.';
         emailError.style.color = 'red';
