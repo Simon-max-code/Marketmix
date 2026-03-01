@@ -759,8 +759,8 @@ verifyEmailBtn.addEventListener("click", () => {
       emailOtpSection.style.display = 'flex';
       // optional demo fallback
       const code = String(Math.floor(100000 + Math.random() * 900000));
-+      console.info('Demo OTP for', emailInput, 'is', code);
-+      try { sessionStorage.setItem('emailOtp', JSON.stringify({ email: emailInput, code, expiresAt: Date.now() + 5 * 60 * 1000 })); } catch(e) {}
+      console.info('Demo OTP for', emailInput, 'is', code);
+      try { sessionStorage.setItem('emailOtp', JSON.stringify({ email: emailInput, code, expiresAt: Date.now() + 5 * 60 * 1000 })); } catch(e) {}
     }
 
     // start simple resend cooldown (30s)
