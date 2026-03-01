@@ -6,6 +6,54 @@ document.addEventListener('DOMContentLoaded', () => {
   ------------------------- */
   const form = document.getElementById('storeSetupForm');
 
+  // seller profile initialization logic will run on load to sync with Supabase
+  async function initializeSellerProfile() {
+    try {
+      const {
+        data: { user },
+        error: userErr
+      } = await supabase.auth.getUser();
+      if (userErr) throw userErr;
+      if (!user) return; // no authenticated user
+
+      // attempt to fetch existing profile
+      let { data: profile, error: selErr } = await supabase
+        .from('seller_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      // if no row found PostgREST returns code 'PGRST116', treat as missing
+      if (selErr && selErr.code !== 'PGRST116') {
+        throw selErr;
+      }
+
+      if (!profile) {
+        const insertObj = {
+          user_id: user.id,
+          business_email: user.email
+        };
+        if (user.phone) insertObj.business_phone = user.phone;
+
+        const {
+          data: inserted,
+          error: insertErr
+        } = await supabase
+          .from('seller_profiles')
+          .insert(insertObj)
+          .select()
+          .single();
+        if (insertErr) throw insertErr;
+        profile = inserted;
+      }
+
+      if (profile.business_email) email.value = profile.business_email;
+      if (profile.business_phone) phone.value = profile.business_phone;
+    } catch (err) {
+      console.error('initializeSellerProfile error:', err);
+    }
+  }
+
   // Logo drop & preview
   const logoInput = document.getElementById('storeLogo');
   const logoDrop = document.getElementById('logoDrop');
@@ -101,6 +149,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   renderChips();
+
+  // after rendering categories ensure seller profile exists and fields are prefilling
+  initializeSellerProfile();
 
   /* -------------------------
      Category modal logic
