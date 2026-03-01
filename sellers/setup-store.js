@@ -726,25 +726,124 @@ const emailOtpSection = document.getElementById("emailOtpSection");
 const emailError = document.getElementById("error-email");
 
 verifyEmailBtn.addEventListener("click", () => {
-  const email = document.getElementById("email").value.trim();
-  if (!email) {
-    emailError.textContent = "Please enter your email before verifying.";
-    return;
-  }
-  emailError.textContent = "OTP sent to your email (demo).";
-  emailError.style.color = "green";
-  emailOtpSection.style.display = "flex";
+  (async () => {
+    const emailInput = document.getElementById("email").value.trim();
+    if (!emailInput) {
+      emailError.textContent = "Please enter your email before verifying.";
+      emailError.style.color = 'red';
+      return;
+    }
+
+    // generate 6-digit code
+    const code = String(Math.floor(100000 + Math.random() * 900000));
+    const expiresAt = Date.now() + (5 * 60 * 1000); // 5 minutes
+
+    // persist to sessionStorage (per-tab) as fallback if backend not available
+    try {
+      sessionStorage.setItem('emailOtp', JSON.stringify({ email: emailInput, code, expiresAt }));
+      console.log('verifyEmail: stored OTP in sessionStorage for demo', { email: emailInput, code });
+    } catch (e) {
+      console.warn('verifyEmail: could not store OTP in sessionStorage', e);
+    }
+
+    // attempt to send via backend if API available
+    const apiBase = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api');
+    const sendUrl = apiBase.replace(/\/+$/, '') + '/auth/send-otp';
+    let sentViaBackend = false;
+    try {
+      const res = await fetch(sendUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailInput, code })
+      });
+      if (res.ok) {
+        sentViaBackend = true;
+        console.log('verifyEmail: backend accepted OTP send request');
+      } else {
+        console.warn('verifyEmail: backend send-otp returned', res.status, await res.text());
+      }
+    } catch (e) {
+      console.warn('verifyEmail: backend send-otp not available, falling back to demo', e);
+    }
+
+    // show OTP UI
+    emailOtpSection.style.display = 'flex';
+    if (sentViaBackend) {
+      emailError.textContent = 'OTP sent to your email.';
+      emailError.style.color = 'green';
+    } else {
+      emailError.textContent = 'OTP (demo) generated and printed to console.';
+      emailError.style.color = 'orange';
+      console.info('Demo OTP for', emailInput, 'is', code);
+    }
+
+    // start simple resend cooldown (30s)
+    verifyEmailBtn.disabled = true;
+    let cooldown = 30;
+    const origText = verifyEmailBtn.textContent;
+    verifyEmailBtn.textContent = `Resend (${cooldown}s)`;
+    const t = setInterval(() => {
+      cooldown -= 1;
+      if (cooldown <= 0) {
+        clearInterval(t);
+        verifyEmailBtn.disabled = false;
+        verifyEmailBtn.textContent = origText;
+      } else {
+        verifyEmailBtn.textContent = `Resend (${cooldown}s)`;
+      }
+    }, 1000);
+  })();
 });
 
 document.getElementById("submitEmailOtp").addEventListener("click", () => {
-  const code = document.getElementById("emailOtp").value.trim();
-  if (!code) {
-    emailError.textContent = "Please enter the OTP.";
-    emailError.style.color = "red";
-  } else {
-    emailError.textContent = "✅ Email verified successfully.";
-    emailError.style.color = "green";
-  }
+  (async () => {
+    const entered = document.getElementById('emailOtp').value.trim();
+    if (!entered) {
+      emailError.textContent = 'Please enter the OTP.';
+      emailError.style.color = 'red';
+      return;
+    }
+
+    // check sessionStorage first
+    let stored = null;
+    try {
+      const raw = sessionStorage.getItem('emailOtp');
+      if (raw) stored = JSON.parse(raw);
+    } catch (e) { console.warn('submitEmailOtp: parse error', e); }
+
+    // also try local fallback in case sessionStorage not present
+    if (!stored) {
+      try {
+        const raw2 = localStorage.getItem('emailOtp');
+        if (raw2) stored = JSON.parse(raw2);
+      } catch (e) { /* ignore */ }
+    }
+
+    if (!stored) {
+      emailError.textContent = 'No OTP found. Please click Verify to request a code.';
+      emailError.style.color = 'red';
+      return;
+    }
+
+    // validate expiry and match
+    if (Date.now() > (stored.expiresAt || 0)) {
+      emailError.textContent = 'OTP expired. Please request a new code.';
+      emailError.style.color = 'red';
+      return;
+    }
+
+    if (entered === String(stored.code)) {
+      emailError.textContent = '✅ Email verified successfully.';
+      emailError.style.color = 'green';
+      // mark verified in UI and hide OTP box
+      emailOtpSection.style.display = 'none';
+      // optionally persist that email was verified in session (frontend-only)
+      try { sessionStorage.removeItem('emailOtp'); } catch (e) {}
+    } else {
+      emailError.textContent = 'Invalid OTP. Please check and try again.';
+      emailError.style.color = 'red';
+    }
+  })();
 });
 
 
