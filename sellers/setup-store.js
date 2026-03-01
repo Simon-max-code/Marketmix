@@ -207,6 +207,13 @@ document.addEventListener('DOMContentLoaded', () => {
         address.value = user.user_metadata.business_address;
       }
 
+      // Manually update preview elements (setting input.value doesn't trigger 'input' event listeners)
+      previewEmail.textContent = emailVal || '—';
+      previewPhone.textContent = phoneVal || '—';
+      previewAddress.textContent = addressVal || '—';
+      previewName.textContent = (nameVal || user?.user_metadata?.business_name || 'Your Store Name');
+      previewDesc.textContent = storeDesc.value.trim() || 'Store description will appear here.';
+
       console.log('initializeSellerProfile: after populate form', {
         email: email.value,
         phone: phone.value,
@@ -214,17 +221,27 @@ document.addEventListener('DOMContentLoaded', () => {
         address: address.value
       });
 
-      // preselect category if user chose one during signup
+      // preselect category: try localStorage first, then parse from businessDescription if available
       try {
-        const sc = localStorage.getItem('signupCategory');
+        let sc = localStorage.getItem('signupCategory');
+        
+        // if not in localStorage, try to extract from businessDescription (backend format)
+        if (!sc && profile?.businessDescription) {
+          const match = profile.businessDescription.match(/Product Category:\s*([^|]+)/);
+          if (match && match[1]) {
+            sc = match[1].trim().toLowerCase();
+          }
+        }
+        
         if (sc) {
           // if category matches one of our default chips
           if (defaultCategories.includes(sc)) {
             selectedCategory = sc;
             renderChips();
             updatePreviewCategories();
+            console.log('initializeSellerProfile: preselected category', sc);
           }
-          // clear so we don't reuse it later
+          // clear localStorage so we don't reuse it later
           localStorage.removeItem('signupCategory');
         }
       } catch (e) {
