@@ -182,16 +182,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Populate form from profile if available, otherwise use user metadata
-      if (profile?.business_email) email.value = profile.business_email;
-      if (profile?.business_phone) phone.value = profile.business_phone;
-      if (profile?.business_name) {
-        storeName.value = profile.business_name;
+      // helper to read either snake_case (supabase) or camelCase (backend) property
+      function pick(field) {
+        return profile?.[field] ?? profile?.[field.replace(/_([a-z])/g, (m,p)=>p.toUpperCase())];
+      }
+
+      console.log('initializeSellerProfile: raw profile object', JSON.stringify(profile));
+
+      const emailVal = pick('business_email');
+      const phoneVal = pick('business_phone');
+      const nameVal = pick('business_name');
+      const addressVal = pick('business_address');
+
+      if (emailVal) email.value = emailVal;
+      if (phoneVal) phone.value = phoneVal;
+      if (nameVal) {
+        storeName.value = nameVal;
       } else if (user?.user_metadata?.business_name) {
         storeName.value = user.user_metadata.business_name;
       }
-      if (profile?.business_address) {
-        address.value = profile.business_address;
+      if (addressVal) {
+        address.value = addressVal;
       } else if (user?.user_metadata?.business_address) {
         address.value = user.user_metadata.business_address;
       }
