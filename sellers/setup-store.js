@@ -71,12 +71,35 @@ document.addEventListener('DOMContentLoaded', () => {
   async function initializeSellerProfile() {
     try {
       const supabase = await getSupabaseClient();
-      const {
-        data: { user },
-        error: userErr
-      } = await supabase.auth.getUser();
-      if (userErr) throw userErr;
-      if (!user) return; // no authenticated user
+      let user = null;
+      try {
+        const {
+          data: { user: u },
+          error: userErr
+        } = await supabase.auth.getUser();
+        if (userErr) throw userErr;
+        user = u;
+      } catch (authErr) {
+        console.warn('initializeSellerProfile: supabase.auth.getUser failed', authErr);
+        // If the auth session is missing (e.g. redirect after signup lost session),
+        // try to recover user info from localStorage where signup/login may have saved it.
+        const userKey = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.USER) ? CONFIG.STORAGE_KEYS.USER : 'user';
+        try {
+          const raw = localStorage.getItem(userKey);
+          if (raw) {
+            user = JSON.parse(raw);
+            console.log('initializeSellerProfile: recovered user from localStorage key', userKey, user);
+          }
+        } catch (lsErr) {
+          console.warn('initializeSellerProfile: failed to parse user from localStorage', lsErr);
+        }
+
+        // If still no user, only proceed if we can obtain minimal info; otherwise abort silently
+        if (!user) {
+          console.log('initializeSellerProfile: no authenticated user available; aborting initialization');
+          return;
+        }
+      }
 
       // attempt to fetch existing profile
       let { data: profile, error: selErr } = await supabase
