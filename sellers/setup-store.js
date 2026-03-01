@@ -758,11 +758,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // success
         console.log('sendOtp response body', body);
-        emailError.textContent = 'OTP sent to your email.';
-        emailError.style.color = 'green';
+        if (body.emailFailed) {
+          emailError.textContent = 'Could not send OTP email; using demo code below.';
+          emailError.style.color = 'orange';
+        } else {
+          emailError.textContent = 'OTP sent to your email.';
+          emailError.style.color = 'green';
+        }
         if (body.code) {
           console.info('Demo OTP code (from backend):', body.code);
-          // also store it for the verify step so demo fallback won't be needed
           try { sessionStorage.setItem('emailOtp', JSON.stringify({ email: emailInput, code: body.code, expiresAt: Date.now() + 5 * 60 * 1000 })); } catch(e) {}
         }
         emailOtpSection.style.display = 'flex';
