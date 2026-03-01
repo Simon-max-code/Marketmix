@@ -224,16 +224,20 @@ document.addEventListener('DOMContentLoaded', () => {
       // preselect category: try localStorage first, then parse from businessDescription if available
       try {
         let sc = localStorage.getItem('signupCategory');
+        console.log('initializeSellerProfile: signupCategory from localStorage', sc);
         
         // if not in localStorage, try to extract from businessDescription (backend format)
         if (!sc && profile?.businessDescription) {
+          console.log('initializeSellerProfile: parsing businessDescription', profile.businessDescription);
           const match = profile.businessDescription.match(/Product Category:\s*([^|]+)/);
           if (match && match[1]) {
             sc = match[1].trim();
+            console.log('initializeSellerProfile: extracted category from businessDescription', sc);
           }
         }
         
         if (sc) {
+          console.log('initializeSellerProfile: attempting to match category', sc, 'against defaults:', defaultCategories);
           // normalize to find matching category (case-insensitive)
           const normalized = sc.toLowerCase();
           const matchedCat = defaultCategories.find(cat => cat.toLowerCase() === normalized);
@@ -243,9 +247,13 @@ document.addEventListener('DOMContentLoaded', () => {
             renderChips();
             updatePreviewCategories();
             console.log('initializeSellerProfile: preselected category', matchedCat);
+          } else {
+            console.log('initializeSellerProfile: no matching category found for', sc, '(normalized:', normalized + ')');
           }
           // clear localStorage so we don't reuse it later
           localStorage.removeItem('signupCategory');
+        } else {
+          console.log('initializeSellerProfile: no category found to preselect');
         }
       } catch (e) {
         console.warn('Failed to process signupCategory', e);

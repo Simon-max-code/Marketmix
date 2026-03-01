@@ -520,13 +520,14 @@ prevBtns.forEach((btn) => {
           console.warn('Store profile setup failed:', profileData.message);
           showToast('Account created! Store details can be updated in your dashboard.', 'info');
         } else {
-          // Save chosen category so setup-store can preselect it
-          try {
-            localStorage.setItem('signupCategory', productCategory || '');
-          } catch (e) {
-            console.warn('Unable to persist signupCategory', e);
-          }
           showToast('Account created successfully! Welcome aboard 🚀', 'success');
+        }
+        // Always save chosen category so setup-store can preselect it
+        try {
+          localStorage.setItem('signupCategory', productCategory || '');
+          console.log('Signup: saved signupCategory to localStorage:', productCategory);
+        } catch (e) {
+          console.warn('Unable to persist signupCategory', e);
         }
 
         // ── Redirect to store setup / dashboard ────────────────────────────
