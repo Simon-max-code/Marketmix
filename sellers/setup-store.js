@@ -719,121 +719,119 @@ document.addEventListener('DOMContentLoaded', () => {
   styleTag.innerHTML = '@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }';
   document.head.appendChild(styleTag);
 
-});
-// Email Verify Flow
-const verifyEmailBtn = document.getElementById("verifyEmail");
-const emailOtpSection = document.getElementById("emailOtpSection");
-const emailError = document.getElementById("error-email");
+  // ✅ Email Verify Flow - INSIDE DOMContentLoaded
+  const verifyEmailBtn = document.getElementById("verifyEmail");
+  const emailOtpSection = document.getElementById("emailOtpSection");
+  const emailError = document.getElementById("error-email");
 
-verifyEmailBtn.addEventListener("click", () => {
-  (async () => {
-    const emailInput = document.getElementById("email").value.trim();
-    if (!emailInput) {
-      emailError.textContent = "Please enter your email before verifying.";
-      emailError.style.color = 'red';
-      return;
-    }
+  console.log('✅ Email verify elements loaded:', { verifyEmailBtn, emailOtpSection, emailError });
 
-    const apiBase = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api');
-    const sendUrl = apiBase.replace(/\/+$/, '') + '/auth/send-otp';
-
-    try {
-      const res = await fetch(sendUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: emailInput })
-      });
-      const body = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(body.error || body.message || `status ${res.status}`);
+  verifyEmailBtn.addEventListener("click", () => {
+    (async () => {
+      const emailInput = document.getElementById("email").value.trim();
+      if (!emailInput) {
+        emailError.textContent = "Please enter your email before verifying.";
+        emailError.style.color = 'red';
+        return;
       }
 
-      // success
-      emailError.textContent = 'OTP sent to your email.';
-      emailError.style.color = 'green';
-      emailOtpSection.style.display = 'flex';
-    } catch (err) {
-      console.warn('verifyEmail: backend send-otp failed, falling back to demo or showing error', err);
-      emailError.textContent = 'Could not send OTP. Check console for demo code.';
-      emailError.style.color = 'orange';
-      emailOtpSection.style.display = 'flex';
-      // optional demo fallback
-      const code = String(Math.floor(100000 + Math.random() * 900000));
-      console.info('Demo OTP for', emailInput, 'is', code);
-      try { sessionStorage.setItem('emailOtp', JSON.stringify({ email: emailInput, code, expiresAt: Date.now() + 5 * 60 * 1000 })); } catch(e) {}
-    }
+      const apiBase = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api');
+      const sendUrl = apiBase.replace(/\/+$/, '') + '/auth/send-otp';
 
-    // start simple resend cooldown (30s)
-    verifyEmailBtn.disabled = true;
-    let cooldown = 30;
-    const origText = verifyEmailBtn.textContent;
-    verifyEmailBtn.textContent = `Resend (${cooldown}s)`;
-    const t = setInterval(() => {
-      cooldown -= 1;
-      if (cooldown <= 0) {
-        clearInterval(t);
-        verifyEmailBtn.disabled = false;
-        verifyEmailBtn.textContent = origText;
-      } else {
-        verifyEmailBtn.textContent = `Resend (${cooldown}s)`;
+      try {
+        const res = await fetch(sendUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: emailInput })
+        });
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(body.error || body.message || `status ${res.status}`);
+        }
+
+        // success
+        emailError.textContent = 'OTP sent to your email.';
+        emailError.style.color = 'green';
+        emailOtpSection.style.display = 'flex';
+      } catch (err) {
+        console.warn('verifyEmail: backend send-otp failed, falling back to demo or showing error', err);
+        emailError.textContent = 'Could not send OTP. Check console for demo code.';
+        emailError.style.color = 'orange';
+        emailOtpSection.style.display = 'flex';
+        // optional demo fallback
+        const code = String(Math.floor(100000 + Math.random() * 900000));
+        console.info('Demo OTP for', emailInput, 'is', code);
+        try { sessionStorage.setItem('emailOtp', JSON.stringify({ email: emailInput, code, expiresAt: Date.now() + 5 * 60 * 1000 })); } catch(e) {}
       }
-    }, 1000);
-  })();
-});
 
-document.getElementById("submitEmailOtp").addEventListener("click", () => {
-  (async () => {
-    const entered = document.getElementById('emailOtp').value.trim();
-    if (!entered) {
-      emailError.textContent = 'Please enter the OTP.';
-      emailError.style.color = 'red';
-      return;
-    }
+      // start simple resend cooldown (30s)
+      verifyEmailBtn.disabled = true;
+      let cooldown = 30;
+      const origText = verifyEmailBtn.textContent;
+      verifyEmailBtn.textContent = `Resend (${cooldown}s)`;
+      const t = setInterval(() => {
+        cooldown -= 1;
+        if (cooldown <= 0) {
+          clearInterval(t);
+          verifyEmailBtn.disabled = false;
+          verifyEmailBtn.textContent = origText;
+        } else {
+          verifyEmailBtn.textContent = `Resend (${cooldown}s)`;
+        }
+      }, 1000);
+    })();
+  });
 
-    const emailInput = document.getElementById('email').value.trim();
-    const apiBase = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api');
-    const verifyUrl = apiBase.replace(/\/+$/, '') + '/auth/verify-otp';
-
-    try {
-      // include token if we have one (sessionStorage or localStorage)
-      const tokenKey = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.TOKEN) ? CONFIG.STORAGE_KEYS.TOKEN : 'token';
-      const token = sessionStorage.getItem(tokenKey) || localStorage.getItem(tokenKey);
-      const headers = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-      const res = await fetch(verifyUrl, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ email: emailInput, code: entered })
-      });
-      const body = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(body.error || body.message || `status ${res.status}`);
+  document.getElementById("submitEmailOtp").addEventListener("click", () => {
+    (async () => {
+      const entered = document.getElementById('emailOtp').value.trim();
+      if (!entered) {
+        emailError.textContent = 'Please enter the OTP.';
+        emailError.style.color = 'red';
+        return;
       }
-      emailError.textContent = '✅ Email verified successfully.';
-      emailError.style.color = 'green';
-      emailOtpSection.style.display = 'none';
-    } catch (err) {
-      console.warn('submitEmailOtp: backend verify failed', err);
-      // fallback to demo storage check
-      let stored = null;
-      try { stored = JSON.parse(sessionStorage.getItem('emailOtp') || 'null'); } catch(e){}
-      if (stored && entered === String(stored.code) && Date.now() <= (stored.expiresAt||0)) {
-        emailError.textContent = '✅ Email verified (demo fallback).';
+
+      const emailInput = document.getElementById('email').value.trim();
+      const apiBase = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api');
+      const verifyUrl = apiBase.replace(/\/+$/, '') + '/auth/verify-otp';
+
+      try {
+        // include token if we have one (sessionStorage or localStorage)
+        const tokenKey = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.TOKEN) ? CONFIG.STORAGE_KEYS.TOKEN : 'token';
+        const token = sessionStorage.getItem(tokenKey) || localStorage.getItem(tokenKey);
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        const res = await fetch(verifyUrl, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ email: emailInput, code: entered })
+        });
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(body.error || body.message || `status ${res.status}`);
+        }
+        emailError.textContent = '✅ Email verified successfully.';
         emailError.style.color = 'green';
         emailOtpSection.style.display = 'none';
-      } else {
-        emailError.textContent = 'Invalid OTP. Please try again.';
-        emailError.style.color = 'red';
+      } catch (err) {
+        console.warn('submitEmailOtp: backend verify failed', err);
+        // fallback to demo storage check
+        let stored = null;
+        try { stored = JSON.parse(sessionStorage.getItem('emailOtp') || 'null'); } catch(e){}
+        if (stored && entered === String(stored.code) && Date.now() <= (stored.expiresAt||0)) {
+          emailError.textContent = '✅ Email verified (demo fallback).';
+          emailError.style.color = 'green';
+          emailOtpSection.style.display = 'none';
+        } else {
+          emailError.textContent = 'Invalid OTP. Please try again.';
+          emailError.style.color = 'red';
+        }
       }
-    }
-  })();
+    })();
+  });
+
+  // Auto year in footer
+  document.querySelector(".footer-copy").innerHTML =
+    "&copy; " + new Date().getFullYear() + " MarketMix. All rights reserved.";
+
 });
-
-
-
-
-
-
-// Auto year in footer
-document.querySelector(".footer-copy").innerHTML =
-  "&copy; " + new Date().getFullYear() + " MarketMix. All rights reserved.";
