@@ -742,7 +742,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const overrideUrl = localStorage.getItem('API_BASE_URL');
       const apiBase = overrideUrl || ((typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api'));
-      const sendUrl = apiBase.replace(/\/+$, '') + '/auth/send-otp';
+      const sendUrl = apiBase.replace(/\/+$/, '') + '/auth/send-otp';
       console.log('will POST to', sendUrl);
 
       try {
