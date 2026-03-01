@@ -229,17 +229,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!sc && profile?.businessDescription) {
           const match = profile.businessDescription.match(/Product Category:\s*([^|]+)/);
           if (match && match[1]) {
-            sc = match[1].trim().toLowerCase();
+            sc = match[1].trim();
           }
         }
         
         if (sc) {
-          // if category matches one of our default chips
-          if (defaultCategories.includes(sc)) {
-            selectedCategory = sc;
+          // normalize to find matching category (case-insensitive)
+          const normalized = sc.toLowerCase();
+          const matchedCat = defaultCategories.find(cat => cat.toLowerCase() === normalized);
+          
+          if (matchedCat) {
+            selectedCategory = matchedCat;
             renderChips();
             updatePreviewCategories();
-            console.log('initializeSellerProfile: preselected category', sc);
+            console.log('initializeSellerProfile: preselected category', matchedCat);
           }
           // clear localStorage so we don't reuse it later
           localStorage.removeItem('signupCategory');
