@@ -6,9 +6,71 @@ document.addEventListener('DOMContentLoaded', () => {
   ------------------------- */
   const form = document.getElementById('storeSetupForm');
 
+  // ensure we have a Supabase client instance available for any page that needs it
+  // if a client already exists globally, reuse it; otherwise load the CDN and create one
+  let supabaseClientInstance;
+  async function getSupabaseClient() {
+    if (supabaseClientInstance) return supabaseClientInstance;
+
+    // ensure global CONFIG is available (load config.js if not yet present)
+    if (typeof CONFIG === 'undefined') {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = '../config.js';
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+      }).catch(err => {
+        console.warn('Failed loading config.js', err);
+      });
+    }
+
+    // helper to read config from various places
+    function retrieveConfig() {
+      if (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.SUPABASE && CONFIG.SUPABASE.URL && CONFIG.SUPABASE.KEY) {
+        return { url: CONFIG.SUPABASE.URL, key: CONFIG.SUPABASE.KEY };
+      }
+      if (typeof window !== 'undefined' && window.CONFIG && window.CONFIG.SUPABASE && window.CONFIG.SUPABASE.URL && window.CONFIG.SUPABASE.KEY) {
+        return { url: window.CONFIG.SUPABASE.URL, key: window.CONFIG.SUPABASE.KEY };
+      }
+      // allow overrides via localStorage for quick testing
+      const urlLS = localStorage.getItem('SUPABASE_URL');
+      const keyLS = localStorage.getItem('SUPABASE_KEY');
+      if (urlLS && keyLS) return { url: urlLS, key: keyLS };
+      return null;
+    }
+
+    const cfg = retrieveConfig();
+    if (!cfg) {
+      throw new Error('Supabase configuration not found');
+    }
+
+    // if a namespace is already present with createClient, use it
+    if (typeof window !== 'undefined' && window.supabase && typeof window.supabase.createClient === 'function') {
+      supabaseClientInstance = window.supabase.createClient(cfg.url, cfg.key);
+      return supabaseClientInstance;
+    }
+
+    // otherwise dynamically load the CDN build of supabase-js
+    await new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js';
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+
+    if (!(window.supabase && typeof window.supabase.createClient === 'function')) {
+      throw new Error('Failed to load Supabase client library');
+    }
+    supabaseClientInstance = window.supabase.createClient(cfg.url, cfg.key);
+    return supabaseClientInstance;
+  }
+
   // seller profile initialization logic will run on load to sync with Supabase
   async function initializeSellerProfile() {
     try {
+      const supabase = await getSupabaseClient();
       const {
         data: { user },
         error: userErr
@@ -47,8 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
         profile = inserted;
       }
 
-      if (profile.business_email) email.value = profile.business_email;
-      if (profile.business_phone) phone.value = profile.business_phone;
+      if (profile && profile.business_email) email.value = profile.business_email;
+      if (profile && profile.business_phone) phone.value = profile.business_phone;
     } catch (err) {
       console.error('initializeSellerProfile error:', err);
     }
