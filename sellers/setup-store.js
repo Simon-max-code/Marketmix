@@ -101,46 +101,88 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // attempt to fetch existing profile (request explicit columns to avoid RLS recursion)
-      let { data: profile, error: selErr } = await supabase
-        .from('seller_profiles')
-        .select('id,user_id,business_email,business_phone,business_name,business_address')
-        .eq('user_id', user.id)
-        .single();
+      // decide whether we had an active Supabase session
+      let hadActiveSession = false;
 
-      // if no row found PostgREST returns code 'PGRST116', treat as missing
-      if (selErr && selErr.code !== 'PGRST116') {
-        throw selErr;
+      // Try to detect an active session
+      try {
+        const sessionRes = await supabase.auth.getSession();
+        if (sessionRes && sessionRes.data && sessionRes.data.session) hadActiveSession = true;
+      } catch (e) {
+        // no active session
       }
 
-      console.log('initializeSellerProfile: fetched profile', profile, 'user', user);
-      if (!profile) {
-        const insertObj = {
-          user_id: user.id,
-          business_email: user.email
-        };
-        if (user.phone) insertObj.business_phone = user.phone;
-        // optionally prefill name/address from metadata
-        if (user?.user_metadata?.business_name) {
-          insertObj.business_name = user.user_metadata.business_name;
-        }
-        if (user?.user_metadata?.business_address) {
-          insertObj.business_address = user.user_metadata.business_address;
-        }
+      // Try backend fallback first if no active Supabase session
+      let profile = null;
+      if (!hadActiveSession) {
+        const tokenKey = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.TOKEN) ? CONFIG.STORAGE_KEYS.TOKEN : 'token';
+        const token = sessionStorage.getItem(tokenKey) || localStorage.getItem(tokenKey);
+        const apiBase = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api');
+        const url = `${apiBase.replace(/\/+$/, '')}/seller/profile`;
 
-        const {
-          data: inserted,
-          error: insertErr
-        } = await supabase
+        if (token) {
+          try {
+            const res = await fetch(url, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            });
+            if (res.ok) {
+              const json = await res.json();
+              profile = json?.data?.seller?.profile || null;
+              console.log('initializeSellerProfile: recovered profile from backend', profile);
+            } else {
+              console.warn('initializeSellerProfile: backend profile fetch failed', res.status, await res.text());
+            }
+          } catch (e) {
+            console.warn('initializeSellerProfile: backend fetch error', e);
+          }
+        } else {
+          console.log('initializeSellerProfile: no token found for backend fetch');
+        }
+      }
+
+      // If we still don't have a profile and we do have an active session, query Supabase directly
+      if (!profile && hadActiveSession) {
+        let { data: fetched, error: selErr } = await supabase
           .from('seller_profiles')
-          .insert(insertObj)
           .select('id,user_id,business_email,business_phone,business_name,business_address')
+          .eq('user_id', user.id)
           .single();
-        if (insertErr) throw insertErr;
-        profile = inserted;
-        console.log('initializeSellerProfile: created new profile', profile);
+
+        if (selErr && selErr.code !== 'PGRST116') {
+          throw selErr;
+        }
+        profile = fetched;
+        console.log('initializeSellerProfile: fetched profile via supabase', profile);
+
+        if (!profile) {
+          // create only when session active
+          const insertObj = {
+            user_id: user.id,
+            business_email: user.email
+          };
+          if (user.phone) insertObj.business_phone = user.phone;
+          if (user?.user_metadata?.business_name) insertObj.business_name = user.user_metadata.business_name;
+          if (user?.user_metadata?.business_address) insertObj.business_address = user.user_metadata.business_address;
+
+          const {
+            data: inserted,
+            error: insertErr
+          } = await supabase
+            .from('seller_profiles')
+            .insert(insertObj)
+            .select('id,user_id,business_email,business_phone,business_name,business_address')
+            .single();
+          if (insertErr) throw insertErr;
+          profile = inserted;
+          console.log('initializeSellerProfile: created new profile via supabase', profile);
+        }
       }
 
+      // Populate form from profile if available, otherwise use user metadata
       if (profile?.business_email) email.value = profile.business_email;
       if (profile?.business_phone) phone.value = profile.business_phone;
       if (profile?.business_name) {
