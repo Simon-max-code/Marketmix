@@ -90,12 +90,20 @@ document.addEventListener('DOMContentLoaded', () => {
         throw selErr;
       }
 
+      console.log('initializeSellerProfile: fetched profile', profile, 'user', user);
       if (!profile) {
         const insertObj = {
           user_id: user.id,
           business_email: user.email
         };
         if (user.phone) insertObj.business_phone = user.phone;
+        // optionally prefill name/address from metadata
+        if (user?.user_metadata?.business_name) {
+          insertObj.business_name = user.user_metadata.business_name;
+        }
+        if (user?.user_metadata?.business_address) {
+          insertObj.business_address = user.user_metadata.business_address;
+        }
 
         const {
           data: inserted,
@@ -107,10 +115,28 @@ document.addEventListener('DOMContentLoaded', () => {
           .single();
         if (insertErr) throw insertErr;
         profile = inserted;
+        console.log('initializeSellerProfile: created new profile', profile);
       }
 
-      if (profile && profile.business_email) email.value = profile.business_email;
-      if (profile && profile.business_phone) phone.value = profile.business_phone;
+      if (profile?.business_email) email.value = profile.business_email;
+      if (profile?.business_phone) phone.value = profile.business_phone;
+      if (profile?.business_name) {
+        storeName.value = profile.business_name;
+      } else if (user?.user_metadata?.business_name) {
+        storeName.value = user.user_metadata.business_name;
+      }
+      if (profile?.business_address) {
+        address.value = profile.business_address;
+      } else if (user?.user_metadata?.business_address) {
+        address.value = user.user_metadata.business_address;
+      }
+
+      console.log('initializeSellerProfile: after populate form', {
+        email: email.value,
+        phone: phone.value,
+        storeName: storeName.value,
+        address: address.value
+      });
     } catch (err) {
       console.error('initializeSellerProfile error:', err);
     }
