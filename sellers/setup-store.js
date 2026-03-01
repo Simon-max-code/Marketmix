@@ -600,32 +600,7 @@ document.getElementById("submitEmailOtp").addEventListener("click", () => {
   }
 });
 
-// Phone Verify Flow
-const verifyPhoneBtn = document.getElementById("verifyPhone");
-const phoneOtpSection = document.getElementById("phoneOtpSection");
-const phoneError = document.getElementById("error-phone");
 
-verifyPhoneBtn.addEventListener("click", () => {
-  const phone = document.getElementById("phone").value.trim();
-  if (!phone) {
-    phoneError.textContent = "Please enter your phone number before verifying.";
-    return;
-  }
-  phoneError.textContent = "OTP sent to your phone (demo).";
-  phoneError.style.color = "green";
-  phoneOtpSection.style.display = "flex";
-});
-
-document.getElementById("submitPhoneOtp").addEventListener("click", () => {
-  const code = document.getElementById("phoneOtp").value.trim();
-  if (!code) {
-    phoneError.textContent = "Please enter the OTP.";
-    phoneError.style.color = "red";
-  } else {
-    phoneError.textContent = "✅ Phone verified successfully.";
-    phoneError.style.color = "green";
-  }
-});
 
 
 
