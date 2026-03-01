@@ -518,6 +518,14 @@ prevBtns.forEach((btn) => {
         if (!profileRes.ok) {
           // Registration succeeded — warn but don't block
           console.warn('Store profile setup failed:', profileData.message);
+        } else {
+          // Save chosen category so setup-store can preselect it
+          try {
+            localStorage.setItem('signupCategory', productCategory || '');
+          } catch (e) {
+            console.warn('Unable to persist signupCategory', e);
+          }
+        }
           showToast('Account created! Store details can be updated in your dashboard.', 'info');
         } else {
           showToast('Account created successfully! Welcome aboard 🚀', 'success');

@@ -213,6 +213,23 @@ document.addEventListener('DOMContentLoaded', () => {
         storeName: storeName.value,
         address: address.value
       });
+
+      // preselect category if user chose one during signup
+      try {
+        const sc = localStorage.getItem('signupCategory');
+        if (sc) {
+          // if category matches one of our default chips
+          if (defaultCategories.includes(sc)) {
+            selectedCategory = sc;
+            renderChips();
+            updatePreviewCategories();
+          }
+          // clear so we don't reuse it later
+          localStorage.removeItem('signupCategory');
+        }
+      } catch (e) {
+        console.warn('Failed to process signupCategory', e);
+      }
     } catch (err) {
       console.error('initializeSellerProfile error:', err);
     }
