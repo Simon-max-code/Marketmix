@@ -117,7 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!hadActiveSession) {
         const tokenKey = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.TOKEN) ? CONFIG.STORAGE_KEYS.TOKEN : 'token';
         const token = sessionStorage.getItem(tokenKey) || localStorage.getItem(tokenKey);
-        const apiBase = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api');
+        const overrideUrl = localStorage.getItem('API_BASE_URL');
+        const apiBase = overrideUrl || ((typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api'));
         const url = `${apiBase.replace(/\/+$/, '')}/seller/profile`;
 
         if (token) {
@@ -739,8 +740,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      const apiBase = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api');
-      const sendUrl = apiBase.replace(/\/+$/, '') + '/auth/send-otp';
+      const overrideUrl = localStorage.getItem('API_BASE_URL');
+      const apiBase = overrideUrl || ((typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api'));
+      const sendUrl = apiBase.replace(/\/+$, '') + '/auth/send-otp';
       console.log('will POST to', sendUrl);
 
       try {
@@ -805,7 +807,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const emailInput = document.getElementById('email').value.trim();
-      const apiBase = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api');
+      const overrideUrl = localStorage.getItem('API_BASE_URL');
+      const apiBase = overrideUrl || ((typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api'));
       const verifyUrl = apiBase.replace(/\/+$/, '') + '/auth/verify-otp';
 
       try {
