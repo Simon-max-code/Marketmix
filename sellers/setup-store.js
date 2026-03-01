@@ -101,10 +101,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // attempt to fetch existing profile
+      // attempt to fetch existing profile (request explicit columns to avoid RLS recursion)
       let { data: profile, error: selErr } = await supabase
         .from('seller_profiles')
-        .select('*')
+        .select('id,user_id,business_email,business_phone,business_name,business_address')
         .eq('user_id', user.id)
         .single();
 
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } = await supabase
           .from('seller_profiles')
           .insert(insertObj)
-          .select()
+          .select('id,user_id,business_email,business_phone,business_name,business_address')
           .single();
         if (insertErr) throw insertErr;
         profile = inserted;
