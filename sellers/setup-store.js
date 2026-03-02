@@ -789,6 +789,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   verifyEmailBtn.addEventListener("click", async () => {
     const emailInput = document.getElementById("email").value.trim();
+    console.log('verifyEmailBtn clicked, email=', emailInput);
     if (!emailInput) {
       emailError.textContent = "Please enter your email before verifying.";
       emailError.style.color = 'red';
@@ -797,12 +798,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const supabase = await getSupabaseClient();
-      const { error } = await supabase.auth.signInWithOtp({ email: emailInput });
-      if (error) throw error;
+      const result = await supabase.auth.signInWithOtp({ email: emailInput });
+      console.log('signInWithOtp result', result);
+      const { data, error } = result;
+      if (error) {
+        // Supabase may return a descriptive message such as "SMTP settings not configured"
+        console.error('OTP send error from supabase', error);
+        emailError.textContent = `Error sending verification: ${error.message || error}`;
+        emailError.style.color = 'red';
+        return;
+      }
       emailError.textContent = 'Verification email sent. Please check your inbox.';
       emailError.style.color = 'green';
     } catch (err) {
-      console.error('supabase signInWithOtp error', err);
+      console.error('supabase signInWithOtp exception', err);
       emailError.textContent = 'Unable to send verification email. Please try again.';
       emailError.style.color = 'red';
     }
