@@ -90,69 +90,53 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const supabase = await getSupabaseClient();
       let user = null;
+
+      // first try to obtain an active session (this is the most reliable way
+      // to know whether the user is signed in)
       try {
-        const {
-          data: { user: u },
-          error: userErr
-        } = await supabase.auth.getUser();
-        if (userErr) throw userErr;
-        user = u;
-      } catch (authErr) {
-        console.warn('initializeSellerProfile: supabase.auth.getUser failed', authErr);
-        // If the auth session is missing (e.g. redirect after signup lost session),
-        // try to recover user info from localStorage where signup/login may have saved it.
-        const userKey = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.USER) ? CONFIG.STORAGE_KEYS.USER : 'user';
-        try {
-          const raw = localStorage.getItem(userKey);
-          if (raw) {
-            user = JSON.parse(raw);
-            console.log('initializeSellerProfile: recovered user from localStorage key', userKey, user);
-          }
-        } catch (lsErr) {
-          console.warn('initializeSellerProfile: failed to parse user from localStorage', lsErr);
+        const { data: { session }, error: sessErr } = await supabase.auth.getSession();
+        if (sessErr) throw sessErr;
+        if (session && session.user) {
+          user = session.user;
         }
+      } catch (sessErr) {
+        console.warn('initializeSellerProfile: supabase.auth.getSession failed', sessErr);
+      }
 
-        // If still no user, only proceed if we can obtain minimal info; otherwise abort silently
-        if (!user) {
-          console.log('initializeSellerProfile: no authenticated user available; aborting initialization');
-          return;
+      // if we still don't have a user, fall back to getUser (which may throw
+      // AuthSessionMissingError) or to whatever may be stored in localStorage.
+      if (!user) {
+        try {
+          const {
+            data: { user: u },
+            error: userErr
+          } = await supabase.auth.getUser();
+          if (userErr) throw userErr;
+          user = u;
+        } catch (authErr) {
+          console.warn('initializeSellerProfile: supabase.auth.getUser failed', authErr);
+          // try recovering from localStorage
+          const userKey = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.USER) ? CONFIG.STORAGE_KEYS.USER : 'user';
+          try {
+            const raw = localStorage.getItem(userKey);
+            if (raw) {
+              user = JSON.parse(raw);
+              console.log('initializeSellerProfile: recovered user from localStorage key', userKey, user);
+            }
+          } catch (lsErr) {
+            console.warn('initializeSellerProfile: failed to parse user from localStorage', lsErr);
+          }
+
+          if (!user) {
+            console.log('initializeSellerProfile: no authenticated user available; aborting initialization');
+            return;
+          }
         }
       }
 
-      // **SUPABASE EMAIL CONFIRMATION CHECK**
       console.log('initializeSellerProfile: supabase user object', user);
-      if (user && user.email_confirmed_at) {
-        console.log('initializeSellerProfile: supabase email confirmed at', user.email_confirmed_at);
-        // update seller_profiles on backend to reflect verified status
-        try {
-          const tokenKey = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.TOKEN) ? CONFIG.STORAGE_KEYS.TOKEN : 'token';
-          const token = sessionStorage.getItem(tokenKey) || localStorage.getItem(tokenKey);
-          if (token) {
-            const overrideUrl = localStorage.getItem('API_BASE_URL');
-            const apiBase = overrideUrl || ((typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api'));
-            await fetch(apiBase.replace(/\/+$/, '') + '/seller/setup-profile', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-              },
-              body: JSON.stringify({
-                storeName: document.getElementById('storeName').value || '',
-                isVerified: true
-              })
-            });
-          }
-        } catch (e) {
-          console.warn('initializeSellerProfile: could not mark backend profile verified', e);
-        }
-        // update UI immediately
-        const verifyEmailBtnLocal = document.getElementById('verifyEmail');
-        if (verifyEmailBtnLocal) {
-          verifyEmailBtnLocal.textContent = 'Verified ✅';
-          verifyEmailBtnLocal.disabled = true;
-          verifyEmailBtnLocal.classList.add('verified');
-        }
-      }
+      // NOTE: do *not* update backend here yet; wait until we have the seller
+      // profile so we can inspect its current verification state.
 
       // decide whether we had an active Supabase session
       let hadActiveSession = false;
@@ -281,6 +265,43 @@ document.addEventListener('DOMContentLoaded', () => {
         verifyEmailBtn.disabled = true;
         emailError.textContent = 'Email already verified.';
         emailError.style.color = 'green';
+      }
+
+      // **after loading backend profile, if Supabase session exists and the
+      // user record shows email_confirmed_at then we should mark the profile
+      // verified if it isn't already.** this covers the case where the magic
+      // link was clicked before visiting the setup page.
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session && session.user && session.user.email_confirmed_at) {
+          console.log('initializeSellerProfile: session user confirmed', session.user.id);
+          if (!profile || !profile.isVerified) {
+            // send update request to backend
+            const tokenKey = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.TOKEN) ? CONFIG.STORAGE_KEYS.TOKEN : 'token';
+            const token = sessionStorage.getItem(tokenKey) || localStorage.getItem(tokenKey);
+            if (token) {
+              const overrideUrl = localStorage.getItem('API_BASE_URL');
+              const apiBase = overrideUrl || ((typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api'));
+              await fetch(apiBase.replace(/\/+$/, '') + '/seller/setup-profile', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                  storeName: document.getElementById('storeName').value || '',
+                  isVerified: true
+                })
+              });
+            }
+            // reflect immediately in UI
+            verifyEmailBtn.textContent = 'Verified ✅';
+            verifyEmailBtn.disabled = true;
+            verifyEmailBtn.classList.add('verified');
+          }
+        }
+      } catch (e) {
+        console.error('initializeSellerProfile: error while checking session for confirmed email', e);
       }
 
       // preselect category: try localStorage first, then parse from businessDescription if available
