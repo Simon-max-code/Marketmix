@@ -48,6 +48,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // if a namespace is already present with createClient, use it
     if (typeof window !== 'undefined' && window.supabase && typeof window.supabase.createClient === 'function') {
       supabaseClientInstance = window.supabase.createClient(cfg.url, cfg.key);
+      // attach a single auth state listener so we can react when a session becomes active
+      // (e.g. after redirect from email confirmation).  Note: listener added only once
+      // because we only execute this branch when we first create the client.
+      supabaseClientInstance.auth.onAuthStateChange((event, session) => {
+        console.log('supabase auth state change', event, session);
+        // re-run profile initialization when a new session is established
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+          initializeSellerProfile().catch(e => console.warn('auth state init failed', e));
+        }
+      });
       return supabaseClientInstance;
     }
 
@@ -64,6 +74,14 @@ document.addEventListener('DOMContentLoaded', () => {
       throw new Error('Failed to load Supabase client library');
     }
     supabaseClientInstance = window.supabase.createClient(cfg.url, cfg.key);
+    // also attach the same listener in the code path where we dynamically loaded the
+    // library and created the client for the first time.
+    supabaseClientInstance.auth.onAuthStateChange((event, session) => {
+      console.log('supabase auth state change', event, session);
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+        initializeSellerProfile().catch(e => console.warn('auth state init failed', e));
+      }
+    });
     return supabaseClientInstance;
   }
 
@@ -98,6 +116,41 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!user) {
           console.log('initializeSellerProfile: no authenticated user available; aborting initialization');
           return;
+        }
+      }
+
+      // **SUPABASE EMAIL CONFIRMATION CHECK**
+      console.log('initializeSellerProfile: supabase user object', user);
+      if (user && user.email_confirmed_at) {
+        console.log('initializeSellerProfile: supabase email confirmed at', user.email_confirmed_at);
+        // update seller_profiles on backend to reflect verified status
+        try {
+          const tokenKey = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.TOKEN) ? CONFIG.STORAGE_KEYS.TOKEN : 'token';
+          const token = sessionStorage.getItem(tokenKey) || localStorage.getItem(tokenKey);
+          if (token) {
+            const overrideUrl = localStorage.getItem('API_BASE_URL');
+            const apiBase = overrideUrl || ((typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api'));
+            await fetch(apiBase.replace(/\/+$/, '') + '/seller/setup-profile', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                storeName: document.getElementById('storeName').value || '',
+                isVerified: true
+              })
+            });
+          }
+        } catch (e) {
+          console.warn('initializeSellerProfile: could not mark backend profile verified', e);
+        }
+        // update UI immediately
+        const verifyEmailBtnLocal = document.getElementById('verifyEmail');
+        if (verifyEmailBtnLocal) {
+          verifyEmailBtnLocal.textContent = 'Verified ✅';
+          verifyEmailBtnLocal.disabled = true;
+          verifyEmailBtnLocal.classList.add('verified');
         }
       }
 
@@ -728,136 +781,35 @@ document.addEventListener('DOMContentLoaded', () => {
   styleTag.innerHTML = '@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }';
   document.head.appendChild(styleTag);
 
-  // ✅ Email Verify Flow - INSIDE DOMContentLoaded
+  // ✅ Email Verify Flow - SUPABASE
   const verifyEmailBtn = document.getElementById("verifyEmail");
-  const emailOtpSection = document.getElementById("emailOtpSection");
   const emailError = document.getElementById("error-email");
 
-  console.log('✅ Email verify elements loaded:', { verifyEmailBtn, emailOtpSection, emailError });
+  console.log('✅ Email verify elements loaded (supabase mode)', { verifyEmailBtn, emailError });
 
-  verifyEmailBtn.addEventListener("click", () => {
-    console.log('verifyEmailBtn clicked');
-    // always show OTP section so user can at least type something and see feedback
-    emailOtpSection.style.display = 'flex';
-    (async () => {
-      const emailInput = document.getElementById("email").value.trim();
-      console.log('verifyEmailBtn handler running, emailInput=', emailInput);
-      if (!emailInput) {
-        emailError.textContent = "Please enter your email before verifying.";
-        emailError.style.color = 'red';
-        return;
-      }
+  verifyEmailBtn.addEventListener("click", async () => {
+    const emailInput = document.getElementById("email").value.trim();
+    if (!emailInput) {
+      emailError.textContent = "Please enter your email before verifying.";
+      emailError.style.color = 'red';
+      return;
+    }
 
-      const overrideUrl = localStorage.getItem('API_BASE_URL');
-      const apiBase = overrideUrl || ((typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api'));
-      const sendUrl = apiBase.replace(/\/+$/, '') + '/auth/send-otp';
-      console.log('will POST to', sendUrl);
-
-      try {
-        const res = await fetch(sendUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: emailInput })
-        });
-        const body = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          throw new Error(body.error || body.message || `status ${res.status}`);
-        }
-
-        // success
-        console.log('sendOtp response body', body);
-        if (body.emailFailed) {
-          emailError.textContent = 'Could not send OTP email; using demo code below.';
-          emailError.style.color = 'orange';
-        } else {
-          emailError.textContent = 'OTP sent to your email.';
-          emailError.style.color = 'green';
-        }
-        if (body.code) {
-          console.info('Demo OTP code (from backend):', body.code);
-          try { sessionStorage.setItem('emailOtp', JSON.stringify({ email: emailInput, code: body.code, expiresAt: Date.now() + 5 * 60 * 1000 })); } catch(e) {}
-        }
-        emailOtpSection.style.display = 'flex';
-      } catch (err) {
-        console.warn('verifyEmail: backend send-otp failed, falling back to demo or showing error', err);
-        emailError.textContent = 'Could not send OTP. Check console for demo code.';
-        emailError.style.color = 'orange';
-        emailOtpSection.style.display = 'flex';
-        // optional demo fallback
-        const code = String(Math.floor(100000 + Math.random() * 900000));
-        console.info('Demo OTP for', emailInput, 'is', code);
-        try { sessionStorage.setItem('emailOtp', JSON.stringify({ email: emailInput, code, expiresAt: Date.now() + 5 * 60 * 1000 })); } catch(e) {}
-      }
-
-      // start simple resend cooldown (30s)
-      verifyEmailBtn.disabled = true;
-      let cooldown = 30;
-      const origText = verifyEmailBtn.textContent;
-      verifyEmailBtn.textContent = `Resend (${cooldown}s)`;
-      const t = setInterval(() => {
-        cooldown -= 1;
-        if (cooldown <= 0) {
-          clearInterval(t);
-          verifyEmailBtn.disabled = false;
-          verifyEmailBtn.textContent = origText;
-        } else {
-          verifyEmailBtn.textContent = `Resend (${cooldown}s)`;
-        }
-      }, 1000);
-    })();
+    try {
+      const supabase = await getSupabaseClient();
+      const { error } = await supabase.auth.signInWithOtp({ email: emailInput });
+      if (error) throw error;
+      emailError.textContent = 'Verification email sent. Please check your inbox.';
+      emailError.style.color = 'green';
+    } catch (err) {
+      console.error('supabase signInWithOtp error', err);
+      emailError.textContent = 'Unable to send verification email. Please try again.';
+      emailError.style.color = 'red';
+    }
   });
 
-  document.getElementById("submitEmailOtp").addEventListener("click", () => {
-    console.log('submitEmailOtp clicked');
-    (async () => {
-      const entered = document.getElementById('emailOtp').value.trim();
-      console.log('submitEmailOtp handler, entered=', entered);
-      if (!entered) {
-        emailError.textContent = 'Please enter the OTP.';
-        emailError.style.color = 'red';
-        return;
-      }
+  // no OTP submission listener anymore
 
-      const emailInput = document.getElementById('email').value.trim();
-      const overrideUrl = localStorage.getItem('API_BASE_URL');
-      const apiBase = overrideUrl || ((typeof CONFIG !== 'undefined' && CONFIG && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : (window.location.origin + '/api'));
-      const verifyUrl = apiBase.replace(/\/+$/, '') + '/auth/verify-otp';
-
-      try {
-        // include token if we have one (sessionStorage or localStorage)
-        const tokenKey = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.TOKEN) ? CONFIG.STORAGE_KEYS.TOKEN : 'token';
-        const token = sessionStorage.getItem(tokenKey) || localStorage.getItem(tokenKey);
-        const headers = { 'Content-Type': 'application/json' };
-        if (token) headers['Authorization'] = `Bearer ${token}`;
-        const res = await fetch(verifyUrl, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({ email: emailInput, code: entered })
-        });
-        const body = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          throw new Error(body.error || body.message || `status ${res.status}`);
-        }
-        emailError.textContent = '✅ Email verified successfully.';
-        emailError.style.color = 'green';
-        emailOtpSection.style.display = 'none';      // mark verify button state
-      verifyEmailBtn.textContent = 'Verified';
-      verifyEmailBtn.disabled = true;      } catch (err) {
-        console.warn('submitEmailOtp: backend verify failed', err);
-        // fallback to demo storage check
-        let stored = null;
-        try { stored = JSON.parse(sessionStorage.getItem('emailOtp') || 'null'); } catch(e){}
-        if (stored && entered === String(stored.code) && Date.now() <= (stored.expiresAt||0)) {
-          emailError.textContent = '✅ Email verified (demo fallback).';
-          emailError.style.color = 'green';
-          emailOtpSection.style.display = 'none';
-        } else {
-          emailError.textContent = 'Invalid OTP. Please try again.';
-          emailError.style.color = 'red';
-        }
-      }
-    })();
-  });
 
   // Auto year in footer
   document.querySelector(".footer-copy").innerHTML =
