@@ -231,6 +231,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const phoneVal = pick('business_phone');
       const nameVal = pick('business_name');
       const addressVal = pick('business_address');
+      const websiteVal = pick('website');
+      const facebookVal = pick('facebook');
+      const logoUrlVal = pick('store_logo_url');
 
       if (emailVal) email.value = emailVal;
       if (phoneVal) phone.value = phoneVal;
@@ -243,6 +246,16 @@ document.addEventListener('DOMContentLoaded', () => {
         address.value = addressVal;
       } else if (user?.user_metadata?.business_address) {
         address.value = user.user_metadata.business_address;
+      }
+      if (websiteVal) {
+        document.getElementById('website').value = websiteVal;
+      }
+      if (facebookVal) {
+        document.getElementById('social-facebook').value = facebookVal;
+      }
+      // Note: logoUrlVal is the public URL; to re-upload, user needs to select a new file
+      if (logoUrlVal) {
+        console.log('Store logo found in profile:', logoUrlVal);
       }
 
       // Manually update preview elements (setting input.value doesn't trigger 'input' event listeners)
@@ -815,38 +828,44 @@ document.addEventListener('DOMContentLoaded', () => {
             .upload(filePath, file, { upsert: true });
 
           if (uploadError) {
-            console.warn('Logo upload failed:', uploadError);
-            // Continue without logo
+            console.warn('Logo upload warning:', uploadError);
+            // Log detailed info for debugging but don't break the form submission
+            if (uploadError.message && uploadError.message.includes('Bucket not found')) {
+              console.warn('⚠️  Store-logos bucket is not yet available. Please run setup_storage_bucket.js in the backend directory.');
+            }
+            // Continue without logo - other data will still be saved
+            console.log('✓ Continuing with form submission without logo');
           } else {
             // Get public URL
             const { data: { publicUrl } } = supabase.storage
               .from('store-logos')
               .getPublicUrl(filePath);
             store_logo_url = publicUrl;
+            console.log('✓ Logo uploaded successfully:', store_logo_url);
           }
         } catch (uploadErr) {
           console.warn('Logo upload error:', uploadErr);
-          // Continue without logo
+          // Continue without logo - this is not a critical error
+          console.log('✓ Continuing with form submission without logo (error caught gracefully)');
         }
       }
 
-      // Update seller_profiles - only update columns that exist in the table
+      // Update seller_profiles with all available fields
       const { error: updateError } = await supabase
         .from('seller_profiles')
         .update({
-          // store_name, // Column needs to be added to seller_profiles table
           store_description,
           business_email,
           business_phone,
           business_address,
-          // website, // Column needs to be added to seller_profiles table
+          website,
           category,
-          // facebook, // Column needs to be added to seller_profiles table
+          facebook,
           twitter,
           tiktok,
           instagram,
           telegram,
-          // store_logo_url, // Column needs to be added to seller_profiles table
+          store_logo_url,
           updated_at: new Date()
         })
         .eq('user_id', user.id);
