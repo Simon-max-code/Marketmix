@@ -892,11 +892,11 @@ document.addEventListener('DOMContentLoaded', () => {
     showNotification('Store setup completed successfully! 🎉', 'success');
     
     setTimeout(() => {
-      showNotification('Redirecting to dashboard...', 'success');
+      showNotification('Redirecting to sellers dashboard...', 'success');
     }, 1500);
 
     setTimeout(() => {
-      window.location.href = 'dashboard.html';
+      window.location.href = 'sellers layout.html';
     }, 3000);
   });
 
