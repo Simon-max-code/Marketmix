@@ -830,23 +830,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Update seller_profiles
+      // Update seller_profiles - only update columns that exist in the table
       const { error: updateError } = await supabase
         .from('seller_profiles')
         .update({
-          store_name,
-          store_description,
+          // store_name, // Column needs to be added to seller_profiles table
+          // store_description, // Column needs to be added to seller_profiles table
           business_email,
           business_phone,
           business_address,
-          website,
+          // website, // Column needs to be added to seller_profiles table
           category,
-          facebook,
-          twitter,
-          tiktok,
-          instagram,
-          telegram,
-          store_logo_url,
+          // facebook, // Column needs to be added to seller_profiles table
+          // twitter, // Column needs to be added to seller_profiles table
+          // tiktok, // Column needs to be added to seller_profiles table
+          // instagram, // Column needs to be added to seller_profiles table
+          // telegram, // Column needs to be added to seller_profiles table
+          // store_logo_url, // Column needs to be added to seller_profiles table
           updated_at: new Date()
         })
         .eq('user_id', user.id);
