@@ -713,7 +713,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* -------------------------
      Form submission validation (final)
   ------------------------- */
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     // clear errors
@@ -760,15 +760,91 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // Save to Supabase
+    try {
+      const supabase = await getSupabaseClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      // Collect form data
+      const store_name = storeName.value.trim();
+      const store_description = storeDesc.value.trim();
+      const business_email = email.value.trim();
+      const business_phone = phone.value.trim();
+      const business_address = address.value.trim();
+      const website = website.value.trim();
+      const category = selectedCategory;
+      const facebook = document.getElementById('social-facebook').value.trim();
+      const twitter = document.getElementById('social-x').value.trim();
+      const tiktok = document.getElementById('social-tiktok').value.trim();
+      const instagram = document.getElementById('social-ig').value.trim();
+      const telegram = document.getElementById('social-telegram').value.trim();
+
+      let store_logo_url = null;
+
+      // Upload logo if present
+      if (logoInput.files && logoInput.files[0]) {
+        const file = logoInput.files[0];
+        const filePath = `${user.id}/logo.png`;
+        const { error: uploadError } = await supabase.storage
+          .from('store-logos')
+          .upload(filePath, file, { upsert: true });
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('store-logos')
+          .getPublicUrl(filePath);
+        store_logo_url = publicUrl;
+      }
+
+      // Update seller_profiles
+      const { error: updateError } = await supabase
+        .from('seller_profiles')
+        .update({
+          store_name,
+          store_description,
+          business_email,
+          business_phone,
+          business_address,
+          website,
+          category,
+          facebook,
+          twitter,
+          tiktok,
+          instagram,
+          telegram,
+          store_logo_url,
+          updated_at: new Date()
+        })
+        .eq('id', user.id);
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      console.log('Store setup saved successfully');
+    } catch (error) {
+      console.error('Error saving store setup:', error);
+      showNotification('Failed to save store setup. Please try again.', 'error');
+      return;
+    }
+
     // All good: show success notifications and redirect
     showNotification('Store setup completed successfully! 🎉', 'success');
     
     setTimeout(() => {
-      showNotification('Preparing KYC verification...', 'success');
+      showNotification('Redirecting to dashboard...', 'success');
     }, 1500);
 
     setTimeout(() => {
-      window.location.href = 'kyc.html';
+      window.location.href = 'dashboard.html';
     }, 3000);
   });
 
