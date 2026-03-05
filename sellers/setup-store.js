@@ -763,7 +763,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // Save to Supabase
     try {
       const supabase = await getSupabaseClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      let user = null;
+
+      // Try to get user from Supabase auth
+      try {
+        const { data: { user: u }, error: userErr } = await supabase.auth.getUser();
+        if (userErr) throw userErr;
+        user = u;
+      } catch (authErr) {
+        console.warn('Submit: supabase.auth.getUser failed', authErr);
+        // Fallback to localStorage
+        const userKey = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.STORAGE_KEYS && CONFIG.STORAGE_KEYS.USER) ? CONFIG.STORAGE_KEYS.USER : 'user';
+        try {
+          const raw = localStorage.getItem(userKey);
+          if (raw) {
+            user = JSON.parse(raw);
+            console.log('Submit: recovered user from localStorage', user);
+          }
+        } catch (lsErr) {
+          console.warn('Submit: failed to parse user from localStorage', lsErr);
+        }
+      }
 
       if (!user) {
         throw new Error('User not authenticated');
