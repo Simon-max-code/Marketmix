@@ -852,12 +852,19 @@ document.addEventListener('DOMContentLoaded', () => {
         .eq('user_id', user.id);
 
       if (updateError) {
+        console.error('Supabase update error details:', updateError);
         throw updateError;
       }
 
       console.log('Store setup saved successfully');
     } catch (error) {
       console.error('Error saving store setup:', error);
+      console.error('Error details:', {
+        message: error?.message,
+        code: error?.code,
+        details: error?.details,
+        hint: error?.hint
+      });
       showNotification('Failed to save store setup. Please try again.', 'error');
       return;
     }
