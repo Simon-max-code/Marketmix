@@ -807,21 +807,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Upload logo if present
       if (logoInput.files && logoInput.files[0]) {
-        const file = logoInput.files[0];
-        const filePath = `${user.id}/logo.png`;
-        const { error: uploadError } = await supabase.storage
-          .from('store-logos')
-          .upload(filePath, file, { upsert: true });
+        try {
+          const file = logoInput.files[0];
+          const filePath = `${user.id}/logo.png`;
+          const { error: uploadError } = await supabase.storage
+            .from('store-logos')
+            .upload(filePath, file, { upsert: true });
 
-        if (uploadError) {
-          throw uploadError;
+          if (uploadError) {
+            console.warn('Logo upload failed:', uploadError);
+            // Continue without logo
+          } else {
+            // Get public URL
+            const { data: { publicUrl } } = supabase.storage
+              .from('store-logos')
+              .getPublicUrl(filePath);
+            store_logo_url = publicUrl;
+          }
+        } catch (uploadErr) {
+          console.warn('Logo upload error:', uploadErr);
+          // Continue without logo
         }
-
-        // Get public URL
-        const { data: { publicUrl } } = supabase.storage
-          .from('store-logos')
-          .getPublicUrl(filePath);
-        store_logo_url = publicUrl;
       }
 
       // Update seller_profiles
