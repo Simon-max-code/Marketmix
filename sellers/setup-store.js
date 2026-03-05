@@ -835,17 +835,17 @@ document.addEventListener('DOMContentLoaded', () => {
         .from('seller_profiles')
         .update({
           // store_name, // Column needs to be added to seller_profiles table
-          // store_description, // Column needs to be added to seller_profiles table
+          store_description,
           business_email,
           business_phone,
           business_address,
           // website, // Column needs to be added to seller_profiles table
           category,
           // facebook, // Column needs to be added to seller_profiles table
-          // twitter, // Column needs to be added to seller_profiles table
-          // tiktok, // Column needs to be added to seller_profiles table
-          // instagram, // Column needs to be added to seller_profiles table
-          // telegram, // Column needs to be added to seller_profiles table
+          twitter,
+          tiktok,
+          instagram,
+          telegram,
           // store_logo_url, // Column needs to be added to seller_profiles table
           updated_at: new Date()
         })
