@@ -834,19 +834,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const { error: updateError } = await supabase
         .from('seller_profiles')
         .update({
-          // store_name, // Column may not exist yet
-          // store_description, // Column may not exist yet
+          store_name,
+          store_description,
           business_email,
           business_phone,
           business_address,
-          // website, // Column may not exist yet
+          website,
           category,
-          // facebook, // Column may not exist yet
-          // twitter, // Column may not exist yet
-          // tiktok, // Column may not exist yet
-          // instagram, // Column may not exist yet
-          // telegram, // Column may not exist yet
-          // store_logo_url, // Column may not exist yet
+          facebook,
+          twitter,
+          tiktok,
+          instagram,
+          telegram,
+          store_logo_url,
           updated_at: new Date()
         })
         .eq('user_id', user.id);
