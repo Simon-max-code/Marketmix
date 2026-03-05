@@ -790,12 +790,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Collect form data
-      const store_name = storeName.value.trim();
-      const store_description = storeDesc.value.trim();
-      const business_email = email.value.trim();
-      const business_phone = phone.value.trim();
-      const business_address = address.value.trim();
-      const website = website.value.trim();
+      const store_name = document.getElementById('storeName').value.trim();
+      const store_description = document.getElementById('storeDesc').value.trim();
+      const business_email = document.getElementById('email').value.trim();
+      const business_phone = document.getElementById('phone').value.trim();
+      const business_address = document.getElementById('address').value.trim();
+      const website = document.getElementById('website').value.trim();
       const category = selectedCategory;
       const facebook = document.getElementById('social-facebook').value.trim();
       const twitter = document.getElementById('social-x').value.trim();
