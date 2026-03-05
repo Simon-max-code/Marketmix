@@ -849,7 +849,7 @@ document.addEventListener('DOMContentLoaded', () => {
           // store_logo_url, // Column may not exist yet
           updated_at: new Date()
         })
-        .eq('id', user.id);
+        .eq('user_id', user.id);
 
       if (updateError) {
         throw updateError;
